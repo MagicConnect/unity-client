@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="199.217" height="62.917" viewBox="0 0 199.217 62.917">
+  <g id="Group_943" data-name="Group 943" transform="translate(-874.81 -460.422)">
+    <line id="Line_232" data-name="Line 232" x2="111.424" transform="translate(918.467 460.922)" fill="none" stroke="#fff2b4" stroke-width="1"/>
+    <g id="Rectangle_958" data-name="Rectangle 958" transform="translate(967.144 516.303) rotate(-45)" fill="none" stroke="#fff2b4" stroke-width="1">
+      <rect width="9.949" height="9.949" stroke="none"/>
+      <rect x="0.5" y="0.5" width="8.949" height="8.949" fill="none"/>
+    </g>
+    <text id="Connect" transform="translate(974.218 496.375)" fill="#fff" font-size="18" font-family="HelveticaNeue, Helvetica Neue"><tspan x="-34" y="0">Connect</tspan></text>
+    <path id="Path_494" data-name="Path 494" d="M2605.5-6037.8h-64.094l-24.954-24.954,24.954-24.954h139.857l24.954,24.954-24.954,24.954h-64.5" transform="translate(-1637 6554)" fill="none" stroke="#fff2b4" stroke-width="1"/>
+    <path id="Path_495" data-name="Path 495" d="M2534.32-6080.792l-1.783-1.784-20.019,20.02,20.019,20.019,1.783-1.783-18.236-18.236Z" transform="translate(-1637 6554)" fill="none" stroke="#fff2b4" stroke-width="1"/>
+    <path id="Path_496" data-name="Path 496" d="M2512.517-6080.792l1.783-1.784,20.019,20.02-20.019,20.019-1.783-1.783,18.236-18.236Z" transform="translate(-1461 6554)" fill="none" stroke="#fff2b4" stroke-width="1"/>
+  </g>
+</svg>
