@@ -15,11 +15,11 @@ C:/Users/Dan/Desktop/Magicon Unity Client
 -logFile
 Logs/AssetImportWorker0.log
 -srvPort
-60812
+51163
 Successfully changed project path to: C:/Users/Dan/Desktop/Magicon Unity Client
 C:/Users/Dan/Desktop/Magicon Unity Client
 Using Asset Import Pipeline V2.
-Refreshing native plugins compatible for Editor in 38.88 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 38.52 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Initialize engine version: 2020.3.17f1 (a4537701e4ab)
 [Subsystems] Discovering subsystems at path C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/Resources/UnitySubsystems
@@ -35,75 +35,75 @@ Initialize mono
 Mono path[0] = 'C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/Managed'
 Mono path[1] = 'C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/MonoBleedingEdge/lib/mono/unityjit'
 Mono config path = 'C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/MonoBleedingEdge/etc'
-Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56624
+Using monoOptions --debugger-agent=transport=dt_socket,embedding=1,server=y,suspend=n,address=127.0.0.1:56228
 Begin MonoManager ReloadAssembly
 Registering precompiled unity dll's ...
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/WebGLSupport/UnityEditor.WebGL.Extensions.dll
 Register platform support module: C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll
-Registered in 0.001716 seconds.
+Registered in 0.002020 seconds.
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
-Refreshing native plugins compatible for Editor in 38.31 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 40.22 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  0.970 seconds
+- Completed reload, in  0.977 seconds
 Domain Reload Profiling:
-	ReloadAssembly (970ms)
-		BeginReloadAssembly (43ms)
+	ReloadAssembly (978ms)
+		BeginReloadAssembly (42ms)
 			ExecutionOrderSort (0ms)
 			DisableScriptedObjects (0ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
 			CreateAndSetChildDomain (1ms)
-		EndReloadAssembly (330ms)
-			LoadAssemblies (42ms)
+		EndReloadAssembly (347ms)
+			LoadAssemblies (41ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (118ms)
+			SetupTypeCache (124ms)
 			ReleaseScriptCaches (0ms)
-			RebuildScriptCaches (25ms)
-			SetupLoadedEditorAssemblies (138ms)
+			RebuildScriptCaches (26ms)
+			SetupLoadedEditorAssemblies (144ms)
 				LogAssemblyErrors (0ms)
 				InitializePlatformSupportModulesInManaged (4ms)
 				SetLoadedEditorAssemblies (0ms)
-				RefreshPlugins (38ms)
-				BeforeProcessingInitializeOnLoad (10ms)
-				ProcessInitializeOnLoadAttributes (64ms)
-				ProcessInitializeOnLoadMethodAttributes (21ms)
+				RefreshPlugins (40ms)
+				BeforeProcessingInitializeOnLoad (11ms)
+				ProcessInitializeOnLoadAttributes (67ms)
+				ProcessInitializeOnLoadMethodAttributes (22ms)
 				AfterProcessingInitializeOnLoad (0ms)
 				EditorAssembliesLoaded (0ms)
 			ExecutionOrderSort2 (0ms)
 			AwakeInstancesAfterBackupRestoration (0ms)
 Platform modules already initialized, skipping
 Registering precompiled user dll's ...
-Registered in 0.003278 seconds.
+Registered in 0.003498 seconds.
 Begin MonoManager ReloadAssembly
 Native extension for WindowsStandalone target not found
 Native extension for WebGL target not found
-Refreshing native plugins compatible for Editor in 37.76 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 37.60 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Mono: successfully reloaded assembly
-- Completed reload, in  0.960 seconds
+- Completed reload, in  0.946 seconds
 Domain Reload Profiling:
-	ReloadAssembly (961ms)
+	ReloadAssembly (947ms)
 		BeginReloadAssembly (119ms)
 			ExecutionOrderSort (0ms)
-			DisableScriptedObjects (3ms)
+			DisableScriptedObjects (4ms)
 			BackupInstance (0ms)
 			ReleaseScriptingObjects (0ms)
-			CreateAndSetChildDomain (16ms)
-		EndReloadAssembly (791ms)
-			LoadAssemblies (71ms)
+			CreateAndSetChildDomain (15ms)
+		EndReloadAssembly (775ms)
+			LoadAssemblies (72ms)
 			RebuildTransferFunctionScriptingTraits (0ms)
-			SetupTypeCache (233ms)
+			SetupTypeCache (230ms)
 			ReleaseScriptCaches (0ms)
-			RebuildScriptCaches (40ms)
-			SetupLoadedEditorAssemblies (351ms)
+			RebuildScriptCaches (39ms)
+			SetupLoadedEditorAssemblies (339ms)
 				LogAssemblyErrors (0ms)
 				InitializePlatformSupportModulesInManaged (4ms)
 				SetLoadedEditorAssemblies (0ms)
 				RefreshPlugins (38ms)
-				BeforeProcessingInitializeOnLoad (64ms)
-				ProcessInitializeOnLoadAttributes (231ms)
+				BeforeProcessingInitializeOnLoad (61ms)
+				ProcessInitializeOnLoadAttributes (222ms)
 				ProcessInitializeOnLoadMethodAttributes (10ms)
 				AfterProcessingInitializeOnLoad (5ms)
 				EditorAssembliesLoaded (0ms)
@@ -113,14 +113,14 @@ Platform modules already initialized, skipping
 ========================================================================
 Worker process is ready to serve import requests
 Launched and connected shader compiler UnityShaderCompiler.exe after 0.08 seconds
-Refreshing native plugins compatible for Editor in 0.44 ms, found 3 plugins.
+Refreshing native plugins compatible for Editor in 0.46 ms, found 3 plugins.
 Preloading 0 native plugins for Editor in 0.00 ms.
 Unloading 2104 Unused Serialized files (Serialized files now loaded: 0)
 System memory in use before: 95.3 MB.
 System memory in use after: 95.4 MB.
 
 Unloading 28 unused Assets to reduce memory usage. Loaded Objects now: 2542.
-Total: 2.835900 ms (FindLiveObjects: 0.193300 ms CreateObjectMapping: 0.046500 ms MarkObjects: 2.536100 ms  DeleteObjects: 0.058700 ms)
+Total: 2.772700 ms (FindLiveObjects: 0.182800 ms CreateObjectMapping: 0.043400 ms MarkObjects: 2.486000 ms  DeleteObjects: 0.059600 ms)
 
 AssetImportParameters requested are different than current active one (requested -> active):
   custom:framework-win-MediaFoundation: 216162199b28c13a410421893ffa2e32 -> 
@@ -135,9 +135,121 @@ AssetImportParameters requested are different than current active one (requested
   custom:audio-encoder-webm-vorbis: bf7c407c2cedff20999df2af8eb42d56 -> 
 ========================================================================
 Received Import Request.
-  path: Assets/UI Prefabs/Account Mail Panel.prefab
-  artifactKey: Guid(e5d13e725de8b3a4487ae8a6836f1fc8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
-Start importing Assets/UI Prefabs/Account Mail Panel.prefab using Guid(e5d13e725de8b3a4487ae8a6836f1fc8) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '0c818262e022055cf952c21b4f203dea') in 0.101753 seconds 
-  Import took 0.105422 seconds .
+  path: Assets/UI Assets/Fonts
+  artifactKey: Guid(85e0082bb07ca914a9ed019d927af753) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts using Guid(85e0082bb07ca914a9ed019d927af753) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'fd9da3afc101c0b62efa97c1e023c3b9') in 0.008997 seconds 
+  Import took 0.012033 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 35.130777 seconds.
+  path: Assets/UI Assets/Fonts/Fonts
+  artifactKey: Guid(406f4173c4945ae4f9f526cbd6999e9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts using Guid(406f4173c4945ae4f9f526cbd6999e9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a6bf2a23c7c1f3c7f49e077e0662934d') in 0.003181 seconds 
+  Import took 0.006036 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.087965 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-black.otf
+  artifactKey: Guid(632cfac3c9de5d84792e3ac92c5c3491) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-black.otf using Guid(632cfac3c9de5d84792e3ac92c5c3491) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '19e78f5c0d43e31bb9286c82b1bf4ee2') in 0.091683 seconds 
+  Import took 0.094511 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000142 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-semibold.otf
+  artifactKey: Guid(08732f3977d702c459fe0c3b9acd5676) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-semibold.otf using Guid(08732f3977d702c459fe0c3b9acd5676) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '69b36fa9d8f7fe733b4bb73679dc1cdb') in 0.010982 seconds 
+  Import took 0.013618 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000147 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-bold.otf
+  artifactKey: Guid(5a82387edfcdeab44a69489fc8b56b95) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-bold.otf using Guid(5a82387edfcdeab44a69489fc8b56b95) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '70a451a080ac1da8358898a263002ee2') in 0.012263 seconds 
+  Import took 0.015158 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000134 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-regular.otf
+  artifactKey: Guid(f5db9c38e0a3c4f4780665907ddec8fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-regular.otf using Guid(f5db9c38e0a3c4f4780665907ddec8fd) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '388a81a76b33089a5b0b719caef78301') in 0.010640 seconds 
+  Import took 0.013349 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000173 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-light.otf
+  artifactKey: Guid(80732a490b8b2e7469da651d5bf10cb5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-light.otf using Guid(80732a490b8b2e7469da651d5bf10cb5) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'a5277133eff678d8445340295aa73192') in 0.010666 seconds 
+  Import took 0.013836 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 0.000153 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-extralight.otf
+  artifactKey: Guid(17d5f1ca6d8b0c040a2b2143030891d7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-extralight.otf using Guid(17d5f1ca6d8b0c040a2b2143030891d7) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '1a183c5926e9d05edbf3291ecd714730') in 0.012346 seconds 
+  Import took 0.015582 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 268.593365 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-light SDF_textmeshpro_default.asset
+  artifactKey: Guid(cec7bbf9009ab0741939e37f25fa013a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-light SDF_textmeshpro_default.asset using Guid(cec7bbf9009ab0741939e37f25fa013a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'e668caf69a739efeb2bf072ae339abf9') in 0.037893 seconds 
+  Import took 0.041146 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 2985.938326 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-light SDF_textmeshpro_default.asset
+  artifactKey: Guid(cec7bbf9009ab0741939e37f25fa013a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-light SDF_textmeshpro_default.asset using Guid(cec7bbf9009ab0741939e37f25fa013a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '3b72dcc70c5696eecc8e0d8e018bb7ab') in 0.030461 seconds 
+  Import took 0.033723 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 386.171513 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-black SDF_textmeshpro_default.asset
+  artifactKey: Guid(325663eb3e96bf8459be3cb33e27ee9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-black SDF_textmeshpro_default.asset using Guid(325663eb3e96bf8459be3cb33e27ee9d) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: 'aba0704c82ad4162c2f679cf76348ddd') in 0.018895 seconds 
+  Import took 0.022035 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 19.761948 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-bold SDF_textmeshpro_default.asset
+  artifactKey: Guid(b373631f5055bbf4f83ded7f6082cc66) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-bold SDF_textmeshpro_default.asset using Guid(b373631f5055bbf4f83ded7f6082cc66) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '77f834909e43e4b2fb968813d7e75856') in 0.027165 seconds 
+  Import took 0.030480 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 18.312978 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-extralight SDF_textmeshpro_default.asset
+  artifactKey: Guid(d64910c335be1cf4482987fc2b452c55) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-extralight SDF_textmeshpro_default.asset using Guid(d64910c335be1cf4482987fc2b452c55) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '23511b081f665034164a74d4e9c131e1') in 0.027471 seconds 
+  Import took 0.030462 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 18.132966 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-regular SDF_textmeshpro_default.asset
+  artifactKey: Guid(2f3b4de79ca4cc44e9c67a73acd7445c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-regular SDF_textmeshpro_default.asset using Guid(2f3b4de79ca4cc44e9c67a73acd7445c) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '37e60c5e15d92e91a9a738e5843f72e8') in 0.021839 seconds 
+  Import took 0.024919 seconds .
+
+========================================================================
+Received Import Request.
+  Time since last request: 18.229522 seconds.
+  path: Assets/UI Assets/Fonts/Fonts/trajanpro3-semibold SDF_textmeshpro_default.asset
+  artifactKey: Guid(1164b05a91e79c64fa10b305c004357a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)
+Start importing Assets/UI Assets/Fonts/Fonts/trajanpro3-semibold SDF_textmeshpro_default.asset using Guid(1164b05a91e79c64fa10b305c004357a) Importer(815301076,1909f56bfc062723c751e8b465ee728b)  -> (artifact id: '6ab578e474aeffd05ad74e13c5ff4c24') in 0.026242 seconds 
+  Import took 0.029252 seconds .
 
 AssetImportWorkerClient::OnTransportError - code=2 error=End of file
