@@ -1,0 +1,59 @@
+﻿title: Start
+---
+Which node would you like to try out?
+-> 1 (DemoConversation)
+    <<jump DemoConversation>>
+-> 2
+-> 3
+-> 4
+-> 5
+===
+title: DemoConversation
+tags:
+---
+<<show Beryl>>
+<<move Beryl Center>>
+Beryl: Hey!
+Beryl: If I'm appearing on your screen right now, that means everything is working!
+Beryl: Now I'm going to try disappearing.
+<<hide Beryl>>
+Beryl: Can you see me? No? That means it worked!
+<<show Beryl>>
+Beryl: Alright, now I'm gonna move around.
+Beryl: First to the far left...
+<<move Beryl FarLeft>>
+Beryl: Then the far right...
+<<move Beryl FarRight>>
+Beryl: To the left now!
+<<move Beryl Left>>
+Beryl: How about the right?
+<<move Beryl Right>>
+Beryl: Finally, to the center of the stage!
+<<move Beryl Center>>
+Beryl: That's just the way I like it.
+Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
+-> Sure
+    Beryl: Great! Glad you agree.
+    <<jump FriendlyConversation>>
+-> Not really
+    Beryl: Wrong answer. This is happening whether you like it or not.
+    <<jump FriendlyConversation>>
+===
+
+title: FriendlyConversation
+---
+Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I want to talk to you about something.
+<<move Beryl Left>>
+<<show Lana>>
+<<move Lana Right>>
+Lana comes into the room.
+Lana: Sup.
+Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
+Lana: Sure, I guess. Communication is important.
+Beryl: It sure is!
+Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
+<<hide Beryl>>
+Beryl disappears.
+Lana: Uh...Well I guess I'll be going too. Bye.
+Lana quickly leaves.
+===
