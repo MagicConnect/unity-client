@@ -47,13 +47,23 @@ Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I wa
 <<show Lana>>
 <<move Lana Right>>
 Lana comes into the room.
+<<fade_in Lana>>
+<<fade_out Beryl>>
 Lana: Sup.
+<<fade_in Beryl>>
+<<fade_out Lana>>
 Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
+<<fade_in Lana>>
+<<fade_out Beryl>>
 Lana: Sure, I guess. Communication is important.
+<<fade_in Beryl>>
+<<fade_out Lana>>
 Beryl: It sure is!
 Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
 <<hide Beryl>>
 Beryl disappears.
+<<fade_in Lana>>
 Lana: Uh...Well I guess I'll be going too. Bye.
+<<hide Lana>>
 Lana quickly leaves.
 ===

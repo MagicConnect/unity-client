@@ -34,4 +34,16 @@ public class Character : MonoBehaviour
     {
         gameObject.transform.position = stagePosition.transform.position;
     }
+
+    [YarnCommand("fade_out")]
+    public void FadeOut()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
+    }
+
+    [YarnCommand("fade_in")]
+    public void FadeIn()
+    {
+        gameObject.GetComponent<SpriteRenderer>().color = Color.white;
+    }
 }
