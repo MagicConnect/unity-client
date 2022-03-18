@@ -26,6 +26,7 @@ jobs:
       - uses: actions/checkout@v2
         with:
           fetch-depth: 0
+          lfs: true
           
       - uses: actions/cache@v2
         with:
@@ -39,6 +40,7 @@ jobs:
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           unityVersion: 2020.3.17f1
+          allowDirtyBuild: true
           
       - uses: actions/upload-artifact@v2
         with:
