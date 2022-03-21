@@ -56,6 +56,7 @@ public class DialogueDebugWindow : MonoBehaviour
                 //path = Path.GetDirectoryName(path);
                 //Debug.LogWarning("Single yarn file detected and changed to a directory.");
                 dialogueRunner.GetComponent<DialogueRunner>().Stop();
+                HideOptionsList();
                 dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(File.ReadAllText(path));
                 dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
             }
@@ -90,6 +91,7 @@ public class DialogueDebugWindow : MonoBehaviour
             
             // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
             dialogueRunner.GetComponent<DialogueRunner>().Stop();
+            HideOptionsList();
             dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(contents);
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
         }
@@ -103,6 +105,7 @@ public class DialogueDebugWindow : MonoBehaviour
         if(dialogueRunner.GetComponent<DialogueRunner>().NodeExists(selectedOption))
         {
             dialogueRunner.GetComponent<DialogueRunner>().Stop();
+            HideOptionsList();
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue(selectedOption);
         }
         else
@@ -116,6 +119,16 @@ public class DialogueDebugWindow : MonoBehaviour
         loadedNodesDropdown.GetComponent<TMP_Dropdown>().ClearOptions();
         List<string> nodeNames = new List<string>(dialogueRunner.GetComponent<DialogueRunner>().Dialogue.NodeNames);
         loadedNodesDropdown.GetComponent<TMP_Dropdown>().AddOptions(nodeNames);
+    }
+
+    // For some reason Yarn Spinner doesn't hide the options list when you stop the dialogue and switch to a new project.
+    // We need to manually hide it to keep it from getting in the way.
+    public void HideOptionsList()
+    {
+        CanvasGroup options = dialogueRunner.GetComponent<DialogueRunner>().GetComponentInChildren<OptionsListView>().gameObject.GetComponent<CanvasGroup>();
+        options.alpha = 0;
+        options.interactable = false;
+        options.blocksRaycasts = false;
     }
 
     public void ToggleDebugWindow()

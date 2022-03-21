@@ -1,12 +1,7 @@
 ﻿title: Start
 ---
-Which node would you like to try out?
--> 1 (DemoConversation)
-    <<jump DemoConversation>>
--> 2
--> 3
--> 4
--> 5
+Press Tab to open the debug window and load some scripts, or press the Continue button for a brief demo conversation.
+<<jump DemoConversation>>
 ===
 title: DemoConversation
 tags:
