@@ -50,9 +50,12 @@ public class DialogueDebugWindow : MonoBehaviour
             // If not, check if it is a valid yarn script file.
             if(File.Exists(path) && Path.GetExtension(path) == ".yarn")
             {
-                // If so, get the file's directory and load from there as normal. (TODO: Allow loading of single files)
-                path = Path.GetDirectoryName(path);
-                Debug.LogWarning("Single yarn file detected and changed to a directory.");
+                // If so, load the file contents and sent it to the dynamic yarn loader.
+                //path = Path.GetDirectoryName(path);
+                //Debug.LogWarning("Single yarn file detected and changed to a directory.");
+                dialogueRunner.GetComponent<DialogueRunner>().Stop();
+                dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(File.ReadAllText(path));
+                dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
             }
             else
             {
@@ -61,24 +64,34 @@ public class DialogueDebugWindow : MonoBehaviour
                 return;
             }
         }
-
-        // If the load subfolders checkbox is checked then we search all subdirectories for yarn scripts.
-        IEnumerable<string> yarnScripts;
-        if(loadSubfoldersToggle.GetComponent<Toggle>().isOn)
-        {
-            yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.AllDirectories);
-        }
-        // If not, just search the top directory only.
         else
         {
-            yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.TopDirectoryOnly);
+            // If the load subfolders checkbox is checked then we search all subdirectories for yarn scripts.
+            IEnumerable<string> yarnScripts;
+            if(loadSubfoldersToggle.GetComponent<Toggle>().isOn)
+            {
+                yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.AllDirectories);
+            }
+            // If not, just search the top directory only.
+            else
+            {
+                yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.TopDirectoryOnly);
+            }
+
+            // Load the contents of each script file and combine them into a single Yarn script.
+            string contents = "";
+            foreach(string file in yarnScripts)
+            {
+                contents += File.ReadAllText(file);
+                contents += "\n";
+            }
+            
+            // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
+            //LoadYarnScripts(yarnScripts);
+            dialogueRunner.GetComponent<DialogueRunner>().Stop();
+            dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(contents);
+            dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
         }
-        
-        // Pass the list of yarn scripts to the Dialogue Runner's dynamic loader so it can handle compilation.
-        //LoadYarnScripts(yarnScripts);
-        dialogueRunner.GetComponent<DialogueRunner>().Stop();
-        dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScripts(yarnScripts);
-        dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
     }
 
     public void OnReloadAllScriptsClicked()
