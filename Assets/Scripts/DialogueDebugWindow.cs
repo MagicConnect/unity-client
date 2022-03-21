@@ -20,6 +20,9 @@ public class DialogueDebugWindow : MonoBehaviour
     // The Yarn dialogue runner that we're going to load scripts into.
     public GameObject dialogueRunner;
 
+    // The dropdown component where our loaded yarn script nodes should be displayed.
+    public GameObject loadedNodesDropdown;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,7 +45,6 @@ public class DialogueDebugWindow : MonoBehaviour
         Debug.Log("Load All Scripts button clicked.");
         Debug.Log(workspaceInput.GetComponent<TMP_InputField>().text);
         string path = workspaceInput.GetComponent<TMP_InputField>().text;
-        //string workspace = workspaceInput.GetComponent<TMP_InputField>().text;
         
         // Check if the given path isn't a valid directory.
         if(!Directory.Exists(path))
@@ -87,28 +89,37 @@ public class DialogueDebugWindow : MonoBehaviour
             }
             
             // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
-            //LoadYarnScripts(yarnScripts);
             dialogueRunner.GetComponent<DialogueRunner>().Stop();
             dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(contents);
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
         }
+
+        RefreshNodeDropdown();
     }
 
-    public void OnReloadAllScriptsClicked()
+    public void OnStartAtNodeClicked()
     {
+        string selectedOption = loadedNodesDropdown.GetComponent<TMP_Dropdown>().captionText.text;
+        if(dialogueRunner.GetComponent<DialogueRunner>().NodeExists(selectedOption))
+        {
+            dialogueRunner.GetComponent<DialogueRunner>().Stop();
+            dialogueRunner.GetComponent<DialogueRunner>().StartDialogue(selectedOption);
+        }
+        else
+        {
+            Debug.LogError("Cannot jump to a node that does not exist.");
+        }
+    }
 
+    public void RefreshNodeDropdown()
+    {
+        loadedNodesDropdown.GetComponent<TMP_Dropdown>().ClearOptions();
+        List<string> nodeNames = new List<string>(dialogueRunner.GetComponent<DialogueRunner>().Dialogue.NodeNames);
+        loadedNodesDropdown.GetComponent<TMP_Dropdown>().AddOptions(nodeNames);
     }
 
     public void ToggleDebugWindow()
     {
         displayPanel.SetActive(!displayPanel.activeInHierarchy);
-    }
-
-    private void LoadYarnScripts(IEnumerable<string> scripts)
-    {
-        foreach(string scriptPath in scripts)
-        {
-            Debug.Log(scriptPath);
-        }
     }
 }
