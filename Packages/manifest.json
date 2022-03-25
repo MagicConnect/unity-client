@@ -54,6 +54,13 @@
       "scopes": [
         "dev.yarnspinner"
       ]
+    },
+    {
+      "name": "WebP Plugin",
+      "url": "https://github.com/netpyoung/unity.webp",
+      "scopes": [
+        "com.netpyoung.webp"
+      ]
     }
   ]
 }

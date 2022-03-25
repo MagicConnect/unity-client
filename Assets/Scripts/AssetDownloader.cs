@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 
 using BestHTTP;
 using Newtonsoft.Json;
+using WebP;
+
+using UnityEngine.UI;
 
 public class AssetDownloader : MonoBehaviour
 {
@@ -48,6 +51,8 @@ public class AssetDownloader : MonoBehaviour
     {
         public string Version {get; set;}
     }
+
+    public GameObject image;
 
     // Start is called before the first frame update
     void Start()
@@ -124,7 +129,20 @@ public class AssetDownloader : MonoBehaviour
     public void OnWebpRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
         Debug.Log(resp.DataAsText);
-        //Texture2D webpTexture = Texture2dext
+
+        var bytes = resp.Data;
+        
+        Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError);
+        
+        if (lError == Error.Success)
+        {
+            //image.texture = webpTexture;
+            image.GetComponent<SpriteRenderer>().sprite = Sprite.Create(webpTexture, new Rect(0.0f, 0.0f, webpTexture.width, webpTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
+        }
+        else
+        {
+            Debug.LogError("Webp Load Error : " + lError.ToString());
+        }
     }
 
     protected virtual void OnDownloadProgress(HTTPRequest originalRequest, long downloaded, long downloadLength)

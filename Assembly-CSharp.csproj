@@ -36,11 +36,12 @@
     <ImplicitlyExpandDesignTimeFacades>false</ImplicitlyExpandDesignTimeFacades>
   </PropertyGroup>
   <ItemGroup>
-     <Compile Include="Assets\Scripts\StageDirector.cs" />
      <Compile Include="Assets\Scripts\AssetDownloader.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\DynamicYarnLoader.cs" />
      <Compile Include="Assets\Scripts\DialogueDebugWindow.cs" />
+     <Compile Include="Assets\Scripts\StageDirector.cs" />
+     <Compile Include="Assets\Scripts\NewBehaviourScript.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -771,6 +772,10 @@
     <ProjectReference Include="BestHTTP.csproj">
       <Project>{6545f1bc-248b-1538-6604-863c2ad1d840}</Project>
       <Name>BestHTTP</Name>
+    </ProjectReference>
+    <ProjectReference Include="unity.webp.csproj">
+      <Project>{e4a49c04-1ee3-f83d-0cae-8db292d07ce8}</Project>
+      <Name>unity.webp</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -5,8 +5,8 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637834785160796888
-    m_Hash: 1986275144
+      ticks: 637838290088058639
+    m_Hash: 1682507095
   m_LockFileStatus:
     m_FilePath: C:/Users/Dan/Desktop/magicon/unity-client/Packages/packages-lock.json
     m_PathExists: 1
@@ -850,6 +850,7 @@ m_PackageAssets:
         - 3.0.9
         - 3.0.10
         - 3.0.12
+        - 3.0.13
         compatible:
         - 1.0.2
         - 1.0.6
@@ -879,6 +880,7 @@ m_PackageAssets:
         - 3.0.9
         - 3.0.10
         - 3.0.12
+        - 3.0.13
         verified: 2.0.7
       dependencies:
       - name: com.unity.test-framework
