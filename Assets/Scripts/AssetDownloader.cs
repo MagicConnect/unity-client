@@ -8,12 +8,22 @@ using System.Net.Http;
 using System.Net;
 using System.Threading.Tasks;
 
+using BestHTTP;
+using Newtonsoft.Json;
+
 public class AssetDownloader : MonoBehaviour
 {
+    // DELETE ME: From failed attempt to use C#'s HttpClient library.
     static readonly HttpClient client = new HttpClient();
 
+    // The HTTP request we're making to the server. We want this to be at the top so it can be aborted, if necessary.
+    protected HTTPRequest request;
+
+    // The fragment size that we will set to the HTTP request.
+    protected int fragmentSize = HTTPResponse.MinReadBufferSize;
+
     // This is the object containing meta information we parse from the JSON manifest.
-    public class Meta
+    public class MetaInformation
     {
         public string Hash {get; set;}
     }
@@ -29,7 +39,7 @@ public class AssetDownloader : MonoBehaviour
     // This is the object representing the parsed JSON manifest.
     public class AssetManifest
     {
-        public Meta MetaInformation {get; set;}
+        public MetaInformation Meta {get; set;}
         public Asset[] Assets {get; set;}
     }
 
@@ -57,7 +67,98 @@ public class AssetDownloader : MonoBehaviour
         //GetVersionNumber();
         //GetAssetManifest();
         //DownloadWebpAsset();
-        MakeWebRequest();
+        //MakeWebRequest();
+        request = new HTTPRequest(new Uri("https://art.magic-connect.com/manifest.json"), OnRequestFinished);
+        request.Send();
+
+        HTTPRequest webpRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/assets/art/accessories/Magic_Emblem.webp"), OnWebpRequestFinished);
+        webpRequest.Send();
+    }
+
+    protected virtual void SetupHTTPRequest()
+    {
+        request = new HTTPRequest(new Uri("https://jsonplaceholder.typicode.com/posts"), OnRequestFinished);
+        /*
+        request.StreamFragmentSize = fragmentSize;
+        request.Tag = DateTime.Now;
+
+        request.OnHeadersReceived += OnHeadersReceived;
+        request.OnDownloadProgress += OnDownloadProgress;
+        request.OnStreamingData += OnDataDownloaded;
+        */
+    }
+
+    private void OnHeadersReceived(HTTPRequest req, HTTPResponse resp, Dictionary<string, List<string>> newHeaders)
+    {
+        var range = resp.GetRange();
+        if (range != null)
+        {
+            //this.DownloadLength = range.ContentLength;
+        }
+        else
+        {
+            var contentLength = resp.GetFirstHeaderValue("content-length");
+            if (contentLength != null)
+            {
+                long length = 0;
+                if (long.TryParse(contentLength, out length))
+                {
+                    //this.DownloadLength = length;
+                }
+            }
+        }
+    }
+
+    public void OnRequestFinished(HTTPRequest req, HTTPResponse resp)
+    {
+        //Debug.Log(resp.DataAsText);
+        var newManifest = JsonConvert.DeserializeObject<AssetManifest>(resp.DataAsText);
+        Debug.Log("Manifest Hashcode: " + newManifest.Meta.Hash);
+
+        foreach (Asset a in newManifest.Assets)
+        {
+            Debug.Log("Asset: " + a.Hash + " " + a.Name + " " + a.Path);
+        }
+    }
+
+    public void OnWebpRequestFinished(HTTPRequest req, HTTPResponse resp)
+    {
+        Debug.Log(resp.DataAsText);
+        //Texture2D webpTexture = Texture2dext
+    }
+
+    protected virtual void OnDownloadProgress(HTTPRequest originalRequest, long downloaded, long downloadLength)
+    {
+        double downloadPercent = (downloaded / (double)downloadLength) * 100;
+        //this._downloadProgressSlider.value = (float)downloadPercent;
+        //this._downloadProgressText.text = string.Format("{0:F1}%", downloadPercent);
+    }
+
+    protected virtual bool OnDataDownloaded(HTTPRequest request, HTTPResponse response, byte[] dataFragment, int dataFragmentLength)
+    {
+        //this.ProcessedBytes += dataFragmentLength;
+        //SetDataProcessedUI(this.ProcessedBytes, this.DownloadLength);
+
+        // Use downloaded data
+
+        // Return true if dataFrament is processed so the plugin can recycle the byte[]
+        return true;
+    }
+
+    protected void SetDataProcessedUI(long processed, long length)
+    {
+        float processedPercent = (processed / (float)length) * 100f;
+
+        //this._processedDataSlider.value = processedPercent;
+        //this._processedDataText.text = GUIHelper.GetBytesStr(processed, 0);
+    }
+
+    protected virtual void ResetProcessedValues()
+    {
+        //this.ProcessedBytes = 0;
+        //this.DownloadLength = 0;
+
+        //SetDataProcessedUI(this.ProcessedBytes, this.DownloadLength);
     }
 
     IEnumerator GetRequest(string url, Action<UnityWebRequest> callback)
