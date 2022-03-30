@@ -4,21 +4,15 @@ using UnityEngine;
 using UnityEngine.Networking;
 using System;
 
-using System.Net.Http;
-using System.Net;
-using System.Threading.Tasks;
-
 using BestHTTP;
 using Newtonsoft.Json;
 using WebP;
 
 using UnityEngine.UI;
+using TMPro;
 
 public class AssetDownloader : MonoBehaviour
 {
-    // DELETE ME: From failed attempt to use C#'s HttpClient library.
-    static readonly HttpClient client = new HttpClient();
-
     // The HTTP request we're making to the server. We want this to be at the top so it can be aborted, if necessary.
     protected HTTPRequest request;
 
@@ -54,6 +48,14 @@ public class AssetDownloader : MonoBehaviour
 
     public GameObject image;
 
+    public GameObject uiImage;
+
+    public GameObject bestHTTPUIImage;
+
+    public Slider progressBar;
+
+    public TMP_Text progressText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -68,16 +70,31 @@ public class AssetDownloader : MonoBehaviour
 
     public void OnDownloadButtonClicked()
     {
-        //GetPosts();
-        //GetVersionNumber();
-        //GetAssetManifest();
-        //DownloadWebpAsset();
-        //MakeWebRequest();
+        if(HTTPManager.IsCachingDisabled)
+        {
+            Debug.Log("HTTP Request caching is disabled.");
+        }
+        else
+        {
+            Debug.Log("HTTP Request caching is enabled. Cache is stored at " + HTTPManager.GetRootCacheFolder());
+        }
+
+        progressBar.value = 0.0f;
+        progressText.text = "Download progress: 0 / 100%";
+
+
+
         request = new HTTPRequest(new Uri("https://art.magic-connect.com/manifest.json"), OnRequestFinished);
+        //request.DisableCache = false;
         request.Send();
+        //Debug.Log("Manifest request headers: " + request.DumpHeaders());
 
         HTTPRequest webpRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/assets/art/accessories/Magic_Emblem.webp"), OnWebpRequestFinished);
+        webpRequest.OnDownloadProgress += OnDownloadProgress;
         webpRequest.Send();
+
+        HTTPRequest webhookRequest = new HTTPRequest(new Uri("https://media.wired.com/photos/5fab11172cc0d6153d3f973b/master/w_1600,c_limit/Gear-PS5-2-src-Sony.jpg"), OnWebhookRequestFinished);
+        webhookRequest.Send();
     }
 
     protected virtual void SetupHTTPRequest()
@@ -114,30 +131,110 @@ public class AssetDownloader : MonoBehaviour
         }
     }
 
+    public void OnWebhookRequestFinished(HTTPRequest req, HTTPResponse resp)
+    {
+        if(resp.IsFromCache)
+        {
+            Debug.Log("Loaded webhook response from cache.");
+        }
+        else
+        {
+            Debug.Log("Downloaded webhook response from server.");
+        }
+
+        foreach(KeyValuePair<string, List<string>> header in resp.Headers)
+        {
+            string headerOutput = "Header: " + header.Key + " Value(s): ";
+            
+            foreach(string value in header.Value)
+            {
+                headerOutput += (" " + value);
+            }
+
+            Debug.Log(headerOutput);
+        }
+
+        Debug.Log(resp.DataAsText);
+        Texture2D webTexture = resp.DataAsTexture2D;
+        Sprite httpSprite = Sprite.Create(webTexture, new Rect(0.0f, 0.0f, webTexture.width, webTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
+        uiImage.GetComponent<Image>().sprite = httpSprite;
+    }
+
     public void OnRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
+        foreach(KeyValuePair<string, List<string>> header in resp.Headers)
+        {
+            string headerOutput = "Header: " + header.Key + " Value(s): ";
+            
+            foreach(string value in header.Value)
+            {
+                headerOutput += (" " + value);
+            }
+
+            Debug.Log(headerOutput);
+        }
+
         //Debug.Log(resp.DataAsText);
+        if(resp.IsFromCache)
+        {
+            Debug.Log("Loaded asset manifest from cache.");
+        }
+        else
+        {
+            Debug.Log("Downloaded asset manifest from server.");
+        }
+        
         var newManifest = JsonConvert.DeserializeObject<AssetManifest>(resp.DataAsText);
         Debug.Log("Manifest Hashcode: " + newManifest.Meta.Hash);
 
         foreach (Asset a in newManifest.Assets)
         {
-            Debug.Log("Asset: " + a.Hash + " " + a.Name + " " + a.Path);
+            //Debug.Log("Asset: " + a.Hash + " " + a.Name + " " + a.Path);
         }
     }
 
     public void OnWebpRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
-        Debug.Log(resp.DataAsText);
+        foreach(KeyValuePair<string, List<string>> header in resp.Headers)
+        {
+            string headerOutput = "Header: " + header.Key + " Value(s): ";
+            
+            foreach(string value in header.Value)
+            {
+                headerOutput += (" " + value);
+            }
+
+            Debug.Log(headerOutput);
+        }
+
+        //Debug.Log(resp.DataAsText);
+        if(resp.IsFromCache)
+        {
+            Debug.Log("Loaded WebP asset from cache.");
+        }
+        else
+        {
+            Debug.Log("Downloaded WebP asset from server.");
+        }
+
+        progressBar.value = 100.0f;
+        progressText.text = "Download complete.";
 
         var bytes = resp.Data;
         
         Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError);
+
+        // Just for testing's sake, try loading the data as a Texture2D so we aren't tethered to the WebP plugin.
+        Texture2D downloadedTexture = resp.DataAsTexture2D;
+        Sprite httpSprite = Sprite.Create(downloadedTexture, new Rect(0.0f, 0.0f, downloadedTexture.width, downloadedTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
+        bestHTTPUIImage.GetComponent<Image>().sprite = httpSprite;
         
         if (lError == Error.Success)
         {
             //image.texture = webpTexture;
-            image.GetComponent<SpriteRenderer>().sprite = Sprite.Create(webpTexture, new Rect(0.0f, 0.0f, webpTexture.width, webpTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
+            Sprite sprite = Sprite.Create(webpTexture, new Rect(0.0f, 0.0f, webpTexture.width, webpTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
+            image.GetComponent<SpriteRenderer>().sprite = sprite;
+            uiImage.GetComponent<Image>().sprite = sprite;
         }
         else
         {
@@ -148,6 +245,8 @@ public class AssetDownloader : MonoBehaviour
     protected virtual void OnDownloadProgress(HTTPRequest originalRequest, long downloaded, long downloadLength)
     {
         double downloadPercent = (downloaded / (double)downloadLength) * 100;
+        progressBar.value = (float)downloadPercent;
+        progressText.SetText("Download progress: " + downloadPercent + " / 100%");
         //this._downloadProgressSlider.value = (float)downloadPercent;
         //this._downloadProgressText.text = string.Format("{0:F1}%", downloadPercent);
     }
@@ -177,102 +276,5 @@ public class AssetDownloader : MonoBehaviour
         //this.DownloadLength = 0;
 
         //SetDataProcessedUI(this.ProcessedBytes, this.DownloadLength);
-    }
-
-    IEnumerator GetRequest(string url, Action<UnityWebRequest> callback)
-    {
-        using (UnityWebRequest request = UnityWebRequest.Get(url))
-        {
-            // Send the request and wait for a response.
-            yield return request.SendWebRequest();
-            callback(request);
-        }
-    }
-
-    // This is a test function to make sure we can make requests to a server and get JSON data back.
-    public void GetPosts()
-    {
-        StartCoroutine(GetRequest("https://jsonplaceholder.typicode.com/posts", (UnityWebRequest request) =>
-        {
-            if((request.result == UnityWebRequest.Result.ConnectionError) || (request.result == UnityWebRequest.Result.ProtocolError))
-            {
-                Debug.Log($"{request.error}: {request.downloadHandler.text}");
-            }
-            else
-            {
-                Debug.Log(request.downloadHandler.text);
-            }
-        }));
-    }
-
-    // Get the version number of our assets.
-    public void GetVersionNumber()
-    {
-        StartCoroutine(GetRequest("https://art.magic-connect.com/version.json", (UnityWebRequest request) =>
-        {
-            if((request.result == UnityWebRequest.Result.ConnectionError) || (request.result == UnityWebRequest.Result.ProtocolError))
-            {
-                Debug.Log($"{request.error}: {request.downloadHandler.text}");
-            }
-            else
-            {
-                Debug.Log(request.downloadHandler.text);
-            }
-        }));
-    }
-
-    // Get the asset manifest in JSON and parse it into useable data.
-    public void GetAssetManifest()
-    {
-        StartCoroutine(GetRequest("https://art.magic-connect.com/manifest.json", (UnityWebRequest request) =>
-        {
-            if((request.result == UnityWebRequest.Result.ConnectionError) || (request.result == UnityWebRequest.Result.ProtocolError))
-            {
-                Debug.Log($"{request.error}: {request.downloadHandler.text}");
-            }
-            else
-            {
-                Debug.Log(request.downloadHandler.text);
-            }
-        }));
-    }
-
-    // A function for downloading a webp asset from the server.
-    public void DownloadWebpAsset()
-    {
-        StartCoroutine(GetRequest("https://art.magic-connect.com/assets/art/accessories/Magic_Emblem.webp", (UnityWebRequest request) =>
-        {
-            if((request.result == UnityWebRequest.Result.ConnectionError) || (request.result == UnityWebRequest.Result.ProtocolError))
-            {
-                Debug.Log($"{request.error}: {request.downloadHandler.text}");
-            }
-            else
-            {
-                Debug.Log(request.downloadHandler.text);
-            }
-        }));
-    }
-
-    static async Task MakeWebRequest()
-    {
-        // Call asynchronous network methods in a try/catch block to handle exceptions.
-        try	
-        {
-            HttpResponseMessage response = await client.GetAsync("https://art.magic-connect.com/version.json");
-            response.EnsureSuccessStatusCode();
-            string responseBody = await response.Content.ReadAsStringAsync();
-            // Above three lines can be replaced with new helper method below
-            // string responseBody = await client.GetStringAsync(uri);
-
-            Debug.Log(responseBody);
-        }
-        catch(HttpRequestException e)
-        {
-            Debug.Log("\nException Caught!");	
-            Debug.Log("Message :" + e.Message);
-            Debug.Log(e.InnerException.Message);
-            Debug.Log(e.InnerException.InnerException.Message);
-            Debug.Log(e.InnerException.InnerException.InnerException.Message);
-        }
     }
 }
