@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using System;
 using System.IO;
+using System.Linq;
 
 using BestHTTP;
 using Newtonsoft.Json;
@@ -46,6 +47,55 @@ public class WebAssetCache : MonoBehaviour
     }
     #endregion
 
+    #region Image Asset class definition
+    public class LoadedImageAsset
+    {
+        // The Texture2D object created from the loaded image.
+        public Texture2D texture {get; private set;}
+
+        // We might want to create a shared Sprite object from the texture that multiple game objects can use.
+        // It's unclear how Unity handles references to things like sprites, and whether or not this saves memory
+        // or if there's a risk of the sprite being modified by different game objects.
+        public Sprite sprite {get; private set;}
+
+        // These attributes are from the images asset manifest entry and are kept for convenient access.
+        public string name {get; private set;}
+
+        public string hash {get; private set;}
+
+        public string path {get; private set;}
+
+        public LoadedImageAsset()
+        {
+
+        }
+
+        public LoadedImageAsset(string name, string path, string hash, Texture2D texture)
+        {
+            this.name = name;
+            this.path = path;
+            this.hash = hash;
+            this.texture = texture;
+        }
+
+        // Save the image asset data to the cache.
+        public void Save()
+        {
+            // We should already have the asset's attributes saved in the manifest. Focus on saving the image itself.
+        }
+
+        // Load the image asset data from the cache using the given file path.
+        public void Load(string name, string path, string hash)
+        {
+            this.name = name;
+            this.path = path;
+            this.hash = hash;
+
+
+        }
+    }
+    #endregion
+
     // The currently loaded version information.
     private VersionNumber currentVersion;
 
@@ -62,6 +112,9 @@ public class WebAssetCache : MonoBehaviour
     // anywhere in the script.
     private HTTPRequest versionRequest;
     private HTTPRequest manifestRequest;
+
+    // We don't want our cached files to be mixed in with the rest of our game's persistent data, so this is the folder where we should dump it all.
+    public string cacheDirectory = "WebCache/";
 
     // INSERT HERE: Data structure(s) representing the in-memory cache of our web assets.
 
@@ -83,7 +136,7 @@ public class WebAssetCache : MonoBehaviour
         // First we're going to do a brief cache integrity check. If our version and manifest files exist, load them in.
         // If not, set the current version to null (if it isn't already). A null version will tell our loader that there is
         // no cache and we should start from scratch.
-        string versionFilePath = Path.Combine(Application.persistentDataPath, "manifest_version.dat");
+        string versionFilePath = Path.Combine(Application.persistentDataPath, cacheDirectory, "manifest_version.dat");
         if(File.Exists(versionFilePath))
         {
             LoadVersion();
@@ -96,7 +149,7 @@ public class WebAssetCache : MonoBehaviour
             Debug.Log("No cached version data was found.");
         }
 
-        string manifestFilePath = Path.Combine(Application.persistentDataPath, "manifest.dat");
+        string manifestFilePath = Path.Combine(Application.persistentDataPath, cacheDirectory, "manifest.dat");
         if(File.Exists(manifestFilePath))
         {
             LoadManifest();
@@ -110,24 +163,22 @@ public class WebAssetCache : MonoBehaviour
             currentVersion = null;
         }
 
-        // Perform a check to make sure the cached assets exist and/or load them in and update the cache later as necessary.
+        // Perform an integrity check to make sure the cached assets exist and/or load them in and update the cache later as necessary.
+
+
+        // To test our diff function(s) we're going to override the loaded version and manifest data with some test data we've prepared.
+        // NOTE: This should not be used to download actual files, since many of them will not exist. Only test up to the point the download
+        //      batch is prepared.
+        string testVersion = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_version.json"));
+        currentVersion = JsonConvert.DeserializeObject<VersionNumber>(testVersion);
+
+        string testManifest = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_manifest.json"));
+        currentManifest = JsonConvert.DeserializeObject<AssetManifest>(testManifest);
+
 
         // Next we need to check the manifest version against the one we have on file.
         versionRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/version.json"), OnVersionRequestFinished);
         versionRequest.Send();
-
-
-
-        // Before we do anything we need our asset manifests.
-        // INSERT HERE: Load previous asset manifest from the on-disk cache. There isn't one right now because the on-disk cache isn't implemented.
-
-        // INSERT HERE: Download the current asset manifest from the server.
-
-        // If we don't have a cached manifest, or there are version mismatches on the manifest, download the necessary assets from the server.
-
-        // NOTE: Be sure to save any updated files to the cache.
-
-        // Otherwise, load the files from the cache.
     }
 
     // Update is called once per frame
@@ -139,6 +190,54 @@ public class WebAssetCache : MonoBehaviour
     // Method handling updating the cache with new data from the server.
     private void UpdateCache()
     {
+        Debug.Log("Beginning cache update.");
+        // If we don't have a cached manifest then we just go ahead and download everything from the server.
+        // NOTE: May need to delete the cache, just in case we have a bunch of garbage data.
+
+        // If we have a local manifest as well as a server manifest then we need to find:
+        // 1) Assets that exist on the server but not on the local machine, and thus need to be downloaded, loaded into memory, and cached on the local machine
+        // 2) Assets that exist on the local machine but not on the server, and should be deleted because they are no longer necessary (or were given a completely new reference in the manifest)
+        // 3) Assets that exist both locally and remotely but there's a difference (based on hash values), and so the server asset should replace the local one
+        // 4) Assets that exist on both machines but have no differing hash values can be loaded from the local cache as normal
+
+        // 1) Assets that exist on the server but not on the local machine
+        var newAssets = serverManifest.Assets.Where(s => !currentManifest.Assets.Any(l => s.Path == l.Path)).ToList();
+        Debug.Log("New assets:");
+        foreach(Asset a in newAssets)
+        {
+            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+        }
+
+        // 2) Assets that exist on the local machine but not on the server
+        var orphanedAssets = currentManifest.Assets.Where(l => !serverManifest.Assets.Any(s => s.Path == l.Path)).ToList();
+        Debug.Log("Orphaned assets:");
+        foreach(Asset a in orphanedAssets)
+        {
+            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+        }
+
+        // 3) Assets that exist on both machines but there's a hashcode mismatch
+        var changedAssets = serverManifest.Assets.Where(s => currentManifest.Assets.Any(l => s.Path == l.Path && s.Hash != l.Hash)).ToList();
+        Debug.Log("Modified assets:");
+        foreach(Asset a in changedAssets)
+        {
+            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+        }
+
+        // 4) Any local asset that doesn't appear on any of the above lists should exist in the local cache, and can be loaded as normal.
+        var cachedAssets = currentManifest.Assets.Where(l => !orphanedAssets.Concat(changedAssets).Any(n => l.Path == n.Path)).ToList();
+        Debug.Log("Cached assets:");
+        foreach(Asset a in cachedAssets)
+        {
+            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+        }
+
+        // Since the changed assets and the new assets both need to be downloaded from the server we'll go ahead and bundle them together so the downloader
+        // can get them at the same time.
+        //var assetsToDownload = newAssets + changedAssets;
+
+        // Cache the new version and asset manifest locally. We do the version file last because that's how we know the cache was successfully created.
+        // A missing or out of date version file means the cache may be corrupt/incomplete and needs to be rebuilt.
         CacheVersion();
         CacheManifest();
     }
@@ -179,6 +278,8 @@ public class WebAssetCache : MonoBehaviour
     {
         string serializedData = JsonUtility.ToJson(serverVersion);
         SaveDataToFile("manifest_version.dat", serializedData);
+
+        currentVersion = serverVersion;
     }
 
     private void LoadVersion()
@@ -190,6 +291,8 @@ public class WebAssetCache : MonoBehaviour
     {
         string serializedData = JsonUtility.ToJson(serverManifest);
         SaveDataToFile("manifest.dat", serializedData);
+
+        currentManifest = serverManifest;
     }
 
     private void LoadManifest()
@@ -200,14 +303,14 @@ public class WebAssetCache : MonoBehaviour
     // Method which handles writing serialized classes to the persistent data folder.
     private void SaveDataToFile(string path, string json)
     {
-        var filePath = Path.Combine(Application.persistentDataPath, path);
+        var filePath = Path.Combine(Application.persistentDataPath, cacheDirectory, path);
         File.WriteAllText(filePath, json);
     }
 
     // Method which handles loading serialized classes from the persistent data folder.
     private string LoadDataFromFile(string path)
     {
-        var filePath = Path.Combine(Application.persistentDataPath, path);
+        var filePath = Path.Combine(Application.persistentDataPath, cacheDirectory, path);
 
         if(File.Exists(filePath))
         {
