@@ -47,7 +47,6 @@ public class WebAssetCache : MonoBehaviour
     }
     #endregion
 
-    #region Image Asset class definition
     public class LoadedImageAsset
     {
         // The Texture2D object created from the loaded image.
@@ -67,7 +66,7 @@ public class WebAssetCache : MonoBehaviour
 
         public LoadedImageAsset()
         {
-
+            // Empty constructor intended to be used with the Load() method to initialize the object instance.
         }
 
         public LoadedImageAsset(string name, string path, string hash, Texture2D texture)
@@ -79,22 +78,46 @@ public class WebAssetCache : MonoBehaviour
         }
 
         // Save the image asset data to the cache.
-        public void Save()
+        public void Save(string cacheDirectory)
         {
             // We should already have the asset's attributes saved in the manifest. Focus on saving the image itself.
+
+            // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
+            if(texture)
+            {
+                string filePath = Path.Combine(cacheDirectory, path);
+                byte[] pngTexture = texture.EncodeToPNG();
+
+                File.WriteAllBytes(filePath, pngTexture);
+            }
+            else
+            {
+                Debug.LogError("ERROR: Attempted to save nonexistent Texture2D.");
+            }
         }
 
-        // Load the image asset data from the cache using the given file path.
-        public void Load(string name, string path, string hash)
+        // Load the image asset data from the cache using the given cache directory and file path.
+        public LoadedImageAsset Load(string cacheDirectory, string name, string path, string hash)
         {
             this.name = name;
             this.path = path;
             this.hash = hash;
 
+            string filePath = Path.Combine(cacheDirectory, path);
+            if(File.Exists(filePath))
+            {
+                byte[] pngTexture = File.ReadAllBytes(filePath);
+                texture.LoadImage(pngTexture);
 
+                return this;
+            }
+            else
+            {
+                Debug.LogErrorFormat("CACHE LOAD ERROR: File at path '{0}' does not exist.", filePath);
+                return null;
+            }
         }
     }
-    #endregion
 
     // The currently loaded version information.
     private VersionNumber currentVersion;
@@ -114,18 +137,25 @@ public class WebAssetCache : MonoBehaviour
     private HTTPRequest manifestRequest;
 
     // We don't want our cached files to be mixed in with the rest of our game's persistent data, so this is the folder where we should dump it all.
-    public string cacheDirectory = "WebCache/";
+    public string cacheDirectory;
+
+    // The list of currently active http requests we're making to the server.
+    private List<HTTPRequest> activeRequests = new List<HTTPRequest>();
 
     // INSERT HERE: Data structure(s) representing the in-memory cache of our web assets.
+    public Dictionary<string, LoadedImageAsset> loadedAssets {get; private set;}
 
     void Awake()
     {
+        // Set up our singleton instance of the class.
         if(Instance != null)
         {
+            // If we already have an instance of this class, destroy this instance.
             Destroy(gameObject);
             return;
         }
 
+        // If there is no instance of this class, set it and mark it so Unity doesn't destroy it between scene changes.
         Instance = this;
         DontDestroyOnLoad(gameObject);
     }
@@ -133,10 +163,14 @@ public class WebAssetCache : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // We're not allowed to call Application.persistentDataPath from a Monobehavior constructor (Unity's words, not mine) so we need to
+        // set the path either here or in the Awake() function
+        cacheDirectory = Path.Combine(Application.persistentDataPath, "WebCache/");
+
         // First we're going to do a brief cache integrity check. If our version and manifest files exist, load them in.
         // If not, set the current version to null (if it isn't already). A null version will tell our loader that there is
         // no cache and we should start from scratch.
-        string versionFilePath = Path.Combine(Application.persistentDataPath, cacheDirectory, "manifest_version.dat");
+        string versionFilePath = Path.Combine(cacheDirectory, "manifest_version.dat");
         if(File.Exists(versionFilePath))
         {
             LoadVersion();
@@ -149,7 +183,7 @@ public class WebAssetCache : MonoBehaviour
             Debug.Log("No cached version data was found.");
         }
 
-        string manifestFilePath = Path.Combine(Application.persistentDataPath, cacheDirectory, "manifest.dat");
+        string manifestFilePath = Path.Combine(cacheDirectory, "manifest.dat");
         if(File.Exists(manifestFilePath))
         {
             LoadManifest();
@@ -169,11 +203,13 @@ public class WebAssetCache : MonoBehaviour
         // To test our diff function(s) we're going to override the loaded version and manifest data with some test data we've prepared.
         // NOTE: This should not be used to download actual files, since many of them will not exist. Only test up to the point the download
         //      batch is prepared.
+        /*
         string testVersion = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_version.json"));
         currentVersion = JsonConvert.DeserializeObject<VersionNumber>(testVersion);
 
         string testManifest = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_manifest.json"));
         currentManifest = JsonConvert.DeserializeObject<AssetManifest>(testManifest);
+        */
 
 
         // Next we need to check the manifest version against the one we have on file.
@@ -185,6 +221,11 @@ public class WebAssetCache : MonoBehaviour
     void Update()
     {
         
+    }
+
+    private void VerifyCacheIntegrity()
+    {
+
     }
 
     // Method handling updating the cache with new data from the server.
@@ -234,12 +275,95 @@ public class WebAssetCache : MonoBehaviour
 
         // Since the changed assets and the new assets both need to be downloaded from the server we'll go ahead and bundle them together so the downloader
         // can get them at the same time.
-        //var assetsToDownload = newAssets + changedAssets;
+        var assetsToDownload = newAssets.Concat(changedAssets).ToList();
+
+        // Send out our batched asset manifest entries to be taken care of.
+        BatchLoadFromCache(cachedAssets);
+        BatchDeleteFromCache(orphanedAssets);
+        BatchDownload(assetsToDownload);
 
         // Cache the new version and asset manifest locally. We do the version file last because that's how we know the cache was successfully created.
         // A missing or out of date version file means the cache may be corrupt/incomplete and needs to be rebuilt.
         CacheVersion();
         CacheManifest();
+    }
+
+    // Given a list of asset manifest entries, makes a group of http requests to download the assets from the server.
+    private void BatchDownload(List<Asset> batch)
+    {
+        foreach(Asset asset in batch)
+        {
+            HTTPRequest assetRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/" + asset.Path), OnAssetRequestFinished);
+            // Send the asset manifest entry as a tag so we can identify this request later.
+            assetRequest.Tag = asset;
+            assetRequest.Send();
+
+            activeRequests.Add(assetRequest);
+
+            Debug.LogFormat("Download started for '{0}'.", asset.Path);
+        }
+    }
+
+    // The method called when our asset download request gets a complete response back.
+    // NOTE: Right now it only works for webp assets. If other types of assets are added in the future then we need either a new method,
+    // or some way of identifying the type of asset requested and returned.
+    private void OnAssetRequestFinished(HTTPRequest req, HTTPResponse resp)
+    {
+        var bytes = resp.Data;
+        Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError);
+
+        if (lError == Error.Success)
+        {
+            Asset assetData = req.Tag as Asset;
+            LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+            loadedAssets.Add(newAsset.path, newAsset);
+            newAsset.Save(cacheDirectory);
+
+            Debug.LogFormat("Download of '{0}' complete. Asset has been cached and loaded into memory.", assetData.Path);
+        }
+        else
+        {
+            Debug.LogError("Webp Load Error : " + lError.ToString());
+        }
+
+        // Regardless of the results, this request is no longer active.
+        activeRequests.Remove(req);
+    }
+
+    // Given a list of asset manifest entries, loads each asset file from the cache and into memory.
+    private void BatchLoadFromCache(List<Asset> batch)
+    {
+        foreach(Asset asset in batch)
+        {
+            LoadedImageAsset newAsset = new LoadedImageAsset().Load(cacheDirectory, asset.Name, asset.Path, asset.Hash);
+
+            if(newAsset != null)
+            {
+                loadedAssets.Add(newAsset.path, newAsset);
+
+                Debug.LogFormat("Loaded '{0}' from cache and into memory.", newAsset.path);
+            }
+        }
+    }
+
+    // Given a list of asset manifest entries, deletes each asset file from the cache.
+    // Note: This is only for deleting assets stored locally on disk. Any assets already in memory will be left untouched.
+    private void BatchDeleteFromCache(List<Asset> batch)
+    {
+        foreach(Asset asset in batch)
+        {
+            string filePath = Path.Combine(cacheDirectory, asset.Path);
+            if(File.Exists(filePath))
+            {
+                File.Delete(filePath);
+
+                Debug.LogFormat("Deleted '{0}' from the cache.", asset.Path);
+            }
+            else
+            {
+                Debug.LogWarningFormat("Cannot delete file at '{0}' because it doesn't exist.", filePath);
+            }
+        }
     }
 
     // Delete everything from the cache and leave an empty folder.
@@ -303,14 +427,14 @@ public class WebAssetCache : MonoBehaviour
     // Method which handles writing serialized classes to the persistent data folder.
     private void SaveDataToFile(string path, string json)
     {
-        var filePath = Path.Combine(Application.persistentDataPath, cacheDirectory, path);
+        var filePath = Path.Combine(cacheDirectory, path);
         File.WriteAllText(filePath, json);
     }
 
     // Method which handles loading serialized classes from the persistent data folder.
     private string LoadDataFromFile(string path)
     {
-        var filePath = Path.Combine(Application.persistentDataPath, cacheDirectory, path);
+        var filePath = Path.Combine(cacheDirectory, path);
 
         if(File.Exists(filePath))
         {
