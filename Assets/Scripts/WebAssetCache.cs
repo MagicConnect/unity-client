@@ -19,6 +19,7 @@ public class WebAssetCache : MonoBehaviour
     [System.Serializable]
     public class MetaInformation
     {
+        [SerializeField]
         public string Hash {get; set;}
     }
 
@@ -26,8 +27,11 @@ public class WebAssetCache : MonoBehaviour
     [System.Serializable]
     public class Asset
     {
+        [SerializeField]
         public string Name {get; set;}
+        [SerializeField]
         public string Path {get; set;}
+        [SerializeField]
         public string Hash {get; set;}
     }
 
@@ -35,7 +39,9 @@ public class WebAssetCache : MonoBehaviour
     [System.Serializable]
     public class AssetManifest
     {
+        [SerializeField]
         public MetaInformation Meta {get; set;}
+        [SerializeField]
         public Asset[] Assets {get; set;}
     }
 
@@ -43,6 +49,7 @@ public class WebAssetCache : MonoBehaviour
     [System.Serializable]
     public class VersionNumber
     {
+        [SerializeField]
         public string Version {get; set;}
     }
     #endregion
@@ -81,13 +88,14 @@ public class WebAssetCache : MonoBehaviour
         public void Save(string cacheDirectory)
         {
             // We should already have the asset's attributes saved in the manifest. Focus on saving the image itself.
-
-            // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
             if(texture)
             {
+                // Ensure that the directories in the given path exist, so that writing to a file will be successful.
                 string filePath = Path.Combine(cacheDirectory, path);
-                byte[] pngTexture = texture.EncodeToPNG();
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
 
+                // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
+                byte[] pngTexture = texture.EncodeToPNG();
                 File.WriteAllBytes(filePath, pngTexture);
             }
             else
@@ -140,10 +148,10 @@ public class WebAssetCache : MonoBehaviour
     public string cacheDirectory;
 
     // The list of currently active http requests we're making to the server.
-    private List<HTTPRequest> activeRequests = new List<HTTPRequest>();
+    public List<HTTPRequest> activeRequests {get; private set;} = new List<HTTPRequest>();
 
     // INSERT HERE: Data structure(s) representing the in-memory cache of our web assets.
-    public Dictionary<string, LoadedImageAsset> loadedAssets {get; private set;}
+    public Dictionary<string, LoadedImageAsset> loadedAssets {get; private set;} = new Dictionary<string, LoadedImageAsset>();
 
     void Awake()
     {
@@ -166,6 +174,11 @@ public class WebAssetCache : MonoBehaviour
         // We're not allowed to call Application.persistentDataPath from a Monobehavior constructor (Unity's words, not mine) so we need to
         // set the path either here or in the Awake() function
         cacheDirectory = Path.Combine(Application.persistentDataPath, "WebCache/");
+
+        if(!Directory.Exists(cacheDirectory))
+        {
+            Directory.CreateDirectory(cacheDirectory);
+        }
 
         // First we're going to do a brief cache integrity check. If our version and manifest files exist, load them in.
         // If not, set the current version to null (if it isn't already). A null version will tell our loader that there is
@@ -211,9 +224,13 @@ public class WebAssetCache : MonoBehaviour
         currentManifest = JsonConvert.DeserializeObject<AssetManifest>(testManifest);
         */
 
-
+        // TODO: any http request code sent from a Unity event should have the BestHTTP.HTTPManager.Setup() function called, or it should be moved
+        // outside the Unity event. Since our downloading is being done from a Start() event, this could be causing problems unless fixed.
         // Next we need to check the manifest version against the one we have on file.
+        HTTPManager.Setup();
         versionRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/version.json"), OnVersionRequestFinished);
+        versionRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
+        versionRequest.Timeout = TimeSpan.FromSeconds(1000);
         versionRequest.Send();
     }
 
@@ -234,68 +251,101 @@ public class WebAssetCache : MonoBehaviour
         Debug.Log("Beginning cache update.");
         // If we don't have a cached manifest then we just go ahead and download everything from the server.
         // NOTE: May need to delete the cache, just in case we have a bunch of garbage data.
-
-        // If we have a local manifest as well as a server manifest then we need to find:
-        // 1) Assets that exist on the server but not on the local machine, and thus need to be downloaded, loaded into memory, and cached on the local machine
-        // 2) Assets that exist on the local machine but not on the server, and should be deleted because they are no longer necessary (or were given a completely new reference in the manifest)
-        // 3) Assets that exist both locally and remotely but there's a difference (based on hash values), and so the server asset should replace the local one
-        // 4) Assets that exist on both machines but have no differing hash values can be loaded from the local cache as normal
-
-        // 1) Assets that exist on the server but not on the local machine
-        var newAssets = serverManifest.Assets.Where(s => !currentManifest.Assets.Any(l => s.Path == l.Path)).ToList();
-        Debug.Log("New assets:");
-        foreach(Asset a in newAssets)
+        if(currentManifest == null)
         {
-            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
-        }
+            Debug.Log("No local asset manifest found. Downloading all server assets.");
+            var assetsToDownload = serverManifest.Assets.ToList();
 
-        // 2) Assets that exist on the local machine but not on the server
-        var orphanedAssets = currentManifest.Assets.Where(l => !serverManifest.Assets.Any(s => s.Path == l.Path)).ToList();
-        Debug.Log("Orphaned assets:");
-        foreach(Asset a in orphanedAssets)
+            BatchDownload(assetsToDownload);
+
+            Debug.Log("Caching version and manifest data.");
+            CacheVersion();
+            CacheManifest();
+        }
+        else
         {
-            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+            Debug.Log("Local manifest found. Updating local cache.");
+            // If we have a local manifest as well as a server manifest then we need to find:
+            // 1) Assets that exist on the server but not on the local machine, and thus need to be downloaded, loaded into memory, and cached on the local machine
+            // 2) Assets that exist on the local machine but not on the server, and should be deleted because they are no longer necessary (or were given a completely new reference in the manifest)
+            // 3) Assets that exist both locally and remotely but there's a difference (based on hash values), and so the server asset should replace the local one
+            // 4) Assets that exist on both machines but have no differing hash values can be loaded from the local cache as normal
+
+            // 1) Assets that exist on the server but not on the local machine
+            Debug.Log("TEST => Local manifest entries:");
+            foreach(Asset a in currentManifest.Assets)
+            {
+                Debug.Log(a.Name);
+            }
+
+            Debug.Log("TEST => Server manifest entries:");
+            foreach(Asset a in serverManifest.Assets)
+            {
+                Debug.Log(a.Name);
+            }
+
+
+            var newAssets = serverManifest.Assets.Where(s => !currentManifest.Assets.Any(l => s.Path == l.Path)).ToList();
+            Debug.Log("New assets to be downloaded:");
+            foreach (Asset a in newAssets)
+            {
+                Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+            }
+
+            // 2) Assets that exist on the local machine but not on the server
+            var orphanedAssets = currentManifest.Assets.Where(l => !serverManifest.Assets.Any(s => s.Path == l.Path)).ToList();
+            Debug.Log("Orphaned assets to be deleted:");
+            foreach (Asset a in orphanedAssets)
+            {
+                Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+            }
+
+            // 3) Assets that exist on both machines but there's a hashcode mismatch
+            var changedAssets = serverManifest.Assets.Where(s => currentManifest.Assets.Any(l => s.Path == l.Path && s.Hash != l.Hash)).ToList();
+            Debug.Log("Modified assets to be replaced:");
+            foreach (Asset a in changedAssets)
+            {
+                Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+            }
+
+            // 4) Any local asset that doesn't appear on any of the above lists should exist in the local cache, and can be loaded as normal.
+            var cachedAssets = currentManifest.Assets.Where(l => !orphanedAssets.Concat(changedAssets).Any(n => l.Path == n.Path)).ToList();
+            Debug.Log("Cached assets to be loaded from disk:");
+            foreach (Asset a in cachedAssets)
+            {
+                Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
+            }
+
+            // Since the changed assets and the new assets both need to be downloaded from the server we'll go ahead and bundle them together so the downloader
+            // can get them at the same time.
+            var assetsToDownload = newAssets.Concat(changedAssets).ToList();
+
+            // Send out our batched asset manifest entries to be taken care of.
+            BatchLoadFromCache(cachedAssets);
+            BatchDeleteFromCache(orphanedAssets);
+            BatchDownload(assetsToDownload);
+
+            // Cache the new version and asset manifest locally. We do the version file last because that's how we know the cache was successfully created.
+            // A missing or out of date version file means the cache may be corrupt/incomplete and needs to be rebuilt.
+            Debug.Log("Caching version and manifest data.");
+            CacheVersion();
+            CacheManifest();
         }
-
-        // 3) Assets that exist on both machines but there's a hashcode mismatch
-        var changedAssets = serverManifest.Assets.Where(s => currentManifest.Assets.Any(l => s.Path == l.Path && s.Hash != l.Hash)).ToList();
-        Debug.Log("Modified assets:");
-        foreach(Asset a in changedAssets)
-        {
-            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
-        }
-
-        // 4) Any local asset that doesn't appear on any of the above lists should exist in the local cache, and can be loaded as normal.
-        var cachedAssets = currentManifest.Assets.Where(l => !orphanedAssets.Concat(changedAssets).Any(n => l.Path == n.Path)).ToList();
-        Debug.Log("Cached assets:");
-        foreach(Asset a in cachedAssets)
-        {
-            Debug.LogFormat("   Name: {0} Path: {1} Hash: {2}", a.Name, a.Path, a.Hash);
-        }
-
-        // Since the changed assets and the new assets both need to be downloaded from the server we'll go ahead and bundle them together so the downloader
-        // can get them at the same time.
-        var assetsToDownload = newAssets.Concat(changedAssets).ToList();
-
-        // Send out our batched asset manifest entries to be taken care of.
-        BatchLoadFromCache(cachedAssets);
-        BatchDeleteFromCache(orphanedAssets);
-        BatchDownload(assetsToDownload);
-
-        // Cache the new version and asset manifest locally. We do the version file last because that's how we know the cache was successfully created.
-        // A missing or out of date version file means the cache may be corrupt/incomplete and needs to be rebuilt.
-        CacheVersion();
-        CacheManifest();
     }
 
     // Given a list of asset manifest entries, makes a group of http requests to download the assets from the server.
     private void BatchDownload(List<Asset> batch)
     {
+        Debug.LogFormat("Downloading {0} asset files from the server. Max active connections to server: {1}", batch.Count, HTTPManager.MaxConnectionPerServer);
+
+        HTTPManager.Setup();
         foreach(Asset asset in batch)
         {
             HTTPRequest assetRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/" + asset.Path), OnAssetRequestFinished);
             // Send the asset manifest entry as a tag so we can identify this request later.
             assetRequest.Tag = asset;
+            assetRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
+            assetRequest.Timeout = TimeSpan.FromSeconds(1000);
             assetRequest.Send();
 
             activeRequests.Add(assetRequest);
@@ -309,30 +359,67 @@ public class WebAssetCache : MonoBehaviour
     // or some way of identifying the type of asset requested and returned.
     private void OnAssetRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
-        var bytes = resp.Data;
-        Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError);
-
-        if (lError == Error.Success)
+        // Http requests can return with a response object if successful, or a null response as a result of some error that occurred. 
+        // We need to handle each possible result state of the request so we can know about and fix any issues.
+        switch(req.State)
         {
-            Asset assetData = req.Tag as Asset;
-            LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
-            loadedAssets.Add(newAsset.path, newAsset);
-            newAsset.Save(cacheDirectory);
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(resp.IsSuccess)
+                {
+                    // Request response was successful so we should be good to go.
+                    Debug.LogFormat("Response to asset download request received without errors. Attempting to cache data to local machine.");
 
-            Debug.LogFormat("Download of '{0}' complete. Asset has been cached and loaded into memory.", assetData.Path);
-        }
-        else
-        {
-            Debug.LogError("Webp Load Error : " + lError.ToString());
-        }
+                    var bytes = resp.Data;
+                    Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError, makeNoLongerReadable: false);
+
+                    if (lError == Error.Success)
+                    {
+                        Asset assetData = req.Tag as Asset;
+
+                        LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+                        loadedAssets.Add(newAsset.path, newAsset);
+                        newAsset.Save(cacheDirectory);
+
+                        Debug.LogFormat("Download of '{0}' complete. Asset has been cached and loaded into memory.", assetData.Path);
+                    }
+                    else
+                    {
+                        Debug.LogError("Webp Load Error : " + lError.ToString());
+                    }
+                }
+                else
+                {
+                    Debug.LogWarningFormat("Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", resp.StatusCode, resp.Message, resp.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Request finished with an error: " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Request aborted.");
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Connection timed out.");
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Processing the request timed out.");
+                break;
+        }// end switch block
 
         // Regardless of the results, this request is no longer active.
         activeRequests.Remove(req);
+        Debug.LogFormat("Request no longer active. {0} requests remain active.", activeRequests.Count);
     }
 
     // Given a list of asset manifest entries, loads each asset file from the cache and into memory.
     private void BatchLoadFromCache(List<Asset> batch)
     {
+        Debug.LogFormat("Loading {0} files from the local cache.", batch.Count);
         foreach(Asset asset in batch)
         {
             LoadedImageAsset newAsset = new LoadedImageAsset().Load(cacheDirectory, asset.Name, asset.Path, asset.Hash);
@@ -350,6 +437,7 @@ public class WebAssetCache : MonoBehaviour
     // Note: This is only for deleting assets stored locally on disk. Any assets already in memory will be left untouched.
     private void BatchDeleteFromCache(List<Asset> batch)
     {
+        Debug.LogFormat("Deleting {0} files from the local cache.", batch.Count);
         foreach(Asset asset in batch)
         {
             string filePath = Path.Combine(cacheDirectory, asset.Path);
@@ -375,32 +463,98 @@ public class WebAssetCache : MonoBehaviour
     // Callback for our http version request.
     private void OnVersionRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
-        // TODO: Error checking
-        // Now that we got our response from the server, parse the results into a usable object.
-        serverVersion = JsonConvert.DeserializeObject<VersionNumber>(resp.DataAsText);
-        Debug.Log("Server manifest version downloaded. Version: " + serverVersion.Version);
-
-        if(currentVersion == null || serverVersion.Version != currentVersion.Version)
+        // Http requests can return with a response object if successful, or a null response as a result of some error that occurred. 
+        // We need to handle each possible result state of the request so we can know about and fix any issues.
+        switch(req.State)
         {
-            // There's no version on file, or the versions are different.
-            Debug.Log("Server manifest version doesn't match version on file. Downloading new manifest.");
-            manifestRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/manifest.json"), OnManifestRequestFinished);
-            manifestRequest.Send();
-        }
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(resp.IsSuccess)
+                {
+                    // Now that we got our response from the server, parse the results into a usable object.
+                    serverVersion = JsonConvert.DeserializeObject<VersionNumber>(resp.DataAsText);
+                    Debug.Log("Server manifest version downloaded. Version: " + serverVersion.Version);
+
+                    if (currentVersion == null || serverVersion.Version != currentVersion.Version)
+                    {
+                        // There's no version on file, or the versions are different.
+                        Debug.Log("Server manifest version doesn't match version on file. Downloading new manifest.");
+
+                        HTTPManager.Setup();
+                        manifestRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/manifest.json"), OnManifestRequestFinished);
+                        manifestRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
+                        manifestRequest.Timeout = TimeSpan.FromSeconds(1000);
+                        manifestRequest.Send();
+                    }
+                }
+                else
+                {
+                    Debug.LogWarningFormat("Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", resp.StatusCode, resp.Message, resp.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Request finished with an error: " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Request aborted.");
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Connection timed out.");
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Processing the request timed out.");
+                break;
+        }// end switch block
     }
 
     private void OnManifestRequestFinished(HTTPRequest req, HTTPResponse resp)
     {
-        // Parse the results into a usable object.
-        serverManifest = JsonConvert.DeserializeObject<AssetManifest>(resp.DataAsText);
-        Debug.Log("Server manifest downloaded.");
+        // Http requests can return with a response object if successful, or a null response as a result of some error that occurred. 
+        // We need to handle each possible result state of the request so we can know about and fix any issues.
+        switch(req.State)
+        {
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(resp.IsSuccess)
+                {
+                    // Parse the results into a usable object.
+                    serverManifest = JsonConvert.DeserializeObject<AssetManifest>(resp.DataAsText);
+                    Debug.Log("Server manifest downloaded.");
 
-        UpdateCache();
+                    UpdateCache();
+                }
+                else
+                {
+                    Debug.LogWarningFormat("Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", resp.StatusCode, resp.Message, resp.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Request finished with an error: " + (req.Exception != null ? (req.Exception.Message + "\n" + req.Exception.StackTrace) : "No Exception"));
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Request aborted.");
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Connection timed out.");
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Processing the request timed out.");
+                break;
+        }// end switch block
     }
 
     private void CacheVersion()
     {
-        string serializedData = JsonUtility.ToJson(serverVersion);
+        //string serializedData = JsonUtility.ToJson(serverVersion);
+        string serializedData = JsonConvert.SerializeObject(serverVersion);
         SaveDataToFile("manifest_version.dat", serializedData);
 
         currentVersion = serverVersion;
@@ -408,12 +562,14 @@ public class WebAssetCache : MonoBehaviour
 
     private void LoadVersion()
     {
-        currentVersion = JsonUtility.FromJson<VersionNumber>(LoadDataFromFile("manifest_version.dat"));
+        //currentVersion = JsonUtility.FromJson<VersionNumber>(LoadDataFromFile("manifest_version.dat"));
+        currentVersion = JsonConvert.DeserializeObject<VersionNumber>(LoadDataFromFile("manifest_version.dat"));
     }
 
     private void CacheManifest()
     {
-        string serializedData = JsonUtility.ToJson(serverManifest);
+        //string serializedData = JsonUtility.ToJson(serverManifest);
+        string serializedData = JsonConvert.SerializeObject(serverManifest);
         SaveDataToFile("manifest.dat", serializedData);
 
         currentManifest = serverManifest;
@@ -421,10 +577,13 @@ public class WebAssetCache : MonoBehaviour
 
     private void LoadManifest()
     {
-        currentManifest = JsonUtility.FromJson<AssetManifest>(LoadDataFromFile("manifest.dat"));
+        //currentManifest = JsonUtility.FromJson<AssetManifest>(LoadDataFromFile("manifest.dat"));
+        currentManifest = JsonConvert.DeserializeObject<AssetManifest>(LoadDataFromFile("manifest.dat"));
     }
 
     // Method which handles writing serialized classes to the persistent data folder.
+    // TODO: This method is a lot shorter now than I expected it to be and it's only used for caching the version and manifest data,
+    // so consider just deleting this.
     private void SaveDataToFile(string path, string json)
     {
         var filePath = Path.Combine(cacheDirectory, path);
