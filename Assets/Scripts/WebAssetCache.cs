@@ -153,6 +153,18 @@ public class WebAssetCache : MonoBehaviour
     // INSERT HERE: Data structure(s) representing the in-memory cache of our web assets.
     public Dictionary<string, LoadedImageAsset> loadedAssets {get; private set;} = new Dictionary<string, LoadedImageAsset>();
 
+    // Because we want our file I/O to be asynchronous, we're going to track any incomplete file work here so it can be handled at a later frame instead of all at once.
+    Queue<Asset> queuedAssetsToCache = new Queue<Asset>();
+    Queue<Asset> queuedAssetsToDelete = new Queue<Asset>();
+    Queue<Asset> queuedAssetsToLoad = new Queue<Asset>();
+    Queue<Asset> queuedAssetsToDownload = new Queue<Asset>();
+
+    // The handles for our I/O coroutines. We can use these to stop running coroutines, and to check if a coroutine is already running and handling tasks.
+    private Coroutine assetDownloadCoroutine;
+    private Coroutine assetDeletionCoroutine;
+    private Coroutine assetCachingCoroutine;
+    private Coroutine assetLoadCoroutine;
+
     void Awake()
     {
         // Set up our singleton instance of the class.
@@ -228,6 +240,7 @@ public class WebAssetCache : MonoBehaviour
         // outside the Unity event. Since our downloading is being done from a Start() event, this could be causing problems unless fixed.
         // Next we need to check the manifest version against the one we have on file.
         HTTPManager.Setup();
+        HTTPManager.MaxConnectionPerServer = 1;
         versionRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/version.json"), OnVersionRequestFinished);
         versionRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
         versionRequest.Timeout = TimeSpan.FromSeconds(1000);
@@ -256,7 +269,10 @@ public class WebAssetCache : MonoBehaviour
             Debug.Log("No local asset manifest found. Downloading all server assets.");
             var assetsToDownload = serverManifest.Assets.ToList();
 
-            BatchDownload(assetsToDownload);
+            foreach(Asset asset in assetsToDownload)
+            {
+                AddAssetToDownloadQueue(asset);
+            }
 
             Debug.Log("Caching version and manifest data.");
             CacheVersion();
@@ -321,9 +337,20 @@ public class WebAssetCache : MonoBehaviour
             var assetsToDownload = newAssets.Concat(changedAssets).ToList();
 
             // Send out our batched asset manifest entries to be taken care of.
-            BatchLoadFromCache(cachedAssets);
-            BatchDeleteFromCache(orphanedAssets);
-            BatchDownload(assetsToDownload);
+            foreach(Asset asset in cachedAssets)
+            {
+                queuedAssetsToLoad.Enqueue(asset);
+            }
+            
+            foreach(Asset asset in orphanedAssets)
+            {
+                AddAssetToDeletionQueue(asset);
+            }
+
+            foreach(Asset asset in assetsToDownload)
+            {
+                AddAssetToDownloadQueue(asset);
+            }
 
             // Cache the new version and asset manifest locally. We do the version file last because that's how we know the cache was successfully created.
             // A missing or out of date version file means the cache may be corrupt/incomplete and needs to be rebuilt.
@@ -333,25 +360,136 @@ public class WebAssetCache : MonoBehaviour
         }
     }
 
-    // Given a list of asset manifest entries, makes a group of http requests to download the assets from the server.
-    private void BatchDownload(List<Asset> batch)
+    // This method not only adds the asset to the queue, but it activates the download scheduler coroutine which will handle downloading
+    // over time instead of all at once.
+    private void AddAssetToDownloadQueue(Asset asset)
     {
-        Debug.LogFormat("Downloading {0} asset files from the server. Max active connections to server: {1}", batch.Count, HTTPManager.MaxConnectionPerServer);
+        queuedAssetsToDownload.Enqueue(asset);
 
-        HTTPManager.Setup();
-        foreach(Asset asset in batch)
+        // Check if there's a coroutine already running. If not, start one up so it can handle the download queue.
+        if(assetDownloadCoroutine == null)
         {
-            HTTPRequest assetRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/" + asset.Path), OnAssetRequestFinished);
-            // Send the asset manifest entry as a tag so we can identify this request later.
-            assetRequest.Tag = asset;
-            assetRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
-            assetRequest.Timeout = TimeSpan.FromSeconds(1000);
-            assetRequest.Send();
-
-            activeRequests.Add(assetRequest);
-
-            Debug.LogFormat("Download started for '{0}'.", asset.Path);
+            assetDownloadCoroutine = StartCoroutine(AssetDownloadCoroutine());
         }
+    }
+
+    // This coroutine takes asset manifest entries off of the queue and creates new HTTP requests to download them from the server.
+    // When there are no more assets to download or requests to create the coroutine shuts down.
+    private IEnumerator AssetDownloadCoroutine()
+    {
+        // It's unclear what is causing the "closed unexpectedly" error, but at this point I can only assume the server has some issue with how much data
+        // we're trying to get at once. The plugin should automatically handle this since there is a maximum number of connections it can make to the server,
+        // but I don't have any other ideas.
+        int maxActiveRequests = 5;
+
+        Debug.Log("Starting download scheduler coroutine.");
+
+        while(queuedAssetsToDownload.Count > 0)
+        {
+            if(activeRequests.Count < maxActiveRequests)
+            {
+                Asset asset = queuedAssetsToDownload.Dequeue();
+                HTTPRequest assetRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/" + asset.Path), OnAssetRequestFinished);
+
+                // Send the asset manifest entry as a tag so we can identify this request later.
+                assetRequest.Tag = asset;
+                assetRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
+                assetRequest.Timeout = TimeSpan.FromSeconds(1000);
+                assetRequest.Send();
+
+                activeRequests.Add(assetRequest);
+                Debug.LogFormat("Download started for '{0}'.", asset.Path);
+            }
+            
+            yield return null;
+        }
+
+        // Now that the coroutine is finished we can let it vanish into the void.
+        assetDownloadCoroutine = null;
+        Debug.Log("All queued downloads have been started. Ending download scheduler coroutine.");
+    }
+
+    private void AddAssetToCachingQueue(Asset asset)
+    {
+        queuedAssetsToCache.Enqueue(asset);
+
+        if(assetCachingCoroutine == null)
+        {
+            assetCachingCoroutine = StartCoroutine(AssetCachingCoroutine());
+        }
+    }
+
+    // This coroutine gradually saves asset data to the disk. If we attempted to save the assets all at once the client might freeze up,
+    // so this coroutine makes sure the amount of work to be done each frame stays manageable.
+    private IEnumerator AssetCachingCoroutine()
+    {
+        while(queuedAssetsToCache.Count > 0)
+        {
+            Asset assetData = queuedAssetsToCache.Dequeue();
+            LoadedImageAsset imageAsset = loadedAssets[assetData.Path];
+
+            // TODO: This might still cause stability and performance issues.
+            // Change this to either a foreach loop where we write chunks of data to the disk, or create a threaded job system to handle saving of individual files.
+            imageAsset.Save(cacheDirectory);
+
+            yield return null;
+        }
+
+        assetCachingCoroutine = null;
+        Debug.Log("All queued assets have been cached. Ending caching coroutine.");
+    }
+
+    private void AddAssetToDeletionQueue(Asset asset)
+    {
+        queuedAssetsToDelete.Enqueue(asset);
+
+        if(assetDeletionCoroutine == null)
+        {
+            assetDeletionCoroutine = StartCoroutine(AssetDeletionCoroutine());
+        }
+    }
+
+    // This coroutine gradually deletes asset data from the disk. Deletion might be a much faster operation than writing, but just to make sure
+    // it doesn't cause any issues we'll use this coroutine to space out the deletion operations.
+    private IEnumerator AssetDeletionCoroutine()
+    {
+        while(queuedAssetsToDelete.Count > 0)
+        {
+            Asset asset = queuedAssetsToDelete.Dequeue();
+            string filePath = Path.Combine(cacheDirectory, asset.Path);
+
+            if(File.Exists(filePath))
+            {
+                File.Delete(filePath);
+
+                Debug.LogFormat("Deleted '{0}' from the cache.", asset.Path);
+            }
+            else
+            {
+                Debug.LogWarningFormat("Cannot delete file at '{0}' because it doesn't exist.", filePath);
+            }
+
+            yield return null;
+        }
+
+        assetDeletionCoroutine = null;
+        Debug.Log("All queued assets have been deleted. Ending deletion coroutine.");
+    }
+
+    private void AddAssetToLoadQueue(Asset asset)
+    {
+        queuedAssetsToLoad.Enqueue(asset);
+
+        if(assetLoadCoroutine == null)
+        {
+            assetLoadCoroutine = StartCoroutine(AssetLoadCoroutine());
+        }
+    }
+
+    // This coroutine gradually loads asset data from the disk and into memory. 
+    private IEnumerator AssetLoadCoroutine()
+    {
+        yield return null;
     }
 
     // The method called when our asset download request gets a complete response back.
@@ -379,9 +517,12 @@ public class WebAssetCache : MonoBehaviour
 
                         LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
                         loadedAssets.Add(newAsset.path, newAsset);
-                        newAsset.Save(cacheDirectory);
 
-                        Debug.LogFormat("Download of '{0}' complete. Asset has been cached and loaded into memory.", assetData.Path);
+                        //newAsset.Save(cacheDirectory);
+                        //batchedAssetsToCache.Enqueue(assetData);
+                        AddAssetToCachingQueue(assetData);
+
+                        Debug.LogFormat("Download of '{0}' complete. Asset has been loaded into memory.", assetData.Path);
                     }
                     else
                     {
