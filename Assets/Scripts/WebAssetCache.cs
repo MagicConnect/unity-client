@@ -205,16 +205,7 @@ public class WebAssetCache : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // To test our diff function(s) we're going to override the loaded version and manifest data with some test data we've prepared.
-        // NOTE: This should not be used to download actual files, since many of them will not exist. Only test up to the point the download
-        //      batch is prepared.
-        /*
-        string testVersion = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_version.json"));
-        currentVersion = JsonConvert.DeserializeObject<VersionNumber>(testVersion);
-
-        string testManifest = File.ReadAllText(Path.Combine(Application.persistentDataPath, "TestFiles/", "test_manifest.json"));
-        currentManifest = JsonConvert.DeserializeObject<AssetManifest>(testManifest);
-        */
+        
     }
 
     // Update is called once per frame
@@ -376,26 +367,12 @@ public class WebAssetCache : MonoBehaviour
             assetCachingCoroutine = StartCoroutine(AssetCachingCoroutine());
         }
 
-        // Note: Always wait for the downloads to be done because if nothing is downloaded then there is nothing to cache.
-        //yield return new WaitUntil(() => assetDownloadCoroutine == null && activeRequests.Count <= 0);
-
         // Wait for both the download and caching coroutines to finish.
         if(runStartupSynced)
         {
             yield return new WaitUntil(() => assetDownloadCoroutine == null && assetCachingCoroutine == null);
         }
-        /*
-        if(queuedAssetsToCache.Count > 0)
-        {
-            Debug.Log("Assets found in the cache queue. Launching caching coroutine.");
-            assetCachingCoroutine = StartCoroutine(AssetCachingCoroutine());
-        }
         
-        if(runStartupSynced)
-        {
-            yield return new WaitUntil(() => assetCachingCoroutine == null && queuedAssetsToCache.Count <= 0);
-        }
-        */
         if(queuedAssetsToLoad.Count > 0)
         {
             Debug.Log("Assets found in the load queue. Launching loader coroutine.");
@@ -457,35 +434,39 @@ public class WebAssetCache : MonoBehaviour
     // When there are no more assets to download or requests to create the coroutine shuts down.
     private IEnumerator AssetDownloadCoroutine()
     {
-        // It's unclear what is causing the "closed unexpectedly" error, but at this point I can only assume the server has some issue with how much data
-        // we're trying to get at once. The plugin should automatically handle this since there is a maximum number of connections it can make to the server,
-        // but I don't have any other ideas.
-        int maxActiveRequests = 1;
-
         Debug.Log("Starting download scheduler coroutine.");
 
         while(queuedAssetsToDownload.Count > 0)
         {
-            //Debug.LogFormat("[DEBUG] Downloader Line 435"); // DELETE AFTER TESTING
-            if(activeRequests.Count < maxActiveRequests)
+            if(activeRequests.Count < maxNumberOfRequests)
             {
                 Asset asset = queuedAssetsToDownload.Dequeue();
-                Debug.LogFormat("[DEBUG] Downloader: '{0}' Line 439", asset.Path); // DELETE AFTER TESTING
                 HTTPRequest assetRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/" + asset.Path), OnAssetRequestFinished);
-                Debug.LogFormat("[DEBUG] Downloader: '{0}' Line 441", asset.Path); // DELETE AFTER TESTING
+                
                 // Send the asset manifest entry as a tag so we can identify this request later.
                 assetRequest.Tag = asset;
                 assetRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
                 assetRequest.Timeout = TimeSpan.FromSeconds(1000);
                 assetRequest.MaxRetries = 10;
+
+                // The BestHTTP plugin has a built in caching system (which would render a lot of this class redundant) but we can't use it.
+                // To prevent the plugin from doubling the memory footprint and wasting processing time writing data, we'll disable caching for all asset downloads.
+                assetRequest.DisableCache = true;
+
                 assetRequest.Send();
-                Debug.LogFormat("[DEBUG] Downloader: '{0}' Line 448", asset.Path); // DELETE AFTER TESTING
+                
                 activeRequests.Add(assetRequest);
                 Debug.LogFormat("Download started for '{0}'.", asset.Path);
-                Debug.LogFormat("[DEBUG] Downloader: '{0}' Line 451", asset.Path); // DELETE AFTER TESTING
             }
             
             yield return null;
+        }
+
+        // If the startup coroutine is active then this coroutine should wait until all downloads have completed before
+        // shutting down. The startup routine uses this coroutine's handler to know when it's okay to move to the next steps.
+        if(startupCoroutine != null)
+        {
+            yield return new WaitUntil(() => activeRequests.Count <= 0);
         }
 
         // Now that the coroutine is finished we can let it vanish into the void.
@@ -507,44 +488,42 @@ public class WebAssetCache : MonoBehaviour
     // so this coroutine makes sure the amount of work to be done each frame stays manageable.
     private IEnumerator AssetCachingCoroutine()
     {
-        Task[] tasks = new Task[4];
         Asset assetData = null;
         LoadedImageAsset imageAsset = null;
+        List<Task> activeTasks = new List<Task>();
 
-        while(queuedAssetsToCache.Count > 0 || queuedAssetsToDownload.Count > 0)
+        while(queuedAssetsToCache.Count > 0 || assetDownloadCoroutine != null || activeTasks.Count > 0)
         {
-            for(int i = 0; i < tasks.Length; i += 1)
+            // Look through the list of active tasks to check if any tasks have finished. If so, remove them from
+            // the list to make room for new tasks.
+            for(int i = 0; i < activeTasks.Count; i += 1)
             {
-                if(tasks[i] == null || tasks[i].Status == TaskStatus.RanToCompletion)
+                if(activeTasks[i].Status == TaskStatus.RanToCompletion)
                 {
-                    if(queuedAssetsToCache.Count > 0)
-                    {
-                        assetData = queuedAssetsToCache.Dequeue();
-                        imageAsset = loadedAssets[assetData.Path];
-
-                        // Ensure that the directories in the given path exist, so that writing to a file will be successful.
-                        string filePath = Path.Combine(cacheDirectory, assetData.Path);
-                        Directory.CreateDirectory(Path.GetDirectoryName(filePath));
-
-                        // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
-                        byte[] pngTexture = imageAsset.texture.EncodeToPNG();
-
-                        Debug.LogFormat("New task created. Caching '{0}' locally.", assetData.Path);
-
-                        tasks[i] = Task.Run(() => File.WriteAllBytes(filePath, pngTexture));
-                    }
+                    Debug.Log("Asset caching task completed.");
+                    activeTasks.Remove(activeTasks[i]);
                 }
-                else
-                {
-                    Debug.LogFormat("Task {0} status: {1}", i, tasks[i].Status);
-                }
-
-                yield return null;
             }
 
-            // TODO: This might still cause stability and performance issues.
-            // Change this to either a foreach loop where we write chunks of data to the disk, or create a threaded job system to handle saving of individual files.
-            //imageAsset.Save(cacheDirectory);
+            // If there are fewer active tasks than allowed by the system, and we have more assets that need to be cached, 
+            // create a new task.
+            if(activeTasks.Count < SystemInfo.processorCount && queuedAssetsToCache.Count > 0)
+            {
+                assetData = queuedAssetsToCache.Dequeue();
+                imageAsset = loadedAssets[assetData.Path];
+
+                // Ensure that the directories in the given path exist, so that writing to a file will be successful.
+                string filePath = Path.Combine(cacheDirectory, assetData.Path);
+                Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
+                byte[] pngTexture = imageAsset.texture.EncodeToPNG();
+
+                Debug.LogFormat("New task created. Caching '{0}' locally.", assetData.Path);
+
+                Task newTask = Task.Run(() => File.WriteAllBytes(filePath, pngTexture));
+                activeTasks.Add(newTask);
+            }
 
             yield return null;
         }
@@ -614,33 +593,8 @@ public class WebAssetCache : MonoBehaviour
             string filePath = Path.Combine(cacheDirectory, asset.Path);
 
             if(File.Exists(filePath))
-            {
-                /*byte[] pngTexture = File.ReadAllBytes(filePath);
-                Texture2D texture = new Texture2D(0, 0);
-
-                UnityWebRequest www = UnityWebRequestTexture.GetTexture("file:///" + filePath);
-                yield return www.SendWebRequest();
-
-                if(www.result != UnityWebRequest.Result.Success)
-                {
-                    Debug.Log(www.error);
-                }
-                else
-                {
-                    texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
-
-                    LoadedImageAsset imageAsset = new LoadedImageAsset(asset.Name, asset.Path, asset.Hash, texture);
-                    loadedAssets.Add(asset.Path, imageAsset);
-
-                    Debug.LogFormat("Asset at {0} loaded from cache and into memory.", asset.Path);
-                }*/
-
-                //texture.LoadImage(pngTexture);
-                
+            {   
                 StartCoroutine(LoadHelperCoroutine(filePath, asset, runningCoroutines));
-                
-                //Debug.Log("Starting new file load task.");
-                //AssetLoadTask(asset);
             }
             else
             {
@@ -678,10 +632,16 @@ public class WebAssetCache : MonoBehaviour
         }
         else
         {
-            //Texture2D texture = new Texture2D(0, 0);
             Texture2D texture = ((DownloadHandlerTexture)www.downloadHandler).texture;
 
             LoadedImageAsset imageAsset = new LoadedImageAsset(asset.Name, asset.Path, asset.Hash, texture);
+
+            // If there is already an asset with that path then go ahead and overwrite it.
+            if(loadedAssets.ContainsKey(asset.Path))
+            {
+                loadedAssets.Remove(asset.Path);
+            }
+
             loadedAssets.Add(asset.Path, imageAsset);
 
             Debug.LogFormat("Asset at {0} loaded from cache and into memory.", asset.Path);
@@ -689,10 +649,10 @@ public class WebAssetCache : MonoBehaviour
         
         // This coroutine is finished. Remove it from the provided list so the primary loading coroutine knows it's safe to shut down.
         runningCoroutines.Remove(asset);
-        //yield return null;
-        //AssetLoadTask(asset);
     }
 
+    // TODO: Either delete or reuse this method. The Unity Web Request handles loading textures asynchronously for us,
+    // so loading tasks are unnecessary unless we have some other type of asset that the UWR can't handle.
     private async Task AssetLoadTask(Asset asset)
     {
         string filePath = Path.Combine(cacheDirectory, asset.Path);
@@ -706,6 +666,7 @@ public class WebAssetCache : MonoBehaviour
         Debug.LogFormat("Asset at {0} loaded from cache and into memory.", asset.Path);
     }
 
+    // TODO: Same as AssetLoadTask().
     private async Task<byte[]> LoadAssetAsync(string filePath)
     {
         return await Task.Run(() => File.ReadAllBytes(filePath));
@@ -765,7 +726,6 @@ public class WebAssetCache : MonoBehaviour
     {
         Debug.Log("Beginning cache update.");
         // If we don't have a cached manifest then we just go ahead and download everything from the server.
-        // NOTE: May need to delete the cache, just in case we have a bunch of garbage data.
         if(currentManifest == null)
         {
             Debug.Log("No local asset manifest found. Downloading all server assets.");
@@ -779,26 +739,8 @@ public class WebAssetCache : MonoBehaviour
         else
         {
             Debug.Log("Local manifest found. Updating local cache.");
-            // If we have a local manifest as well as a server manifest then we need to find:
-            // 1) Assets that exist on the server but not on the local machine, and thus need to be downloaded, loaded into memory, and cached on the local machine
-            // 2) Assets that exist on the local machine but not on the server, and should be deleted because they are no longer necessary (or were given a completely new reference in the manifest)
-            // 3) Assets that exist both locally and remotely but there's a difference (based on hash values), and so the server asset should replace the local one
-            // 4) Assets that exist on both machines but have no differing hash values can be loaded from the local cache as normal
 
             // 1) Assets that exist on the server but not on the local machine
-            Debug.Log("TEST => Local manifest entries:");
-            foreach(Asset a in currentManifest.Assets)
-            {
-                Debug.Log(a.Name);
-            }
-
-            Debug.Log("TEST => Server manifest entries:");
-            foreach(Asset a in serverManifest.Assets)
-            {
-                Debug.Log(a.Name);
-            }
-
-
             var newAssets = serverManifest.Assets.Where(s => !currentManifest.Assets.Any(l => s.Path == l.Path)).ToList();
             Debug.Log("New assets to be downloaded:");
             foreach (Asset a in newAssets)
@@ -867,28 +809,6 @@ public class WebAssetCache : MonoBehaviour
                     // Now that we got our response from the server, parse the results into a usable object.
                     serverVersion = JsonConvert.DeserializeObject<VersionNumber>(resp.DataAsText);
                     Debug.Log("Server manifest version downloaded. Version: " + serverVersion.Version);
-
-                    /*
-                    if (currentVersion == null || serverVersion.Version != currentVersion.Version)
-                    {
-                        // There's no version on file, or the versions are different.
-                        Debug.Log("Server manifest version doesn't match version on file. Downloading new manifest.");
-
-                        //HTTPManager.Setup();
-                        manifestRequest = new HTTPRequest(new Uri("https://art.magic-connect.com/manifest.json"), OnManifestRequestFinished);
-                        manifestRequest.ConnectTimeout = TimeSpan.FromSeconds(30);
-                        manifestRequest.Timeout = TimeSpan.FromSeconds(1000);
-                        manifestRequest.Send();
-                    }
-                    else
-                    {
-                        // If the version matches then we should have assets cached locally that we can load into memory.
-                        foreach(Asset asset in currentManifest.Assets)
-                        {
-                            AddAssetToLoadQueue(asset);
-                        }
-                    }
-                    */
                 }
                 else
                 {
@@ -927,8 +847,6 @@ public class WebAssetCache : MonoBehaviour
                     // Parse the results into a usable object.
                     serverManifest = JsonConvert.DeserializeObject<AssetManifest>(resp.DataAsText);
                     Debug.Log("Server manifest downloaded.");
-
-                    //UpdateCache();
                 }
                 else
                 {
@@ -970,19 +888,21 @@ public class WebAssetCache : MonoBehaviour
                     // Request response was successful so we should be good to go.
                     Asset assetData = req.Tag as Asset;
                     Debug.LogFormat("Response to asset download request received without errors. Attempting to cache '{0}' to local machine.", assetData.Path);
-                    Debug.LogFormat("[DEBUG] Request: '{0}' Line 956", assetData.Path); // DELETE AFTER TESTING
                     var bytes = resp.Data;
-                    Debug.LogFormat("[DEBUG] Request: '{0}' Line 958", assetData.Path); // DELETE AFTER TESTING
                     Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: false, lLinear: true, lError: out Error lError, makeNoLongerReadable: false);
-                    Debug.LogFormat("[DEBUG] Request: '{0}' Line 960", assetData.Path); // DELETE AFTER TESTING
 
                     if (lError == Error.Success)
                     {
                         LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+
+                        // If we already have an asset in memory with the same path, overwrite it.
+                        if(loadedAssets.ContainsKey(newAsset.path))
+                        {
+                            loadedAssets.Remove(newAsset.path);
+                        }
+
                         loadedAssets.Add(newAsset.path, newAsset);
 
-                        //newAsset.Save(cacheDirectory);
-                        //batchedAssetsToCache.Enqueue(assetData);
                         AddAssetToCachingQueue(assetData);
 
                         Debug.LogFormat("Download of '{0}' complete. Asset has been loaded into memory.", assetData.Path);
@@ -1021,7 +941,6 @@ public class WebAssetCache : MonoBehaviour
         }// end switch block
 
         // Regardless of the results, this request is no longer active.
-        Debug.LogFormat("[DEBUG] Request: Line 1010"); // DELETE AFTER TESTING
         activeRequests.Remove(req);
         Debug.LogFormat("Request no longer active. {0} requests remain active.", activeRequests.Count);
     }
@@ -1040,7 +959,6 @@ public class WebAssetCache : MonoBehaviour
 
     private void LoadVersion()
     {
-        //currentVersion = JsonUtility.FromJson<VersionNumber>(LoadDataFromFile("manifest_version.dat"));
         currentVersion = JsonConvert.DeserializeObject<VersionNumber>(LoadDataFromFile("manifest_version.dat"));
     }
 
@@ -1058,7 +976,6 @@ public class WebAssetCache : MonoBehaviour
 
     private void LoadManifest()
     {
-        //currentManifest = JsonUtility.FromJson<AssetManifest>(LoadDataFromFile("manifest.dat"));
         currentManifest = JsonConvert.DeserializeObject<AssetManifest>(LoadDataFromFile("manifest.dat"));
     }
 
