@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 using UnityEngine.UI;
 using TMPro;
@@ -9,8 +10,12 @@ public class LoadingScreenManager : MonoBehaviour
 {
     public GameObject image;
     public TMP_Text statusText;
-
     public TMP_Text progressPercentage;
+    public Slider progressBar;
+
+    // This string indicates what the status text should say each frame. The status text can't
+    // always be set directly because some cache events are invoked on separate threads, where Unity code is not allowed to be executed.
+    string statusMessage = "";
 
     public int numFilesToDownload = 0;
     public int totalDownloads = 0;
@@ -28,6 +33,26 @@ public class LoadingScreenManager : MonoBehaviour
     public float timeToRefresh = 0.0f;
     private string ellipses = "...";
 
+    // This lets the manager know it's time to load the next scene. The manager can handle when to actually load the next scene.
+    private bool isReadyToLoadGame = false;
+
+    // Whether or not to start loading the game automatically.
+    // TODO: There is no mechanism for manually starting the load process. Add something like a "start" button or input listener
+    // if we want this flag to be useful.
+    public bool autoStart = true;
+
+    // Whether or not to load the next scene once the game assets have been loaded.
+    // TODO: There is no way for the user to manually load the next scene yet. Add one.
+    public bool autoLoadScene = true;
+
+    // How long to wait before starting to load the game automatically.
+    public float autoStartTime = 1.0f;
+
+    // Name of the yarn spinner scene to be loaded.
+    public string yarnDemoScene;
+
+    Coroutine yarnSceneLoader;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -37,6 +62,18 @@ public class LoadingScreenManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        // If it's time to autoload and the cache is idle and unready, launch the startup process.
+        if(Time.realtimeSinceStartup >= autoStartTime && WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.Unready)
+        {
+            WebAssetCache.Instance.Startup();
+        }
+
+        // If the cache is done loading, do any cleanup or preparation necessary and load the next scene.
+        if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse && yarnSceneLoader == null)
+        {
+            yarnSceneLoader = StartCoroutine(LoadYarnSceneAsync());
+        }
+
         timeToRefresh += Time.deltaTime;
 
         if(timeToRefresh >= messageRefreshRate)
@@ -45,85 +82,140 @@ public class LoadingScreenManager : MonoBehaviour
 
             if(ellipses == "....")
             {
-                ellipses = ".";
+                ellipses = "";
             }
 
             loadingMessage.text = "Loading, Please Wait" + ellipses;
             timeToRefresh = 0.0f;
         }
+
+        UpdateProgressGraphic();
+    }
+
+    // Called when the object is destroyed and when the scene changes.
+    void OnDestroy()
+    {
+        UnsubscribeFromCacheEvents();
     }
 
     private void SubscribeToCacheEvents()
     {
+        WebAssetCache.OnCacheReady += CacheReady;
+
         WebAssetCache.OnAssetAddedToDownloadQueue += FileQueuedForDownload;
-        //WebAssetCache.OnDownloadStarted += FileDownloaded;
+        WebAssetCache.OnDownloadStarted += DownloadingFile;
         WebAssetCache.OnDownloadFinished += FileDownloaded;
 
         WebAssetCache.OnAssetAddedToLoadQueue += FileQueuedForLoad;
+        WebAssetCache.OnLoadingFileStarted += LoadingFile;
         WebAssetCache.OnLoadingFileComplete += FileLoaded;
 
         WebAssetCache.OnAssetAddedToCacheQueue += FileQueuedForCache;
+        WebAssetCache.OnCachingFileStarted += CachingFile;
         WebAssetCache.OnCachingFileComplete += FileCached;
 
         WebAssetCache.OnAssetAddedToDeleteQueue += FileQueuedForDeletion;
+        WebAssetCache.OnDeletingFileStarted += DeletingFile;
         WebAssetCache.OnDeletingFileComplete += FileDeleted;
     }
 
     private void UnsubscribeFromCacheEvents()
-    {}
+    {
+        WebAssetCache.OnCacheReady -= CacheReady;
+
+        WebAssetCache.OnAssetAddedToDownloadQueue -= FileQueuedForDownload;
+        WebAssetCache.OnDownloadStarted -= DownloadingFile;
+        WebAssetCache.OnDownloadFinished -= FileDownloaded;
+
+        WebAssetCache.OnAssetAddedToLoadQueue -= FileQueuedForLoad;
+        WebAssetCache.OnLoadingFileStarted -= LoadingFile;
+        WebAssetCache.OnLoadingFileComplete -= FileLoaded;
+
+        WebAssetCache.OnAssetAddedToCacheQueue -= FileQueuedForCache;
+        WebAssetCache.OnCachingFileStarted -= CachingFile;
+        WebAssetCache.OnCachingFileComplete -= FileCached;
+
+        WebAssetCache.OnAssetAddedToDeleteQueue -= FileQueuedForDeletion;
+        WebAssetCache.OnDeletingFileStarted -= DeletingFile;
+        WebAssetCache.OnDeletingFileComplete -= FileDeleted;
+    }
 
     private void FileQueuedForDownload(string path)
     {
         numFilesToDownload += 1;
-        UpdateProgressGraphic();
+    }
+
+    private void DownloadingFile(string path)
+    {
+        statusMessage = string.Format("Downloading '{0}'.");
     }
 
     private void FileDownloaded(string path)
     {
         totalDownloads += 1;
-        UpdateProgressGraphic();
+        statusMessage = string.Format("'{0}' downloaded.", path);
     }
 
     private void FileQueuedForLoad(string path)
     {
         numFilesToLoad += 1;
-        UpdateProgressGraphic();
+    }
+
+    private void LoadingFile(string path)
+    {
+        statusMessage = string.Format("Loading '{0}'.", path);
     }
 
     private void FileLoaded(string path)
     {
         totalFilesLoaded += 1;
-        UpdateProgressGraphic();
+        statusMessage = string.Format("'{0}' loaded.", path);
     }
 
     private void FileQueuedForCache(string path)
     {
         numFilesToCache += 1;
-        UpdateProgressGraphic();
+    }
+
+    private void CachingFile(string path)
+    {
+        statusMessage = string.Format("Caching '{0}'.", path);
     }
 
     private void FileCached(string path)
     {
         totalFilesCached += 1;
-        UpdateProgressGraphic();
+        statusMessage = string.Format("'{0}' cached.", path);
     }
 
     private void FileQueuedForDeletion(string path)
     {
         numFilesToDelete += 1;
-        UpdateProgressGraphic();
+    }
+
+    private void DeletingFile(string path)
+    {
+        statusMessage = string.Format("Deleting '{0}'.");
     }
 
     private void FileDeleted(string path)
     {
         totalFilesDeleted += 1;
-        UpdateProgressGraphic();
+        statusMessage = string.Format("'{0}' deleted.");
+    }
+
+    private void StartupComplete()
+    {}
+
+    private void CacheReady()
+    {
+        isReadyToLoadGame = true;
     }
 
     // Whenever some event happens that affects the loading progress, update the progress graphic objects to reflect the changes.
     private void UpdateProgressGraphic()
     {
-        statusText.text = "";
+        statusText.text = statusMessage;
 
         // Calculate the overall progress of the loading process, then display it.
         // Get the total number of file related operations the cache needs to do before being ready.
@@ -135,34 +227,44 @@ public class LoadingScreenManager : MonoBehaviour
         float downloadProgress = 0.0f;
         if(numFilesToDownload > 0)
         {
-            downloadProgress = (numFilesToDownload / totalTasks) * (totalDownloads / numFilesToDownload);
+            downloadProgress = ((float)numFilesToDownload / (float)totalTasks) * ((float)totalDownloads / (float)numFilesToDownload);
         }
         
         float cacheProgress = 0.0f;
         if(numFilesToCache > 0)
         {
-            cacheProgress = (numFilesToCache / totalTasks) * (totalFilesCached / numFilesToCache);
+            cacheProgress = ((float)numFilesToCache / (float)totalTasks) * ((float)totalFilesCached / (float)numFilesToCache);
         }
         
         float deleteProgress = 0.0f;
         if(numFilesToDelete > 0)
         {
-            deleteProgress = (numFilesToDelete / totalTasks) * (totalFilesDeleted / numFilesToDelete);
+            deleteProgress = ((float)numFilesToDelete / (float)totalTasks) * ((float)totalFilesDeleted / (float)numFilesToDelete);
         }
         
         float loadProgress = 0.0f;
         if(numFilesToLoad > 0)
         {
-            loadProgress = (numFilesToLoad / totalTasks) * (totalFilesLoaded / numFilesToLoad);
+            loadProgress = ((float)numFilesToLoad / (float)totalTasks) * ((float)totalFilesLoaded / (float)numFilesToLoad);
         }
 
         float totalProgress = downloadProgress + cacheProgress + deleteProgress + loadProgress;
 
-        Debug.LogFormat("Progress: {0}", totalProgress * 100);
-
-        progressPercentage.text = string.Format("{0}%", totalProgress * 100);
+        progressBar.value = totalProgress;
+        progressPercentage.text = string.Format("{0}%", totalProgress * 100.0f);
     }
 
+    private IEnumerator LoadYarnSceneAsync()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(yarnDemoScene);
+
+        while(!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    // TODO: Delete this once there's a practical example of referencing assets loaded in the cache. This is here just to prove it works.
     public void TestDisplayImage()
     {
         Texture2D displayTexture = WebAssetCache.Instance.GetTexture2D("assets/art/accessories/Magic_Emblem.webp");

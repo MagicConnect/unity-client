@@ -14,8 +14,6 @@ using System.Threading.Tasks;
 
 using UnityEngine.Networking;
 
-using UnityEngine.Events;
-
 public class WebAssetCache : MonoBehaviour
 {
     // This is the singleton instance of our web asset cache. We only ever want one cache, which the entire game can access.
@@ -78,6 +76,8 @@ public class WebAssetCache : MonoBehaviour
 
         public string path {get; private set;}
 
+        // TODO: Remove the unused code in this class. All the loading and saving is done elsewhere now, and if it
+        // needs to be refactored into this class again almost none of this code will be useful.
         public LoadedImageAsset()
         {
             // Empty constructor intended to be used with the Load() method to initialize the object instance.
@@ -175,58 +175,18 @@ public class WebAssetCache : MonoBehaviour
 
     #region Event Declarations
     // TODO: Clean up old event declarations, standardize event naming, implement event calls throughout code
-    public delegate void OnStartupBegin();
-    public static OnStartupBegin onStartupBegin;
-
-    public delegate void OnStartupEnd();
-    public static OnStartupEnd onStartupEnd;
-
-    public delegate void OnCacheReady();
-    public static OnCacheReady onCacheReady;
-
-/*
-    public delegate void OnBatchDownloadStarted(int numDownloads);
-    public static OnBatchDownloadStarted onBatchDownloadStarted;
-
-    public delegate void OnBatchDownloadCompleted();
-    public static OnBatchDownloadCompleted onBatchDownloadCompleted;
-*/
-    //public delegate void OnAssetAddedToDownloadQueue(string path);
-    //public static OnAssetAddedToDownloadQueue onAssetAddedToDownloadQueue;
+    // TODO: Use a namespace or a class to organize these events and make it easier for other scripts to find the
+    // event handlers.
+    public static event Action OnStartupBegin;
+    public static event Action OnStartupEnd;
+    public static event Action OnCacheReady;
 
     public static event Action<string> OnAssetAddedToDownloadQueue;
-
-    //public delegate void OnDownloadStarted(string path);
-    //public static OnDownloadStarted onDownloadStarted;
-
     public static event Action<string> OnDownloadStarted;
-
-    //public delegate void OnDownloadFinished(string path);
-    //public static OnDownloadFinished onDownloadFinished;
-
     public static event Action<string> OnDownloadFinished;
-/*
-    public delegate void OnBatchLoadStarted(int numFiles);
-    public static OnBatchLoadStarted onBatchLoadStarted;
-
-    public delegate void OnBatchLoadEnded();
-    public static OnBatchLoadEnded onBatchLoadEnded;
-*/
-    // Since the number of assets being loaded can change over time, notify listeners of changes instead
-    // of telling them how many we're trying to load all at once.
-    //public delegate void OnAssetAddedToLoadQueue(string path);
-    //public static OnAssetAddedToLoadQueue onAssetAddedToLoadQueue;
 
     public static event Action<string> OnAssetAddedToLoadQueue;
-
-    //public delegate void OnLoadingFileStarted(string path);
-    //public static OnLoadingFileStarted onLoadingFileStarted;
-
     public static event Action<string> OnLoadingFileStarted;
-
-    //public delegate void OnLoadingFileComplete(string path);
-    //public static OnLoadingFileComplete onLoadingFileComplete;
-
     public static event Action<string> OnLoadingFileComplete;
 
     public static event Action<string> OnAssetAddedToCacheQueue;
@@ -243,6 +203,10 @@ public class WebAssetCache : MonoBehaviour
 
     // Flag that tells the startup coroutine whether it should run the worker coroutines one at a time or simultaneously.
     public bool runStartupSynced = true;
+
+    public enum WebCacheStatus {Unready, Initializing, ReadyToUse};
+
+    public WebCacheStatus status;
 
     void Awake()
     {
@@ -267,6 +231,8 @@ public class WebAssetCache : MonoBehaviour
         {
             Directory.CreateDirectory(cacheDirectory);
         }
+
+        status = WebCacheStatus.Unready;
     }
 
     // Start is called before the first frame update
@@ -298,6 +264,7 @@ public class WebAssetCache : MonoBehaviour
     // This function acts as a public launching point for the startup coroutine.
     public void Startup()
     {
+        status = WebCacheStatus.Initializing;
         startupCoroutine = StartCoroutine(StartupRoutine());
     }
 
@@ -428,6 +395,11 @@ public class WebAssetCache : MonoBehaviour
             Debug.Log("Assets found in the download queue. Launching downloader coroutine.");
             assetDownloadCoroutine = StartCoroutine(AssetDownloadCoroutine());
 
+            if(runStartupSynced)
+            {
+                yield return new WaitUntil(() => assetDownloadCoroutine == null);
+            }
+
             // If we have assets to download then we can assume we'll have files to cache. Create a caching coroutine and then
             // wait on both to finish.
             Debug.Log("Launching coroutine to cache downloaded assets.");
@@ -481,7 +453,13 @@ public class WebAssetCache : MonoBehaviour
 
         // The startup coroutine is complete and the cache should be ready.
         startupCoroutine = null;
+        status = WebCacheStatus.ReadyToUse;
         Debug.Log("Startup routine complete. Cache is ready for use. Closing down startup coroutine.");
+
+        if(OnCacheReady != null)
+        {
+            OnCacheReady();
+        }
     }
 
     // This method not only adds the asset to the queue, but it activates the download scheduler coroutine which will handle downloading
@@ -530,6 +508,12 @@ public class WebAssetCache : MonoBehaviour
                 assetRequest.Send();
                 
                 activeRequests.Add(assetRequest);
+
+                if(OnDownloadStarted != null)
+                {
+                    OnDownloadStarted(asset.Path);
+                }
+
                 Debug.LogFormat("Download started for '{0}'.", asset.Path);
             }
             
@@ -581,7 +565,12 @@ public class WebAssetCache : MonoBehaviour
             {
                 if(activeTasks[i].Status == TaskStatus.RanToCompletion)
                 {
-                    Debug.Log("Asset caching task completed.");
+                    Debug.Log("Caching Stage: Asset caching task completed.");
+                    activeTasks.Remove(activeTasks[i]);
+                }
+                else if(activeTasks[i].Status == TaskStatus.Faulted)
+                {
+                    Debug.LogErrorFormat("Exception occurred while running caching task: {0}", activeTasks[i].Exception);
                     activeTasks.Remove(activeTasks[i]);
                 }
             }
@@ -600,7 +589,8 @@ public class WebAssetCache : MonoBehaviour
                 // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
                 byte[] pngTexture = imageAsset.texture.EncodeToPNG();
 
-                Debug.LogFormat("New task created. Caching '{0}' locally.", assetData.Path);
+                Debug.LogFormat("Caching Stage: New task created. Caching '{0}' locally.", assetData.Path);
+                Debug.LogFormat("{0} of {1} tasks running.", activeTasks.Count, SystemInfo.processorCount);
 
                 Task newTask = Task.Run(() => {
                     File.WriteAllBytes(filePath, pngTexture);
@@ -611,13 +601,18 @@ public class WebAssetCache : MonoBehaviour
                     }
                 });
                 activeTasks.Add(newTask);
+
+                if(OnCachingFileStarted != null)
+                {
+                    OnCachingFileStarted(assetData.Path);
+                }
             }
 
             yield return null;
         }
 
         assetCachingCoroutine = null;
-        Debug.Log("All queued assets have been cached. Ending caching coroutine.");
+        Debug.Log("Caching Stage: All queued assets have been cached. Ending caching coroutine.");
     }
 
     private void AddAssetToDeletionQueue(Asset asset)
@@ -637,6 +632,8 @@ public class WebAssetCache : MonoBehaviour
 
     // This coroutine gradually deletes asset data from the disk. Deletion might be a much faster operation than writing, but just to make sure
     // it doesn't cause any issues we'll use this coroutine to space out the deletion operations.
+    // TODO: Make file deletion asynchronous. It's not a performance concern right now and I doubt we'd expect massive changes to the asset 
+    // database to happen regularly, so it's not worth setting it up just yet.
     private IEnumerator AssetDeletionCoroutine()
     {
         while(queuedAssetsToDelete.Count > 0)
@@ -646,6 +643,13 @@ public class WebAssetCache : MonoBehaviour
 
             if(File.Exists(filePath))
             {
+                // Right now it seems kinda silly to fire off both starting and ending events here when file deletion isn't done asynchronously,
+                // but for consistency's sake we'll do it anyway.
+                if(OnDeletingFileStarted != null)
+                {
+                    OnDeletingFileStarted(asset.Path);
+                }
+
                 File.Delete(filePath);
 
                 if(OnDeletingFileComplete != null)
@@ -723,6 +727,11 @@ public class WebAssetCache : MonoBehaviour
         // Adding this asset entry to the runningCoroutines list tells the parent coroutine that this coroutine is still running.
         // (status of Unity coroutines cannot be tracked otherwise because the Coroutine class exposes no properties or methods)
         runningCoroutines.Add(asset);
+
+        if(OnLoadingFileStarted != null)
+        {
+            OnLoadingFileStarted(asset.Path);
+        }
 
         // The 'file:///' string tells the web request to load a local file instead of trying to connect to a URL.
         UnityWebRequest www = UnityWebRequestTexture.GetTexture("file:///" + filePath);
