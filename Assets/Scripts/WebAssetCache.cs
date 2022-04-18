@@ -76,6 +76,8 @@ public class WebAssetCache : MonoBehaviour
 
         public string path {get; private set;}
 
+        public string category {get; private set;}
+
         // TODO: Remove the unused code in this class. All the loading and saving is done elsewhere now, and if it
         // needs to be refactored into this class again almost none of this code will be useful.
         public LoadedImageAsset()
@@ -89,6 +91,7 @@ public class WebAssetCache : MonoBehaviour
             this.path = path;
             this.hash = hash;
             this.texture = texture;
+            this.category = new DirectoryInfo(Path.GetDirectoryName(path)).Name;
         }
 
         // Save the image asset data to the cache.
@@ -259,6 +262,29 @@ public class WebAssetCache : MonoBehaviour
             // Potentially return an empty texture instead, or a default 'error' texture like the purple/black texture from source games.
             return null;
         }
+    }
+
+    // This method finds all asset manifest entries of the given category and returns them as a list.
+    public List<Asset> GetAssetEntryByCategory(string category)
+    {
+        return currentManifest.Assets.Where((a) => {
+            string assetCategory = new DirectoryInfo(a.Path).Name;
+            return assetCategory == category;
+        }).ToList();
+    }
+
+    // Get all the loaded image assets of a given category.
+    public List<LoadedImageAsset> GetLoadedAssetsByCategory(string category)
+    {
+        // DELETE
+        /*
+        foreach(KeyValuePair<string, LoadedImageAsset> asset in loadedAssets)
+        {
+            Debug.LogFormat("Asset name: {0} Asset category: {1}", asset.Value.name, asset.Value.category);
+        }
+        */
+
+        return loadedAssets.Values.Where((a) => a.category == category).ToList();
     }
 
     // This function acts as a public launching point for the startup coroutine.
