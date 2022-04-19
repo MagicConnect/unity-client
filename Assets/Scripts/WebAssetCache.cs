@@ -583,6 +583,8 @@ public class WebAssetCache : MonoBehaviour
         LoadedImageAsset imageAsset = null;
         List<Task> activeTasks = new List<Task>();
 
+        // Make sure the coroutine stays running while there are assets to cache, or there might be assets to cache, or if
+        // there are assets being cached that we're waiting for.
         while(queuedAssetsToCache.Count > 0 || assetDownloadCoroutine != null || activeTasks.Count > 0)
         {
             // Look through the list of active tasks to check if any tasks have finished. If so, remove them from
@@ -602,7 +604,56 @@ public class WebAssetCache : MonoBehaviour
             }
 
             // If there are fewer active tasks than allowed by the system, and we have more assets that need to be cached, 
-            // create a new task.
+            // create new tasks.
+            int numTasksToCreate = SystemInfo.processorCount - activeTasks.Count;
+            Debug.LogFormat("{0} new tasks to be created.", numTasksToCreate);
+
+            for(int i = 0; i < numTasksToCreate; i += 1)
+            {
+                if(queuedAssetsToCache.Count > 0)
+                {
+                    assetData = queuedAssetsToCache.Dequeue();
+                    imageAsset = loadedAssets[assetData.Path];
+
+                    // Ensure that the directories in the given path exist, so that writing to a file will be successful.
+                    string filePath = Path.Combine(cacheDirectory, assetData.Path);
+                    Directory.CreateDirectory(Path.GetDirectoryName(filePath));
+
+                    // The Texture2D class is not serializable by Unity, so we're just going to save the image as a png and load it back as a Texture2D later.
+                    byte[] pngTexture = imageAsset.texture.EncodeToPNG();
+
+                    Debug.LogFormat("Caching Stage: New task created. Caching '{0}' locally.", assetData.Path);
+
+                    /*
+                    Task newTask = Task.Run(() =>
+                    {
+                        File.WriteAllBytes(filePath, pngTexture);
+
+                        if (OnCachingFileComplete != null)
+                        {
+                            OnCachingFileComplete(assetData.Path);
+                        }
+                    });
+                    */
+                    Task newTask = AssetWriteTask(assetData.Path, filePath, pngTexture);
+
+                    activeTasks.Add(newTask);
+                    Debug.LogFormat("{0} of {1} tasks running.", activeTasks.Count, SystemInfo.processorCount);
+
+                    if (OnCachingFileStarted != null)
+                    {
+                        OnCachingFileStarted(assetData.Path);
+                    }
+                }
+                else
+                {
+                    break;
+                }
+
+                yield return null;
+            }
+            
+            /*
             if(activeTasks.Count < SystemInfo.processorCount && queuedAssetsToCache.Count > 0)
             {
                 assetData = queuedAssetsToCache.Dequeue();
@@ -616,7 +667,6 @@ public class WebAssetCache : MonoBehaviour
                 byte[] pngTexture = imageAsset.texture.EncodeToPNG();
 
                 Debug.LogFormat("Caching Stage: New task created. Caching '{0}' locally.", assetData.Path);
-                Debug.LogFormat("{0} of {1} tasks running.", activeTasks.Count, SystemInfo.processorCount);
 
                 Task newTask = Task.Run(() => {
                     File.WriteAllBytes(filePath, pngTexture);
@@ -626,19 +676,36 @@ public class WebAssetCache : MonoBehaviour
                         OnCachingFileComplete(assetData.Path);
                     }
                 });
+
                 activeTasks.Add(newTask);
+                Debug.LogFormat("{0} of {1} tasks running.", activeTasks.Count, SystemInfo.processorCount);
 
                 if(OnCachingFileStarted != null)
                 {
                     OnCachingFileStarted(assetData.Path);
                 }
             }
-
+            */
+            
             yield return null;
         }
 
         assetCachingCoroutine = null;
         Debug.Log("Caching Stage: All queued assets have been cached. Ending caching coroutine.");
+    }
+
+    // The asynchronous task responsible for writing image asset data to a file in the background.
+    private async Task AssetWriteTask(string assetPath, string filePath, byte[] pngTextureData)
+    {
+        await Task.Run(() =>
+        {
+            File.WriteAllBytes(filePath, pngTextureData);
+
+            if (OnCachingFileComplete != null)
+            {
+                OnCachingFileComplete(assetPath);
+            }
+        });
     }
 
     private void AddAssetToDeletionQueue(Asset asset)
