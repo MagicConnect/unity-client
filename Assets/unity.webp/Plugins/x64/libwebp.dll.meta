@@ -22,7 +22,8 @@ PluginImporter:
         Exclude Linux64: 0
         Exclude LinuxUniversal: 0
         Exclude OSXUniversal: 0
-        Exclude Win: 1
+        Exclude WebGL: 1
+        Exclude Win: 0
         Exclude Win64: 0
         Exclude iOS: 1
         Exclude tvOS: 1
@@ -84,9 +85,9 @@ PluginImporter:
   - first:
       Standalone: Win
     second:
-      enabled: 0
+      enabled: 1
       settings:
-        CPU: None
+        CPU: x86
   - first:
       Standalone: Win64
     second:
