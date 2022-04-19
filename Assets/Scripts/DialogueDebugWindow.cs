@@ -5,9 +5,13 @@ using UnityEngine;
 using TMPro;
 using UnityEngine.UI;
 using Yarn.Unity;
+using Newtonsoft.Json;
 
 public class DialogueDebugWindow : MonoBehaviour
 {
+    // TODO: Use references to the actual components we'll be interacting with instead of the game objects.
+    // It's annoying having to use GetComponent() every time and it makes the code harder to read.
+
     // The actual visible portion of the debug window.
     public GameObject displayPanel;
 
@@ -23,10 +27,25 @@ public class DialogueDebugWindow : MonoBehaviour
     // The dropdown component where our loaded yarn script nodes should be displayed.
     public GameObject loadedNodesDropdown;
 
+    private class DebugSettings
+    {
+        public string Workspace {get; set;} = "";
+
+        public string LoadSubfolders {get; set;} = "true";
+    }
+
+    private DebugSettings settings;
+
     // Start is called before the first frame update
     void Start()
     {
         displayPanel.SetActive(false);
+
+        // Create a blank settings object to be populated later.
+        settings = new DebugSettings();
+
+        // Load previously saved settings, if they exist.
+        LoadSettings();
     }
 
     // Update is called once per frame
@@ -97,6 +116,7 @@ public class DialogueDebugWindow : MonoBehaviour
         }
 
         RefreshNodeDropdown();
+        SaveSettings();
     }
 
     public void OnStartAtNodeClicked()
@@ -134,5 +154,63 @@ public class DialogueDebugWindow : MonoBehaviour
     public void ToggleDebugWindow()
     {
         displayPanel.SetActive(!displayPanel.activeInHierarchy);
+    }
+
+    // Save the current debug window data and settings so it's easier to pick up where the user left off.
+    public void SaveSettings()
+    {
+        // Populate/update the settings object with the current debug window configuration.
+        settings.Workspace = workspaceInput.GetComponent<TMP_InputField>().text;
+
+        if(loadSubfoldersToggle.GetComponent<Toggle>().isOn)
+        {
+            settings.LoadSubfolders = "true";
+        }
+        else
+        {
+            settings.LoadSubfolders = "false";
+        }
+
+        // If there isn't already a directory to save the settings to, create one.
+        string settingsDirectory = Path.Combine(Application.persistentDataPath, "settings/");
+
+        if(!Directory.Exists(settingsDirectory))
+        {
+            Directory.CreateDirectory(settingsDirectory);
+        }
+
+        // Serialize the settings to json and write them to a file.
+        string jsonString = JsonConvert.SerializeObject(settings);
+        File.WriteAllText(Path.Combine(settingsDirectory, "dialogue_debug_settings.json"), jsonString);
+
+        Debug.LogFormat("Saved dialogue debug window settings to '{0}'.", Path.Combine(settingsDirectory, "dialogue_debug_settings.json"));
+    }
+
+    // Load the saved settings and set up the debug window to use them.
+    public void LoadSettings()
+    {
+        string settingsDirectory = Path.Combine(Application.persistentDataPath, "settings/");
+
+        if(Directory.Exists(settingsDirectory))
+        {
+            string filePath = Path.Combine(settingsDirectory, "dialogue_debug_settings.json");
+
+            if(File.Exists(filePath))
+            {
+                string jsonString = File.ReadAllText(filePath);
+                settings = JsonConvert.DeserializeObject<DebugSettings>(jsonString);
+                
+                workspaceInput.GetComponent<TMP_InputField>().text = settings.Workspace;
+
+                if(settings.LoadSubfolders == "true")
+                {
+                    loadSubfoldersToggle.GetComponent<Toggle>().isOn = true;
+                }
+                else
+                {
+                    loadSubfoldersToggle.GetComponent<Toggle>().isOn = false;
+                }
+            }
+        }
     }
 }
