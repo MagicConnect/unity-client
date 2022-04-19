@@ -1031,22 +1031,94 @@ public class WebAssetCache : MonoBehaviour
                     // Request response was successful so we should be good to go.
                     Asset assetData = req.Tag as Asset;
                     Debug.LogFormat("Response to asset download request received without errors. Attempting to cache '{0}' to local machine.", assetData.Path);
-                    var bytes = resp.Data;
-                    Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: false, lLinear: true, lError: out Error lError, makeNoLongerReadable: false);
 
-                    if (lError == Error.Success)
+                    LoadedImageAsset newAsset = null;
+                    string assetExtension = Path.GetExtension(assetData.Path);
+
+                    // Based on the extension of the asset, determine how to convert it into a usable asset in Unity.
+                    // TODO: Possibly support more types of assets, especially image formats. I know Unity supports png and jpg, it might know some more.
+                    if(assetExtension == ".webp")
                     {
-                        LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+                        // The asset is a webp image, so we convert it into a texture2d using the special webp plugin.
+                        var bytes = resp.Data;
+                        Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: false, lLinear: true, lError: out Error lError, makeNoLongerReadable: false);
+
+                        if (lError == Error.Success)
+                        {
+                            //LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+                            newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
+
+                            /*
+                            // If we already have an asset in memory with the same path, overwrite it.
+                            if (loadedAssets.ContainsKey(newAsset.path))
+                            {
+                                loadedAssets.Remove(newAsset.path);
+                            }
+
+                            loadedAssets.Add(newAsset.path, newAsset);
+
+                            if (OnDownloadFinished != null)
+                            {
+                                OnDownloadFinished(newAsset.path);
+                            }
+
+                            AddAssetToCachingQueue(assetData);
+
+                            Debug.LogFormat("Download of '{0}' complete. Asset has been loaded into memory.", assetData.Path);
+                            */
+                        }
+                        else
+                        {
+                            Debug.LogError("Webp Load Error : " + lError.ToString());
+                        }
+                    }
+                    else if(assetExtension == ".png" || assetExtension == ".jpg")
+                    {
+                        // TODO: Much of this code is identical to the code block above. Refactor it somehow.
+                        // The asset is a png image. Either use the built in DataAsTexture2D field of the response, or convert the bytes into a texture
+                        // using Unity's LoadImage method.
+                        Texture2D pngTexture = resp.DataAsTexture2D;
+
+                        /*
+                        //LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, pngTexture);
+                        newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, pngTexture);
 
                         // If we already have an asset in memory with the same path, overwrite it.
-                        if(loadedAssets.ContainsKey(newAsset.path))
+                        if (loadedAssets.ContainsKey(newAsset.path))
                         {
                             loadedAssets.Remove(newAsset.path);
                         }
 
                         loadedAssets.Add(newAsset.path, newAsset);
 
-                        if(OnDownloadFinished != null)
+                        if (OnDownloadFinished != null)
+                        {
+                            OnDownloadFinished(newAsset.path);
+                        }
+
+                        AddAssetToCachingQueue(assetData);
+
+                        Debug.LogFormat("Download of '{0}' complete. Asset has been loaded into memory.", assetData.Path);
+                        */
+                    }
+                    else
+                    {
+                        Debug.LogErrorFormat("Extension '{0}' not supported for '{1}'.", Path.GetExtension(assetData.Path), assetData.Path);
+                    }
+
+                    // If the asset was successfully created then we keep it in memory and cache it.
+                    if(newAsset != null)
+                    {
+                        // If we already have an asset in memory with the same path, overwrite it.
+                        if (loadedAssets.ContainsKey(newAsset.path))
+                        {
+                            loadedAssets.Remove(newAsset.path);
+                        }
+
+                        loadedAssets.Add(newAsset.path, newAsset);
+
+                        // Fire off the OnDownloadFinished event.
+                        if (OnDownloadFinished != null)
                         {
                             OnDownloadFinished(newAsset.path);
                         }
@@ -1057,7 +1129,7 @@ public class WebAssetCache : MonoBehaviour
                     }
                     else
                     {
-                        Debug.LogError("Webp Load Error : " + lError.ToString());
+                        Debug.LogErrorFormat("'{0}' downloaded successfully, but unable to be converted into a Unity texture and loaded into memory.", assetData.Path);
                     }
                 }
                 else
@@ -1090,7 +1162,7 @@ public class WebAssetCache : MonoBehaviour
 
         // Regardless of the results, this request is no longer active.
         activeRequests.Remove(req);
-        Debug.LogFormat("Request no longer active. {0} requests remain active.", activeRequests.Count);
+        //Debug.LogFormat("Request no longer active. {0} requests remain active.", activeRequests.Count);
     }
 
     private void CacheVersion()

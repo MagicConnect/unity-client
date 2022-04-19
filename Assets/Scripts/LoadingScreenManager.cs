@@ -147,7 +147,7 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void DownloadingFile(string path)
     {
-        statusMessage = string.Format("Downloading '{0}'.");
+        statusMessage = string.Format("Downloading '{0}'.", path);
     }
 
     private void FileDownloaded(string path)
@@ -195,13 +195,13 @@ public class LoadingScreenManager : MonoBehaviour
 
     private void DeletingFile(string path)
     {
-        statusMessage = string.Format("Deleting '{0}'.");
+        statusMessage = string.Format("Deleting '{0}'.", path);
     }
 
     private void FileDeleted(string path)
     {
         totalFilesDeleted += 1;
-        statusMessage = string.Format("'{0}' deleted.");
+        statusMessage = string.Format("'{0}' deleted.", path);
     }
 
     private void StartupComplete()
