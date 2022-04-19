@@ -1,10 +1,14 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using System.Linq;
 
 public class ConversationManager : MonoBehaviour
 {
+    // The prefab of the character object to be cloned.
+    public GameObject characterPrefab;
+
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
     public List<GameObject> characters;
 
@@ -28,7 +32,12 @@ public class ConversationManager : MonoBehaviour
 
             foreach(WebAssetCache.LoadedImageAsset asset in assets)
             {
-                
+                GameObject newCharacter = Instantiate(characterPrefab, characterContainer.transform);
+
+                newCharacter.name = asset.name;
+                newCharacter.GetComponent<Image>().sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f);
+
+                characters.Add(newCharacter);
             }
         }
         else

@@ -6,25 +6,26 @@ Press Tab to open the debug window and load some scripts, or press the Continue 
 title: DemoConversation
 tags:
 ---
-<<show Beryl>>
-<<move Beryl Center>>
+<<change ConversationBackground "Lana_Bedroom">>
+<<show Beryl-Vegha>>
+<<move Beryl-Vegha Center>>
 Beryl: Hey!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
 Beryl: Now I'm going to try disappearing.
-<<hide Beryl>>
+<<hide Beryl-Vegha>>
 Beryl: Can you see me? No? That means it worked!
-<<show Beryl>>
+<<show Beryl-Vegha>>
 Beryl: Alright, now I'm gonna move around.
 Beryl: First to the far left...
-<<move Beryl FarLeft>>
+<<move Beryl-Vegha FarLeft>>
 Beryl: Then the far right...
-<<move Beryl FarRight>>
+<<move Beryl-Vegha FarRight>>
 Beryl: To the left now!
-<<move Beryl Left>>
+<<move Beryl-Vegha Left>>
 Beryl: How about the right?
-<<move Beryl Right>>
+<<move Beryl-Vegha Right>>
 Beryl: Finally, to the center of the stage!
-<<move Beryl Center>>
+<<move Beryl-Vegha Center>>
 Beryl: That's just the way I like it.
 Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
 -> Sure
@@ -38,27 +39,27 @@ Beryl: Alright, how about something a little different? I'm going to try calling
 title: FriendlyConversation
 ---
 Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I want to talk to you about something.
-<<move Beryl Left>>
-<<show Lana>>
-<<move Lana Right>>
+<<move Beryl-Vegha Left>>
+<<show Lana-Elenore>>
+<<move Lana-Elenore Right>>
 Lana comes into the room.
-<<fade_in Lana>>
-<<fade_out Beryl>>
+<<fade_in Lana-Elenore>>
+<<fade_out Beryl-Vegha>>
 Lana: Sup.
-<<fade_in Beryl>>
-<<fade_out Lana>>
+<<fade_in Beryl-Vegha>>
+<<fade_out Lana-Elenore>>
 Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
-<<fade_in Lana>>
-<<fade_out Beryl>>
+<<fade_in Lana-Elenore>>
+<<fade_out Beryl-Vegha>>
 Lana: Sure, I guess. Communication is important.
-<<fade_in Beryl>>
-<<fade_out Lana>>
+<<fade_in Beryl-Vegha>>
+<<fade_out Lana-Elenore>>
 Beryl: It sure is!
 Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
-<<hide Beryl>>
+<<hide Beryl-Vegha>>
 Beryl disappears.
-<<fade_in Lana>>
+<<fade_in Lana-Elenore>>
 Lana: Uh...Well I guess I'll be going too. Bye.
-<<hide Lana>>
+<<hide Lana-Elenore>>
 Lana quickly leaves.
 ===

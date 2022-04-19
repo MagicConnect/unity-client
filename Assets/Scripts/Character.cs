@@ -17,31 +17,31 @@ public class Character : MonoBehaviour
         
     }
 
-    [YarnCommand("show")]
+    //[YarnCommand("show")]
     public void ShowCharacter()
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = true;
     }
 
-    [YarnCommand("hide")]
+    //[YarnCommand("hide")]
     public void HideCharacter()
     {
         gameObject.GetComponent<SpriteRenderer>().enabled = false;
     }
 
-    [YarnCommand("move")]
+    //[YarnCommand("move")]
     public void MoveCharacter(GameObject stagePosition)
     {
         gameObject.transform.position = stagePosition.transform.position;
     }
 
-    [YarnCommand("fade_out")]
+    //[YarnCommand("fade_out")]
     public void FadeOut()
     {
         gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
     }
 
-    [YarnCommand("fade_in")]
+    //[YarnCommand("fade_in")]
     public void FadeIn()
     {
         gameObject.GetComponent<SpriteRenderer>().color = Color.white;
