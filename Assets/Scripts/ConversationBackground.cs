@@ -56,8 +56,7 @@ public class ConversationBackground : MonoBehaviour
     }
 
     // Change the background image to a loaded sprite of the given name.
-    [YarnCommand("change")]
-    public void ChangeBackground(string name)
+    public void ChangeBackgroundImage(string name)
     {
         if(backgroundSprites.ContainsKey(name))
         {
@@ -67,5 +66,11 @@ public class ConversationBackground : MonoBehaviour
         {
             Debug.LogErrorFormat("Background sprite named '{0}' does not exist.", name);
         }
+    }
+
+    // Change the background image's color to the one given.
+    public void ChangeBackgroundColor(Color color)
+    {
+        image.color = color;
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
+using Yarn.Unity;
 
 public class ConversationManager : MonoBehaviour
 {
@@ -14,6 +15,9 @@ public class ConversationManager : MonoBehaviour
 
     // Just a helpful reference to the parent of all instantiated character and npc gameobjects.
     public GameObject characterContainer;
+
+    // Reference to the background image that will display during the conversation.
+    public static GameObject staticBackground;
 
     void Awake()
     {
@@ -49,12 +53,32 @@ public class ConversationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        // Find the background gameobject.
+        staticBackground = GameObject.Find("ConversationBackground");
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    [YarnCommand("change_background_image")]
+    public static void SetBackgroundImage(string name)
+    {
+        staticBackground?.GetComponent<ConversationBackground>().ChangeBackgroundImage(name);
+    }
+
+    [YarnCommand("change_background_color")]
+    public static void SetBackgroundColor(float r, float g, float b, float a = 1.0f)
+    {
+        Color color = new Color(r, g, b, a);
+        staticBackground?.GetComponent<ConversationBackground>().ChangeBackgroundColor(color);
+    }
+
+    //[YarnCommand("change_background_transparency")]
+    public static void SetBackgroundAlpha(int a)
+    {
+
     }
 }

@@ -31,35 +31,35 @@ public class ConversationCharacter : MonoBehaviour
         
     }
 
-    [YarnCommand("show")]
+    [YarnCommand("show_character")]
     public void ShowCharacter()
     {
         //gameObject.GetComponent<SpriteRenderer>().enabled = true;
         characterImage.enabled = true;
     }
 
-    [YarnCommand("hide")]
+    [YarnCommand("hide_character")]
     public void HideCharacter()
     {
         //gameObject.GetComponent<SpriteRenderer>().enabled = false;
         characterImage.enabled = false;
     }
 
-    [YarnCommand("move")]
+    [YarnCommand("move_character")]
     public void MoveCharacter(GameObject stagePosition)
     {
         //gameObject.transform.position = stagePosition.transform.position;
         rectTransform.position = stagePosition.GetComponent<RectTransform>().position;
     }
 
-    [YarnCommand("fade_out")]
+    [YarnCommand("fade_out_character")]
     public void FadeOut()
     {
         //gameObject.GetComponent<SpriteRenderer>().color = Color.gray;
         characterImage.color = Color.gray;
     }
 
-    [YarnCommand("fade_in")]
+    [YarnCommand("fade_in_character")]
     public void FadeIn()
     {
         //gameObject.GetComponent<SpriteRenderer>().color = Color.white;

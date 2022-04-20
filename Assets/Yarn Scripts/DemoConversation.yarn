@@ -1,32 +1,56 @@
 ﻿title: Start
 ---
-Press Tab to open the debug window and load some scripts, or press the Continue button for a brief demo conversation.
+Press Tab to open the debug window and load some scripts, or press the Continue button for an example of a conversation between 2 characters.
 <<jump DemoConversation>>
 ===
 title: DemoConversation
 tags:
 ---
-<<change ConversationBackground "Lana_Bedroom">>
-<<show Beryl-Vegha>>
-<<move Beryl-Vegha Center>>
-Beryl: Hey!
+<<change_background_image "Lana_Bedroom">>
+<<show_character Beryl-Vegha>>
+<<move_character Beryl-Vegha Center>>
+Beryl: Hey! My name's Beryl!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
-Beryl: Now I'm going to try disappearing.
-<<hide Beryl-Vegha>>
+Beryl: Real quick I want to try a memory game. Guess any number you want, as long as it's between 1 and 5.
+->1
+    <<set $chosenNumber = 1>>
+    Beryl: 1 huh? Pretty basic if you ask me.
+->2
+    <<set $chosenNumber = 2>>
+    Beryl: 2 is just as bad as 1.
+->3
+    <<set $chosenNumber = 3>>
+    Beryl: The magic number 3. Alright!
+->4
+    <<set $chosenNumber = 4>>
+    Beryl: 4's pretty okay. I guess.
+->5
+    <<set $chosenNumber = 5>>
+    Beryl: 5. Got it.
+Beryl: Try to remember the number you chose, cuz I'm gonna ask you about it again later!
+Beryl: Alright, now I'm going to try disappearing.
+<<hide_character Beryl-Vegha>>
 Beryl: Can you see me? No? That means it worked!
-<<show Beryl-Vegha>>
+<<show_character Beryl-Vegha>>
 Beryl: Alright, now I'm gonna move around.
 Beryl: First to the far left...
-<<move Beryl-Vegha FarLeft>>
+<<move_character Beryl-Vegha FarLeft>>
 Beryl: Then the far right...
-<<move Beryl-Vegha FarRight>>
+<<move_character Beryl-Vegha FarRight>>
 Beryl: To the left now!
-<<move Beryl-Vegha Left>>
+<<move_character Beryl-Vegha Left>>
 Beryl: How about the right?
-<<move Beryl-Vegha Right>>
+<<move_character Beryl-Vegha Right>>
 Beryl: Finally, to the center of the stage!
-<<move Beryl-Vegha Center>>
+<<move_character Beryl-Vegha Center>>
 Beryl: That's just the way I like it.
+Beryl: How about a little change of view? I'm a bit tired of this stuffy old room.
+<<hide_character Beryl-Vegha>>
+You and Beryl go for a walk down the hall...
+<<change_background_image "Barracks">>
+...and enter a large room full of weapons and armor.
+<<show_character Beryl-Vegha>>
+Beryl: A barracks? Hmm, not the most fun place to be but it'll do for now.
 Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
 -> Sure
     Beryl: Great! Glad you agree.
@@ -39,27 +63,77 @@ Beryl: Alright, how about something a little different? I'm going to try calling
 title: FriendlyConversation
 ---
 Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I want to talk to you about something.
-<<move Beryl-Vegha Left>>
-<<show Lana-Elenore>>
-<<move Lana-Elenore Right>>
+<<move_character Beryl-Vegha Left>>
+<<show_character Lana-Elenore>>
+<<move_character Lana-Elenore Right>>
 Lana comes into the room.
-<<fade_in Lana-Elenore>>
-<<fade_out Beryl-Vegha>>
+<<fade_in_character Lana-Elenore>>
+<<fade_out_character Beryl-Vegha>>
 Lana: Sup.
-<<fade_in Beryl-Vegha>>
-<<fade_out Lana-Elenore>>
+<<fade_in_character Beryl-Vegha>>
+<<fade_out_character Lana-Elenore>>
 Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
-<<fade_in Lana-Elenore>>
-<<fade_out Beryl-Vegha>>
+<<fade_in_character Lana-Elenore>>
+<<fade_out_character Beryl-Vegha>>
 Lana: Sure, I guess. Communication is important.
-<<fade_in Beryl-Vegha>>
-<<fade_out Lana-Elenore>>
+<<fade_in_character Beryl-Vegha>>
+<<fade_out_character Lana-Elenore>>
 Beryl: It sure is!
+Beryl: Okay Lana. Before you got here I was playing a little memory game with our friend here. I asked them to choose a number between 1 and 5. Let's see if they can remember what it was.
+<<fade_in_character Lana-Elenore>>
+<<fade_out_character Beryl-Vegha>>
+Lana: That's what you called me in here for?
+<<fade_in_character Beryl-Vegha>>
+<<fade_out_character Lana-Elenore>>
+Beryl: Okay, 1 through 5. Which number did you choose?
+->1
+    <<set $guessedNumber = 1>>
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: 1? Seriously?
+->2
+    <<set $guessedNumber = 2>>
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: Not what I would have chosen...
+->3
+    <<set $guessedNumber = 3>>
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: 3 huh? Hm.
+    Lana appears to be judging you.
+->4
+    <<set $guessedNumber = 4>>
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: 4 is pretty okay I guess.
+->5
+    <<set $guessedNumber = 5>>
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: Oh yeah, the biggest number. That's what I'm talking about.
+<<if $chosenNumber == $guessedNumber>>
+    <<fade_in_character Beryl-Vegha>>
+    <<fade_out_character Lana-Elenore>>
+    Beryl: Yay! You guessed right! That must mean you have a pretty good memory.
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: Ohhh wow that was so amazing.
+<<else>>
+    <<fade_in_character Beryl-Vegha>>
+    <<fade_out_character Lana-Elenore>>
+    Beryl: Oh no! That's completely wrong! Better luck next time, I suppose.
+    <<fade_in_character Lana-Elenore>>
+    <<fade_out_character Beryl-Vegha>>
+    Lana: Oh well, at least you tried. You did try, didn't you?
+<<endif>>
+<<fade_in_character Beryl-Vegha>>
+<<fade_out_character Lana-Elenore>>
 Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
-<<hide Beryl-Vegha>>
+<<hide_character Beryl-Vegha>>
 Beryl disappears.
-<<fade_in Lana-Elenore>>
+<<fade_in_character Lana-Elenore>>
 Lana: Uh...Well I guess I'll be going too. Bye.
-<<hide Lana-Elenore>>
+<<hide_character Lana-Elenore>>
 Lana quickly leaves.
 ===
