@@ -51,6 +51,7 @@ jobs:
           targetPlatform: ${{ matrix.targetPlatform }}
           unityVersion: 2020.3.17f1
           allowDirtyBuild: true
+          buildName: MagicConnect
           
       - uses: actions/upload-artifact@v2
         with:
