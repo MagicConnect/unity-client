@@ -28,31 +28,30 @@ MonoBehaviour:
     m_Name: OpenUPM
     m_Url: https://package.openupm.com
     m_Scopes:
+    - com.netpyoung.webp
+    - com.openupm
     - dev.yarnspinner
     m_IsDefault: 0
     m_Capabilities: 0
-  - m_Id: scoped:WebP Plugin
-    m_Name: WebP Plugin
-    m_Url: https://github.com/netpyoung/unity.webp
-    m_Scopes:
-    - com.netpyoung.webp
-    m_IsDefault: 0
-    m_Capabilities: 0
-  m_UserSelectedRegistryName: WebP Plugin
+  m_UserSelectedRegistryName: OpenUPM
   m_UserAddingNewScopedRegistry: 0
   m_RegistryInfoDraft:
     m_ErrorMessage: 
     m_Original:
-      m_Id: scoped:WebP Plugin
-      m_Name: WebP Plugin
-      m_Url: https://github.com/netpyoung/unity.webp
+      m_Id: scoped:OpenUPM
+      m_Name: OpenUPM
+      m_Url: https://package.openupm.com
       m_Scopes:
       - com.netpyoung.webp
+      - com.openupm
+      - dev.yarnspinner
       m_IsDefault: 0
       m_Capabilities: 0
     m_Modified: 0
-    m_Name: WebP Plugin
-    m_Url: https://github.com/netpyoung/unity.webp
+    m_Name: OpenUPM
+    m_Url: https://package.openupm.com
     m_Scopes:
     - com.netpyoung.webp
+    - com.openupm
+    - dev.yarnspinner
     m_SelectedScopeIndex: 0

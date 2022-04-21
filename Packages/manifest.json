@@ -45,21 +45,17 @@
     "com.unity.modules.video": "1.0.0",
     "com.unity.modules.vr": "1.0.0",
     "com.unity.modules.wind": "1.0.0",
-    "com.unity.modules.xr": "1.0.0"
+    "com.unity.modules.xr": "1.0.0",
+    "com.netpyoung.webp": "0.3.4"
   },
   "scopedRegistries": [
     {
       "name": "OpenUPM",
       "url": "https://package.openupm.com",
       "scopes": [
+        "com.netpyoung.webp",
+        "com.openupm",
         "dev.yarnspinner"
-      ]
-    },
-    {
-      "name": "WebP Plugin",
-      "url": "https://github.com/netpyoung/unity.webp",
-      "scopes": [
-        "com.netpyoung.webp"
       ]
     }
   ]

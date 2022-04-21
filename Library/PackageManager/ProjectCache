@@ -5,18 +5,26 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637838290088058639
-    m_Hash: 1682507095
+      ticks: 637861523506348568
+    m_Hash: 2969109977
   m_LockFileStatus:
     m_FilePath: C:/Users/Dan/Desktop/magicon/unity-client/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637834785160796888
-    m_Hash: 1668814956
+      ticks: 637861544776238367
+    m_Hash: 3238008755
 m_EmbeddedPackageManifests:
-  m_ManifestsStatus: {}
+  m_ManifestsStatus:
+    C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/package.json:
+      m_FilePath: C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/package.json
+      m_PathExists: 1
+      m_ContentTrackingEnabled: 1
+      m_ModificationDate:
+        serializedVersion: 2
+        ticks: 637853957719770000
+      m_Hash: 1706328581
 m_PackageAssets:
   m_Packages:
     m_ResolvedPackages:
@@ -84,6 +92,7 @@ m_PackageAssets:
         - 3.2.15
         - 3.2.16
         - 3.2.17
+        - 3.2.18
         - 4.0.0
         - 4.0.1
         - 4.1.0
@@ -109,6 +118,7 @@ m_PackageAssets:
         - 5.1.0
         - 5.1.1
         - 5.2.0
+        - 5.2.1
         - 6.0.0-pre.1
         - 6.0.0-pre.2
         - 6.0.1
@@ -123,9 +133,11 @@ m_PackageAssets:
         - 7.0.2
         - 7.0.3
         - 7.0.4
+        - 7.0.5
         - 8.0.0-pre.3
         - 8.0.0-pre.4
         - 8.0.0
+        - 8.0.1
         compatible:
         - 5.0.6
         - 5.0.7
@@ -710,6 +722,7 @@ m_PackageAssets:
         - 1.14.12
         - 1.14.13
         - 1.14.15
+        - 1.14.16
         - 1.15.1
         - 1.15.4
         - 1.15.7
@@ -717,6 +730,7 @@ m_PackageAssets:
         - 1.15.12
         - 1.15.13
         - 1.15.15
+        - 1.15.16
         - 2.0.0-preview.6
         - 2.0.0-preview.8
         - 2.0.0-preview.15
@@ -742,6 +756,7 @@ m_PackageAssets:
         - 1.14.12
         - 1.14.13
         - 1.14.15
+        - 1.14.16
         - 1.15.1
         - 1.15.4
         - 1.15.7
@@ -749,6 +764,7 @@ m_PackageAssets:
         - 1.15.12
         - 1.15.13
         - 1.15.15
+        - 1.15.16
         - 2.0.0-preview.6
         - 2.0.0-preview.8
         - 2.0.0-preview.15
@@ -851,6 +867,7 @@ m_PackageAssets:
         - 3.0.10
         - 3.0.12
         - 3.0.13
+        - 3.0.14
         compatible:
         - 1.0.2
         - 1.0.6
@@ -881,6 +898,7 @@ m_PackageAssets:
         - 3.0.10
         - 3.0.12
         - 3.0.13
+        - 3.0.14
         verified: 2.0.7
       dependencies:
       - name: com.unity.test-framework
@@ -954,6 +972,7 @@ m_PackageAssets:
         - 2.0.11
         - 2.0.12
         - 2.0.14
+        - 2.0.15
         compatible:
         - 1.0.2
         - 1.0.3
@@ -972,7 +991,8 @@ m_PackageAssets:
         - 2.0.11
         - 2.0.12
         - 2.0.14
-        verified: 2.0.14
+        - 2.0.15
+        verified: 2.0.15
       dependencies:
       - name: com.unity.test-framework
         version: 1.1.9
@@ -1639,6 +1659,8 @@ m_PackageAssets:
         name: OpenUPM
         url: https://package.openupm.com
         scopes:
+        - com.netpyoung.webp
+        - com.openupm
         - dev.yarnspinner
         isDefault: 0
         capabilities: 0
@@ -3286,6 +3308,67 @@ m_PackageAssets:
         url: 
         revision: 
         path: 
+    - packageId: com.netpyoung.webp@file:C:\Users\Dan\Desktop\magicon\unity-client\Packages\com.netpyoung.webp@0.3.4
+      testable: 1
+      isDirectDependency: 1
+      version: 0.3.4
+      source: 3
+      resolvedPath: C:\Users\Dan\Desktop\magicon\unity-client\Packages\com.netpyoung.webp@0.3.4
+      assetPath: Packages/com.netpyoung.webp
+      name: com.netpyoung.webp
+      displayName: Unity.WebP
+      author:
+        name: 
+        email: 
+        url: 
+      category: image
+      type: 
+      description: webp made easy for Unity3d.
+      status: 4
+      errors: []
+      versions:
+        all:
+        - 0.1.1
+        - 0.2.0
+        - 0.3.0
+        - 0.3.1
+        - 0.3.2
+        - 0.3.3
+        - 0.3.4
+        compatible:
+        - 0.1.1
+        - 0.2.0
+        - 0.3.0
+        - 0.3.1
+        - 0.3.2
+        - 0.3.3
+        - 0.3.4
+        verified: 
+      dependencies: []
+      resolvedDependencies: []
+      keywords:
+      - webp
+      - unity.webp
+      registry:
+        id: 
+        name: 
+        url: 
+        scopes: []
+        isDefault: 0
+        capabilities: 0
+      hasRegistry: 0
+      hideInEditor: 1
+      entitlements:
+        isAllowed: 1
+      isAssetStorePackage: 0
+      datePublishedTicks: 0
+      documentationUrl: 
+      hasRepository: 0
+      repository:
+        type: 
+        url: 
+        revision: 
+        path: 
     - packageId: com.unity.modules.subsystems@1.0.0
       testable: 0
       isDirectDependency: 0
@@ -3501,6 +3584,7 @@ m_PackageAssets:
         - 2.0.1-preview.1
         - 2.0.2
         - 3.0.1
+        - 3.0.2
         compatible:
         - 1.0.0-preview.2
         - 1.0.0-preview.3
@@ -3514,6 +3598,7 @@ m_PackageAssets:
         - 2.0.1-preview.1
         - 2.0.2
         - 3.0.1
+        - 3.0.2
         verified: 2.0.2
       dependencies: []
       resolvedDependencies: []
@@ -3575,6 +3660,7 @@ m_PackageAssets:
         - 1.2.1
         - 1.2.4
         - 1.2.5
+        - 1.2.6
         compatible:
         - 0.0.12-preview.2
         - 0.0.12-preview.5
@@ -3592,7 +3678,8 @@ m_PackageAssets:
         - 1.2.1
         - 1.2.4
         - 1.2.5
-        verified: 1.2.5
+        - 1.2.6
+        verified: 1.2.6
       dependencies: []
       resolvedDependencies: []
       keywords:
