@@ -52,6 +52,7 @@ jobs:
           unityVersion: 2020.3.17f1
           allowDirtyBuild: true
           buildName: MagicConnect
+          versioning: Semantic
           
       - uses: actions/upload-artifact@v2
         with:
