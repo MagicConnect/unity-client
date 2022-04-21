@@ -53,8 +53,9 @@ jobs:
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
+          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           
       - uses: actions/upload-artifact@v2
         with:
-          name: Build-${{ matrix.targetPlatform }}
+          name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
