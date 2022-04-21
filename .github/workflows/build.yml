@@ -5,7 +5,13 @@ on:
     tags:
       - '*'
       
-  workflow_dispatch: {}
+  workflow_dispatch:
+    inputs:
+      debugMode:
+        description: 'Build a debug binary?'
+        type: boolean
+        required: false
+        default: false
   
   pull_request: 
     types: [opened]
@@ -40,10 +46,13 @@ jobs:
       - uses: game-ci/unity-builder@v2
         env:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          DEBUG: ${{ github.event.inputs.debugMode }}
         with:
           targetPlatform: ${{ matrix.targetPlatform }}
           unityVersion: 2020.3.17f1
           allowDirtyBuild: true
+          buildName: MagicConnect
+          versioning: Semantic
           
       - uses: actions/upload-artifact@v2
         with:
