@@ -9,6 +9,7 @@ on:
     inputs:
       debugMode:
         description: 'Build a debug binary?'
+        type: boolean
         required: false
         default: false
   
