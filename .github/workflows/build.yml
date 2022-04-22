@@ -40,19 +40,9 @@ jobs:
           
       - uses: actions/cache@v2
         with:
-          path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Library-${{ matrix.projectPath }}-
-            Library-
-
-        uses: actions/cache@v2
-        with:
-          path: ${{ matrix.projectPath }}/Packages
-          key: Packages-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
-          restore-keys: |
-            Packages-${{ matrix.projectPath }}-
-            Packages-
+          path: Library
+          key: Library-${{ matrix.targetPlatform }}
+          restore-keys: Library-
           
       - uses: game-ci/unity-builder@v2
         env:
@@ -61,13 +51,12 @@ jobs:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           DEBUG: ${{ github.event.inputs.debugMode }}
         with:
-          projectPath: ${{ env.PROJECT_PATH }}
           targetPlatform: ${{ matrix.targetPlatform }}
           unityVersion: 2020.3.17f1
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
-          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
+          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}" -CleanBuildCache
           
       - uses: actions/upload-artifact@v2
         with:
