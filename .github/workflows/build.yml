@@ -56,7 +56,7 @@ jobs:
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
-          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}" -CleanBuildCache
+          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           
       - uses: actions/upload-artifact@v2
         with:
