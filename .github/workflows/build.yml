@@ -41,8 +41,18 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: ${{ matrix.projectPath }}/Library
-          key: Library-${{ matrix.targetPlatform }}
-          restore-keys: Library-
+          key: Library-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Library-${{ matrix.projectPath }}-
+            Library-
+
+        uses: actions/cache@v2
+        with:
+          path: ${{ matrix.projectPath }}/Packages
+          key: Packages-${{ matrix.projectPath }}-${{ matrix.targetPlatform }}
+          restore-keys: |
+            Packages-${{ matrix.projectPath }}-
+            Packages-
           
       - uses: game-ci/unity-builder@v2
         env:
