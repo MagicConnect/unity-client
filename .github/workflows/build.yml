@@ -40,7 +40,7 @@ jobs:
           
       - uses: actions/cache@v2
         with:
-          path: Library
+          path: ${{ matrix.projectPath }}/Library
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: Library-
           
@@ -51,6 +51,7 @@ jobs:
           UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
           DEBUG: ${{ github.event.inputs.debugMode }}
         with:
+          projectPath: ${{ env.PROJECT_PATH }}
           targetPlatform: ${{ matrix.targetPlatform }}
           unityVersion: 2020.3.17f1
           allowDirtyBuild: true
