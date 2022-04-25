@@ -207,6 +207,10 @@ public class WebAssetCache : MonoBehaviour
     // Flag that tells the startup coroutine whether it should run the worker coroutines one at a time or simultaneously.
     public bool runStartupSynced = true;
 
+    // The old webp assets are still on the server, but not listed on the manifest. If testing alternative webp assets is necessary,
+    // use this flag to overwrite all .png/.jpg extensions to .webp.
+    public bool forceWebpExtension = false;
+
     public enum WebCacheStatus {Unready, Initializing, ReadyToUse};
 
     public WebCacheStatus status;
@@ -402,6 +406,23 @@ public class WebAssetCache : MonoBehaviour
 
             // Wait until the manifest download request completes.
             yield return new WaitUntil(() => manifestRequest.State == HTTPRequestStates.Finished && serverManifest != null);
+
+            // If we need to test the webp variants of the assets (assuming they exist) overwrite the extensions to the webp format.
+            if(currentManifest != null && forceWebpExtension)
+            {
+                foreach(Asset asset in currentManifest.Assets)
+                {
+                    asset.Path = Path.ChangeExtension(asset.Path, ".webp");
+                }
+            }
+            
+            if(serverManifest != null && forceWebpExtension)
+            {
+                foreach(Asset asset in serverManifest.Assets)
+                {
+                    asset.Path = Path.ChangeExtension(asset.Path, ".webp");
+                }
+            }
 
             // Check the local manifest against the server manifest and queue up any work that needs to be done.
             PrepareUpdateAndLoadTasks();
@@ -1145,6 +1166,7 @@ public class WebAssetCache : MonoBehaviour
                         // The asset is a png image. Either use the built in DataAsTexture2D field of the response, or convert the bytes into a texture
                         // using Unity's LoadImage method.
                         Texture2D pngTexture = resp.DataAsTexture2D;
+                        newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, pngTexture);
 
                         /*
                         //LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, pngTexture);

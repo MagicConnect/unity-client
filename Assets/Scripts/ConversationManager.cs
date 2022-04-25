@@ -21,6 +21,14 @@ public class ConversationManager : MonoBehaviour
 
     void Awake()
     {
+        
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        characters = new List<GameObject>();
+
         // Create character objects from the loaded character assets.
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
         if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse)
@@ -39,20 +47,19 @@ public class ConversationManager : MonoBehaviour
                 GameObject newCharacter = Instantiate(characterPrefab, characterContainer.transform);
 
                 newCharacter.name = asset.name;
-                newCharacter.GetComponent<Image>().sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f);
+                // Note: SpriteMeshType.FullRect loads faster because it creates a simple quad, but has worse runtime performance. 
+                // SpriteMeshType.Tight incurs a huge loading time penalty with high resolution assets though so this'll have to be configured/benchmarked later.
+                newCharacter.GetComponent<Image>().sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
 
                 characters.Add(newCharacter);
+                Debug.LogFormat("Added character/npc '{0}' to game.", asset.name);
             }
         }
         else
         {
             Debug.LogErrorFormat("Attempted to load conversation background when cache was not fully loaded.");
         }
-    }
 
-    // Start is called before the first frame update
-    void Start()
-    {
         // Find the background gameobject.
         staticBackground = GameObject.Find("ConversationBackground");
     }
