@@ -398,8 +398,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -104.37, y: -38}
-  m_SizeDelta: {x: 368.74, y: 30}
+  m_AnchoredPosition: {x: -175.23358, y: 0}
+  m_SizeDelta: {x: 387.0128, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &89272360
 MonoBehaviour:
@@ -794,7 +794,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3183266951831634833, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
       propertyPath: m_RootOrder
-      value: 4
+      value: 5
       objectReference: {fileID: 0}
     - target: {fileID: 3183266951831634833, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1488,7 +1488,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &786812034
 RectTransform:
   m_ObjectHideFlags: 0
@@ -1611,8 +1611,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 208.73999, y: -38}
-  m_SizeDelta: {x: 160, y: 30}
+  m_AnchoredPosition: {x: 118, y: 0}
+  m_SizeDelta: {x: 177, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &853277336
 MonoBehaviour:
@@ -2093,7 +2093,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Start At Node
+  m_text: Jump To Node
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -2206,7 +2206,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 208.74, y: 57}
+  m_AnchoredPosition: {x: 296, y: 0}
   m_SizeDelta: {x: 160, y: 30}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1087225112
@@ -2777,8 +2777,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 1}
-  m_AnchoredPosition: {x: 0, y: 0}
-  m_SizeDelta: {x: 0, y: 0}
+  m_AnchoredPosition: {x: 0, y: -74.91858}
+  m_SizeDelta: {x: 0, y: -149.8372}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1280552033
 MonoBehaviour:
@@ -3029,6 +3029,9 @@ MonoBehaviour:
   loadSubfoldersToggle: {fileID: 786812033}
   dialogueRunner: {fileID: 841695010}
   loadedNodesDropdown: {fileID: 89272358}
+  lightModeSkin: {fileID: 11400000, guid: 758becaa4751c514ab3abd821b4078bb, type: 2}
+  darkModeSkin: {fileID: 11400000, guid: 07c1616acb3e05d4789781b38d6ab800, type: 2}
+  useDarkMode: 1
 --- !u!1 &1381216601
 GameObject:
   m_ObjectHideFlags: 0
@@ -3486,7 +3489,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1703980041
 RectTransform:
   m_ObjectHideFlags: 0
