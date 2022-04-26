@@ -6,6 +6,7 @@ using TMPro;
 using UnityEngine.UI;
 using Yarn.Unity;
 using Newtonsoft.Json;
+using SimpleFileBrowser;
 
 public class DialogueDebugWindow : MonoBehaviour
 {
@@ -27,6 +28,9 @@ public class DialogueDebugWindow : MonoBehaviour
     // The dropdown component where our loaded yarn script nodes should be displayed.
     public GameObject loadedNodesDropdown;
 
+    // The coroutine handling file browser input.
+    Coroutine fileBrowserCoroutine;
+
     private class DebugSettings
     {
         public string Workspace {get; set;} = "";
@@ -35,6 +39,12 @@ public class DialogueDebugWindow : MonoBehaviour
     }
 
     private DebugSettings settings;
+
+    public UISkin lightModeSkin;
+
+    public UISkin darkModeSkin;
+
+    public bool useDarkMode = true;
 
     // Start is called before the first frame update
     void Start()
@@ -46,6 +56,10 @@ public class DialogueDebugWindow : MonoBehaviour
 
         // Load previously saved settings, if they exist.
         LoadSettings();
+
+        // Set up the SimpleFileBrowser.
+        FileBrowser.SetFilters(false, new FileBrowser.Filter("Yarn Scripts", ".yarn"));
+        FileBrowser.Skin = darkModeSkin;
     }
 
     // Update is called once per frame
@@ -57,10 +71,19 @@ public class DialogueDebugWindow : MonoBehaviour
         }
     }
 
+    void OnDestroy()
+    {
+        
+    }
+
     // When the 'load all scripts' button is clicked, all scripts in the designated folder are loaded, compiled into a program,
     // and added to the Dialogue Runner.
     public void OnLoadAllScriptsClicked()
     {
+        // Get the files and folders to load from the file browser.
+        fileBrowserCoroutine = StartCoroutine(ShowLoadDialogueCoroutine());
+
+        /*
         Debug.Log("Load All Scripts button clicked.");
         Debug.Log(workspaceInput.GetComponent<TMP_InputField>().text);
         string path = workspaceInput.GetComponent<TMP_InputField>().text;
@@ -114,9 +137,11 @@ public class DialogueDebugWindow : MonoBehaviour
             dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(contents);
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
         }
+        
 
         RefreshNodeDropdown();
         SaveSettings();
+        */
     }
 
     public void OnStartAtNodeClicked()
@@ -212,5 +237,66 @@ public class DialogueDebugWindow : MonoBehaviour
                 }
             }
         }
+    }
+
+    // Coroutine that handles opening the file browser and loading the files the user has chosen.
+    private IEnumerator ShowLoadDialogueCoroutine()
+    {
+        // Wait for the user to interact with the file browser.
+        yield return FileBrowser.WaitForLoadDialog(FileBrowser.PickMode.FilesAndFolders, true, null, null, "Load Yarn Spinner Scripts", "Load");
+
+        Debug.Log(FileBrowser.Success);
+
+        // If the file browser was successful in getting some files and/or directories, continue.
+        if(FileBrowser.Success && FileBrowser.Result.Length > 0)
+        {
+            // The combined script to be passed to the dynamic yarn loader.
+            string yarnScriptContents = "";
+
+            // The filebrowser returns an array of all files and folders selected by the user.
+            foreach(string path in FileBrowser.Result)
+            {
+                // Determine whether the given path is a file or a directory.
+                if(Directory.Exists(path))
+                {
+                    // Enumerate all yarn files in the given directory, then add them to the script.
+                    Debug.LogFormat("Loading all Yarnspinner scripts in '{0}'", path);
+                    var yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.AllDirectories);
+
+                    foreach(string script in yarnScripts)
+                    {
+                        Debug.LogFormat("Loading Yarnspinner script '{0}'.", script);
+                        yarnScriptContents += File.ReadAllText(script);
+                        yarnScriptContents += "\n";
+                    }
+                }
+                else if(File.Exists(path))
+                {
+                    // Load the yarn file and add its contents to the script.
+                    Debug.LogFormat("Loading Yarnspinner script '{0}'.", path);
+                    yarnScriptContents += File.ReadAllText(path);
+                    yarnScriptContents += "\n";
+                }
+                else
+                {
+                    // We shouldn't get here, assuming the file browser works properly, but it doesn't hurt to make sure.
+                    Debug.LogErrorFormat("'{0}' is not a valid file or directory.");
+                }
+            }
+
+            // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
+            dialogueRunner.GetComponent<DialogueRunner>().Stop();
+            HideOptionsList();
+            dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(yarnScriptContents);
+            dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
+            RefreshNodeDropdown();
+
+            // TODO: Repurpose the debug settings code or disable it entirely for now. It looks like the simple file browser automatically keeps track of
+            // the last directory it was used in, and having a 'load subfolder' toggle doesn't seem useful now that the filebrowser is much simpler to use.
+            SaveSettings();
+        }
+
+        // This coroutine is done, so nullify the reference so everyone else knows.
+        fileBrowserCoroutine = null;
     }
 }
