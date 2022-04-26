@@ -7,7 +7,7 @@ using System.Linq;
 
 using BestHTTP;
 using Newtonsoft.Json;
-using WebP;
+//using WebP;
 
 using System.Threading;
 using System.Threading.Tasks;
@@ -1128,6 +1128,7 @@ public class WebAssetCache : MonoBehaviour
                     if(assetExtension == ".webp")
                     {
                         // The asset is a webp image, so we convert it into a texture2d using the special webp plugin.
+                        /*
                         var bytes = resp.Data;
                         Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: false, lLinear: true, lError: out Error lError, makeNoLongerReadable: false);
 
@@ -1136,7 +1137,7 @@ public class WebAssetCache : MonoBehaviour
                             //LoadedImageAsset newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
                             newAsset = new LoadedImageAsset(assetData.Name, assetData.Path, assetData.Hash, webpTexture);
 
-                            /*
+                            
                             // If we already have an asset in memory with the same path, overwrite it.
                             if (loadedAssets.ContainsKey(newAsset.path))
                             {
@@ -1153,12 +1154,13 @@ public class WebAssetCache : MonoBehaviour
                             AddAssetToCachingQueue(assetData);
 
                             Debug.LogFormat("Download of '{0}' complete. Asset has been loaded into memory.", assetData.Path);
-                            */
+                            
                         }
                         else
                         {
                             Debug.LogError("Webp Load Error : " + lError.ToString());
                         }
+                        */
                     }
                     else if(assetExtension == ".png" || assetExtension == ".jpg")
                     {

@@ -6,7 +6,7 @@ using System;
 
 using BestHTTP;
 using Newtonsoft.Json;
-using WebP;
+//using WebP;
 
 using UnityEngine.UI;
 using TMPro;
@@ -221,7 +221,7 @@ public class AssetDownloader : MonoBehaviour
         progressText.text = "Download complete.";
 
         var bytes = resp.Data;
-        
+        /*
         Texture2D webpTexture = Texture2DExt.CreateTexture2DFromWebP(bytes, lMipmaps: true, lLinear: true, lError: out Error lError);
 
         // Just for testing's sake, try loading the data as a Texture2D so we aren't tethered to the WebP plugin.
@@ -240,6 +240,7 @@ public class AssetDownloader : MonoBehaviour
         {
             Debug.LogError("Webp Load Error : " + lError.ToString());
         }
+        */
     }
 
     protected virtual void OnDownloadProgress(HTTPRequest originalRequest, long downloaded, long downloadLength)

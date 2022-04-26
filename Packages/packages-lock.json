@@ -1,11 +1,5 @@
 {
   "dependencies": {
-    "com.netpyoung.webp": {
-      "version": "file:com.netpyoung.webp@0.3.4",
-      "depth": 0,
-      "source": "embedded",
-      "dependencies": {}
-    },
     "com.unity.2d.animation": {
       "version": "5.0.7",
       "depth": 0,

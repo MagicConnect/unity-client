@@ -5,26 +5,18 @@ m_ProjectFiles:
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637865807435416713
-    m_Hash: 4174509212
+      ticks: 637865814682193288
+    m_Hash: 2828517934
   m_LockFileStatus:
     m_FilePath: C:/Users/Dan/Desktop/magicon/unity-client/Packages/packages-lock.json
     m_PathExists: 1
     m_ContentTrackingEnabled: 1
     m_ModificationDate:
       serializedVersion: 2
-      ticks: 637865807435426722
-    m_Hash: 3676479348
+      ticks: 637865814682233327
+    m_Hash: 4124945774
 m_EmbeddedPackageManifests:
-  m_ManifestsStatus:
-    C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/package.json:
-      m_FilePath: C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/package.json
-      m_PathExists: 1
-      m_ContentTrackingEnabled: 1
-      m_ModificationDate:
-        serializedVersion: 2
-        ticks: 637865807435416713
-      m_Hash: 1115298202
+  m_ManifestsStatus: {}
 m_PackageAssets:
   m_Packages:
     m_ResolvedPackages:
@@ -138,6 +130,7 @@ m_PackageAssets:
         - 8.0.0-pre.4
         - 8.0.0
         - 8.0.1
+        - 9.0.0-pre.1
         compatible:
         - 5.0.6
         - 5.0.7
@@ -351,6 +344,7 @@ m_PackageAssets:
         - 7.0.0-pre.3
         - 7.0.0-pre.4
         - 7.0.0
+        - 8.0.0-pre.1
         compatible:
         - 4.1.0
         - 4.1.1
@@ -552,6 +546,7 @@ m_PackageAssets:
         - 8.0.0-pre.4
         - 8.0.0-pre.5
         - 8.0.0
+        - 9.0.0-pre.1
         compatible:
         - 5.1.4
         - 5.1.5
@@ -3310,67 +3305,6 @@ m_PackageAssets:
         url: 
         revision: 
         path: 
-    - packageId: com.netpyoung.webp@file:C:\Users\Dan\Desktop\magicon\unity-client\Packages\com.netpyoung.webp@0.3.4
-      testable: 1
-      isDirectDependency: 1
-      version: 0.3.4
-      source: 3
-      resolvedPath: C:\Users\Dan\Desktop\magicon\unity-client\Packages\com.netpyoung.webp@0.3.4
-      assetPath: Packages/com.netpyoung.webp
-      name: com.netpyoung.webp
-      displayName: Unity.WebP
-      author:
-        name: 
-        email: 
-        url: 
-      category: image
-      type: 
-      description: webp made easy for Unity3d.
-      status: 4
-      errors: []
-      versions:
-        all:
-        - 0.1.1
-        - 0.2.0
-        - 0.3.0
-        - 0.3.1
-        - 0.3.2
-        - 0.3.3
-        - 0.3.4
-        compatible:
-        - 0.1.1
-        - 0.2.0
-        - 0.3.0
-        - 0.3.1
-        - 0.3.2
-        - 0.3.3
-        - 0.3.4
-        verified: 
-      dependencies: []
-      resolvedDependencies: []
-      keywords:
-      - webp
-      - unity.webp
-      registry:
-        id: 
-        name: 
-        url: 
-        scopes: []
-        isDefault: 0
-        capabilities: 0
-      hasRegistry: 0
-      hideInEditor: 1
-      entitlements:
-        isAllowed: 1
-      isAssetStorePackage: 0
-      datePublishedTicks: 0
-      documentationUrl: 
-      hasRepository: 0
-      repository:
-        type: 
-        url: 
-        revision: 
-        path: 
     - packageId: com.unity.modules.subsystems@1.0.0
       testable: 0
       isDirectDependency: 0
@@ -3761,6 +3695,7 @@ m_PackageAssets:
         - 7.0.0-pre.3
         - 7.0.0-pre.4
         - 7.0.0
+        - 8.0.0-pre.1
         compatible:
         - 4.0.3
         - 4.0.4
