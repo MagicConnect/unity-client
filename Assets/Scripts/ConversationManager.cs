@@ -91,13 +91,10 @@ public class ConversationManager : MonoBehaviour
     [YarnCommand("dim_characters")]
     public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
     {
-        Debug.LogFormat("dim_characters -> Time to Complete: {0} Wait Until Finished: {1}", timeToComplete, waitForAnimation);
-
         List<ConversationCharacter> charactersToDim = new List<ConversationCharacter>();
 
         if(c1)
         {
-            Debug.LogFormat("{0}", c1.name);
             ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -113,7 +110,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c2)
         {
-            Debug.LogFormat("{0}", c2.name);
             ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -129,7 +125,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c3)
         {
-            Debug.LogFormat("{0}", c3.name);
             ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -145,7 +140,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c4)
         {
-            Debug.LogFormat("{0}", c4.name);
             ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -161,7 +155,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c5)
         {
-            Debug.LogFormat("{0}", c5.name);
             ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -177,7 +170,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c6)
         {
-            Debug.LogFormat("{0}", c6.name);
             ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -203,10 +195,6 @@ public class ConversationManager : MonoBehaviour
                 }
                 return true;
             });
-        }
-        else
-        {
-            yield return null;
         }
     }
 
@@ -242,7 +230,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c1)
         {
-            Debug.LogFormat("{0}", c1.name);
             ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
 
             if(character)
@@ -258,7 +245,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c2)
         {
-            Debug.LogFormat("{0}", c2.name);
             ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
             
             if(character)
@@ -274,7 +260,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c3)
         {
-            Debug.LogFormat("{0}", c3.name);
             ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
             
             if(character)
@@ -290,7 +275,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c4)
         {
-            Debug.LogFormat("{0}", c4.name);
             ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
             
             if(character)
@@ -306,7 +290,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c5)
         {
-            Debug.LogFormat("{0}", c5.name);
             ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
             
             if(character)
@@ -322,7 +305,6 @@ public class ConversationManager : MonoBehaviour
 
         if(c6)
         {
-            Debug.LogFormat("{0}", c6.name);
             ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
             
             if(character)
@@ -348,10 +330,6 @@ public class ConversationManager : MonoBehaviour
                 }
                 return true;
             });
-        }
-        else
-        {
-            yield return null;
         }
     }
 
@@ -447,10 +425,6 @@ public class ConversationManager : MonoBehaviour
         if (waitForAnimation)
         {
             yield return new WaitUntil(() => !c1.isDimming && !c1.isUndimming && !c2.isDimming && !c2.isUndimming);
-        }
-        else
-        {
-            yield return null;
         }
     }
 

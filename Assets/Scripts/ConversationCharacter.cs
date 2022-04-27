@@ -137,6 +137,9 @@ public class ConversationCharacter : MonoBehaviour
             yield return null;
         }
 
+        // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
+        characterImage.color = Color.gray;
+
         isDimming = false;
         isDimmed = true;
         dimmingCoroutine = null;
@@ -178,6 +181,9 @@ public class ConversationCharacter : MonoBehaviour
             timePassed += Time.deltaTime;
             yield return null;
         }
+
+        // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
+        characterImage.color = Color.white;
 
         isUndimming = false;
         isDimmed = false;
