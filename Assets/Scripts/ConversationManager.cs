@@ -235,7 +235,7 @@ public class ConversationManager : MonoBehaviour
     }
 
     // Same for 'dim_characters' but in reverse.
-    [YarnCommand("dim_characters")]
+    [YarnCommand("undim_characters")]
     public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
     {
         List<ConversationCharacter> charactersToUndim = new List<ConversationCharacter>();

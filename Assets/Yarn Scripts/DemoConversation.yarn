@@ -8,7 +8,7 @@ tags:
 ---
 <<change_background_image "Lana_Bedroom">>
 <<show_character Beryl-Vegha>>
-<<move_character Beryl-Vegha Center>>
+<<move_character Beryl-Vegha Center 0.0>>
 Beryl: Hey! My name's Beryl!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
 Beryl: Real quick I want to try a memory game. Guess any number you want, as long as it's between 1 and 5.
