@@ -19,9 +19,11 @@ public class ConversationManager : MonoBehaviour
     // Reference to the background image that will display during the conversation.
     public static GameObject staticBackground;
 
+    public static ConversationManager Instance;
+
     void Awake()
     {
-        
+        Instance = this;
     }
 
     // Start is called before the first frame update
@@ -81,6 +83,375 @@ public class ConversationManager : MonoBehaviour
     {
         Color color = new Color(r, g, b, a);
         staticBackground?.GetComponent<ConversationBackground>().ChangeBackgroundColor(color);
+    }
+
+    // To make it easier for the writers, this method allows dimming multiple characters at once.
+    // Note: Yarn Spinner doesn't support arrays as arguments, so I can't make this into a GameObject[].
+    // As far as I know, it has to be this awful.
+    [YarnCommand("dim_characters")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        Debug.LogFormat("dim_characters -> Time to Complete: {0} Wait Until Finished: {1}", timeToComplete, waitForAnimation);
+
+        List<ConversationCharacter> charactersToDim = new List<ConversationCharacter>();
+
+        if(c1)
+        {
+            Debug.LogFormat("{0}", c1.name);
+            ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c1.name);
+            }
+        }
+
+        if(c2)
+        {
+            Debug.LogFormat("{0}", c2.name);
+            ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c2.name);
+            }
+        }
+
+        if(c3)
+        {
+            Debug.LogFormat("{0}", c3.name);
+            ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c3.name);
+            }
+        }
+
+        if(c4)
+        {
+            Debug.LogFormat("{0}", c4.name);
+            ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c4.name);
+            }
+        }
+
+        if(c5)
+        {
+            Debug.LogFormat("{0}", c5.name);
+            ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c5.name);
+            }
+        }
+
+        if(c6)
+        {
+            Debug.LogFormat("{0}", c6.name);
+            ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToDim.Add(character);
+                character.StartCoroutine(character.DimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c6.name);
+            }
+        }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => {
+                foreach(ConversationCharacter character in charactersToDim)
+                {
+                    if(character.isDimming)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    [YarnCommand("dim_two_characters")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, null, null, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("dim_three_characters")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, null, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("dim_four_characters")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("dim_five_characters")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, c5, null, timeToComplete, waitForAnimation));
+    }
+
+    // Same for 'dim_characters' but in reverse.
+    [YarnCommand("dim_characters")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        List<ConversationCharacter> charactersToUndim = new List<ConversationCharacter>();
+
+        if(c1)
+        {
+            Debug.LogFormat("{0}", c1.name);
+            ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
+
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c1.name);
+            }
+        }
+
+        if(c2)
+        {
+            Debug.LogFormat("{0}", c2.name);
+            ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
+            
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c2.name);
+            }
+        }
+
+        if(c3)
+        {
+            Debug.LogFormat("{0}", c3.name);
+            ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
+            
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c3.name);
+            }
+        }
+
+        if(c4)
+        {
+            Debug.LogFormat("{0}", c4.name);
+            ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
+            
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c4.name);
+            }
+        }
+
+        if(c5)
+        {
+            Debug.LogFormat("{0}", c5.name);
+            ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
+            
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c5.name);
+            }
+        }
+
+        if(c6)
+        {
+            Debug.LogFormat("{0}", c6.name);
+            ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
+            
+            if(character)
+            {
+                charactersToUndim.Add(character);
+                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+            }
+            else
+            {
+                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c6.name);
+            }
+        }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => {
+                foreach(ConversationCharacter character in charactersToUndim)
+                {
+                    if(character.isUndimming)
+                    {
+                        return false;
+                    }
+                }
+                return true;
+            });
+        }
+        else
+        {
+            yield return null;
+        }
+    }
+
+    [YarnCommand("undim_two_characters")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, null, null, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("undim_three_characters")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, null, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("undim_four_characters")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, null, null, timeToComplete, waitForAnimation));
+    }
+
+    [YarnCommand("undim_five_characters")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    {
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, c5, null, timeToComplete, waitForAnimation));
+    }
+
+    // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
+    // doesn't matter; the method handles that logic automatically.
+    [YarnCommand("switch_dimmed_character")]
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float timeToComplete = 0.2f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    {
+        // Don't accept null references. If the writer puts in the wrong name or for some reason a character
+        // wasn't loaded or something else happens to make this not work, we want to know about it.
+        if(!firstCharacter || !secondCharacter)
+        {
+            if(!firstCharacter)
+            {
+                Debug.LogErrorFormat("Invalid first parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
+            }
+
+            if(!secondCharacter)
+            {
+                Debug.LogErrorFormat("Invalid second parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
+            }
+
+            yield break;
+        }
+        
+        // Only actual characters/npcs/whatever can be dimmed or undimmed. If the given object doesn't support the command, abort.
+        ConversationCharacter c1 = firstCharacter.GetComponent<ConversationCharacter>();
+        ConversationCharacter c2 = secondCharacter.GetComponent<ConversationCharacter>();
+
+        if(!c1 || !c2)
+        {
+            if(!c1)
+            {
+                Debug.LogErrorFormat("Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c1.name);
+            }
+
+            if(!c2)
+            {
+                Debug.LogErrorFormat("Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c2.name);
+            }
+            
+            yield break;
+        }
+
+        if (c1.isDimmed)
+        {
+            c1.StartCoroutine(c1.UndimCharacter(timeToComplete));
+        }
+        else
+        {
+            if(!undimFirstCharacter)
+            {
+                c1.StartCoroutine(c1.DimCharacter(timeToComplete));
+            }
+        }
+
+        if (c2.isDimmed)
+        {
+            c2.StartCoroutine(c2.UndimCharacter(timeToComplete));
+        }
+        else
+        {
+            if(!undimSecondCharacter)
+            {
+                c2.StartCoroutine(c2.DimCharacter(timeToComplete));
+            }
+        }
+
+        if (waitForAnimation)
+        {
+            yield return new WaitUntil(() => !c1.isDimming && !c1.isUndimming && !c2.isDimming && !c2.isUndimming);
+        }
+        else
+        {
+            yield return null;
+        }
     }
 
     //[YarnCommand("change_background_transparency")]

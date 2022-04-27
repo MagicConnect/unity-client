@@ -67,72 +67,56 @@ Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I wa
 <<show_character Lana-Elenore>>
 <<move_character Lana-Elenore Right>>
 Lana comes into the room.
-<<fade_in_character Lana-Elenore>>
-<<fade_out_character Beryl-Vegha>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore 0.2 false false undimSecondCharacter>>
 Lana: Sup.
-<<fade_in_character Beryl-Vegha>>
-<<fade_out_character Lana-Elenore>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
-<<fade_in_character Lana-Elenore>>
-<<fade_out_character Beryl-Vegha>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Lana: Sure, I guess. Communication is important.
-<<fade_in_character Beryl-Vegha>>
-<<fade_out_character Lana-Elenore>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Beryl: It sure is!
 Beryl: Okay Lana. Before you got here I was playing a little memory game with our friend here. I asked them to choose a number between 1 and 5. Let's see if they can remember what it was.
-<<fade_in_character Lana-Elenore>>
-<<fade_out_character Beryl-Vegha>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Lana: That's what you called me in here for?
-<<fade_in_character Beryl-Vegha>>
-<<fade_out_character Lana-Elenore>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Beryl: Okay, 1 through 5. Which number did you choose?
 ->1
     <<set $guessedNumber = 1>>
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: 1? Seriously?
 ->2
     <<set $guessedNumber = 2>>
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: Not what I would have chosen...
 ->3
     <<set $guessedNumber = 3>>
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: 3 huh? Hm.
     Lana appears to be judging you.
 ->4
     <<set $guessedNumber = 4>>
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: 4 is pretty okay I guess.
 ->5
     <<set $guessedNumber = 5>>
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: Oh yeah, the biggest number. That's what I'm talking about.
 <<if $chosenNumber == $guessedNumber>>
-    <<fade_in_character Beryl-Vegha>>
-    <<fade_out_character Lana-Elenore>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Beryl: Yay! You guessed right! That must mean you have a pretty good memory.
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: Ohhh wow that was so amazing.
 <<else>>
-    <<fade_in_character Beryl-Vegha>>
-    <<fade_out_character Lana-Elenore>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Beryl: Oh no! That's completely wrong! Better luck next time, I suppose.
-    <<fade_in_character Lana-Elenore>>
-    <<fade_out_character Beryl-Vegha>>
+    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
     Lana: Oh well, at least you tried. You did try, didn't you?
 <<endif>>
-<<fade_in_character Beryl-Vegha>>
-<<fade_out_character Lana-Elenore>>
+<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
 Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
 <<hide_character Beryl-Vegha>>
 Beryl disappears.
-<<fade_in_character Lana-Elenore>>
+<<undim_character Lana-Elenore>>
 Lana: Uh...Well I guess I'll be going too. Bye.
 <<hide_character Lana-Elenore>>
 Lana quickly leaves.
