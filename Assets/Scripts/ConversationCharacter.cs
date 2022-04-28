@@ -144,6 +144,7 @@ public class ConversationCharacter : MonoBehaviour
 
     // Command to fade a character in until they're visible. Optional rgb value arguments determine what the starting color of the
     // character should be, so for example the character can fade in from black.
+    // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("fade_in_character")]
     public IEnumerator FadeInAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
@@ -217,11 +218,8 @@ public class ConversationCharacter : MonoBehaviour
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
-    // TODO: For dimming and undimming characters, even though they are two separate commands it can be assumed
-    // that they are mutually exclusive in their use. That is, if the character is dimming and the writer says to
-    // undim the character, then the dimming animation should be canceled before the undimming animation plays. 
     [YarnCommand("dim_character")]
-    public IEnumerator DimCharacterAsync(float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public IEnumerator DimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -229,30 +227,42 @@ public class ConversationCharacter : MonoBehaviour
             StopCoroutine(dimmingCoroutine);
         }
 
-        // TODO: Check for running undim coroutine and shut it down so there's no conflict.
+        // If there's an undimming animation playing, cancel it so there isn't a conflict.
+        if(undimmingCoroutine != null)
+        {
+            StopCoroutine(undimmingCoroutine);
+            undimmingCoroutine = null;
+            isUndimming = false;
+        }
 
-        dimmingCoroutine = StartCoroutine(DimCharacter(timeToComplete));
+        dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
 
-        // TODO: The else block may be unnecessary, or at least the yield return is. Right now it's basically waiting
-        // for a frame for no reason.
         if(waitForAnimation)
         {
             yield return new WaitUntil(() => !isDimming);
         }
     }
 
-    // TODO: Rename timeToComplete to animationTime for better self-documentation. Do this for every other method that
-    // uses this variable name.
-    public IEnumerator DimCharacter(float timeToComplete = 0.2f)
+    public IEnumerator DimCharacter(float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Dimming over {1} seconds.", gameObject.name, timeToComplete);
+        Debug.LogFormat("{0}: Dimming over {1} seconds.", gameObject.name, animationTime);
         isDimming = true;
         float timePassed = 0.0f;
 
-        while(timePassed <= timeToComplete)
+        while(timePassed <= animationTime)
         {
-            // TODO: Account for divide by 0 case.
-            float progress = timePassed / timeToComplete;
+            float progress;
+
+            // Make sure not to divide by 0.
+            if(animationTime <= 0.0f)
+            {
+                progress = 1.0f;
+            }
+            else
+            {
+                progress = timePassed / animationTime;
+            }
+
             characterImage.color = Color.Lerp(Color.white, Color.gray, progress);
 
             timePassed += Time.deltaTime;
@@ -271,7 +281,7 @@ public class ConversationCharacter : MonoBehaviour
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("undim_character")]
-    public IEnumerator UndimCharacterAsync(float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public IEnumerator UndimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -279,28 +289,42 @@ public class ConversationCharacter : MonoBehaviour
             StopCoroutine(undimmingCoroutine);
         }
 
-        // TODO: Check for running dim coroutine and shut it down so there's no conflict.
+        // If there's already a dimming animation playing, cancel it so there's no conflict.
+        if(dimmingCoroutine != null)
+        {
+            StopCoroutine(dimmingCoroutine);
+            dimmingCoroutine = null;
+            isDimming = false;
+        }
 
-        undimmingCoroutine = StartCoroutine(UndimCharacter(timeToComplete));
+        undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
 
-        // TODO: The else block may be unnecessary, or at least the yield return is. Right now it's basically waiting
-        // for a frame for no reason.
         if(waitForAnimation)
         {
             yield return new WaitUntil(() => !isUndimming);
         }
     }
 
-    public IEnumerator UndimCharacter(float timeToComplete = 0.2f)
+    public IEnumerator UndimCharacter(float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Undimming over {1} seconds.", gameObject.name, timeToComplete);
+        Debug.LogFormat("{0}: Undimming over {1} seconds.", gameObject.name, animationTime);
         isUndimming = true;
         float timePassed = 0.0f;
 
-        while(timePassed <= timeToComplete)
+        while(timePassed <= animationTime)
         {
-            // TODO: Account for divide by 0 case.
-            float progress = timePassed / timeToComplete;
+            float progress;
+
+            // Make sure not to divide by 0.
+            if(animationTime <= 0.0f)
+            {
+                progress = 1.0f;
+            }
+            else
+            {
+                progress = timePassed / animationTime;
+            }
+
             characterImage.color = Color.Lerp(Color.gray, Color.white, progress);
 
             timePassed += Time.deltaTime;
@@ -318,7 +342,7 @@ public class ConversationCharacter : MonoBehaviour
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_character")]
-    public IEnumerator SlideCharacterAsync(GameObject stagePosition, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public IEnumerator SlideCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -327,7 +351,7 @@ public class ConversationCharacter : MonoBehaviour
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(SlideCharacter(stagePosition, timeToComplete));
+        movingCoroutine = StartCoroutine(SlideCharacter(stagePosition, animationTime));
 
         if(waitForAnimation)
         {
@@ -335,23 +359,23 @@ public class ConversationCharacter : MonoBehaviour
         }
     }
 
-    public IEnumerator SlideCharacter(GameObject stagePosition, float timeToComplete = 0.2f)
+    public IEnumerator SlideCharacter(GameObject stagePosition, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, timeToComplete);
+        Debug.LogFormat("{0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
 
-        while(timePassed <= timeToComplete)
+        while(timePassed <= animationTime)
         {
             float progress;
 
-            if(timeToComplete <= 0.0f)
+            if(animationTime <= 0.0f)
             {
                 progress = 1.0f;
             }
             else
             {
-                progress = timePassed / timeToComplete;
+                progress = timePassed / animationTime;
             }
 
             this.rectTransform.position = Vector3.Lerp(originalPosition, stagePosition.transform.position, progress);
@@ -368,14 +392,14 @@ public class ConversationCharacter : MonoBehaviour
     }
 
     [YarnCommand("move_character_to_coordinate")]
-    public IEnumerator MoveCharacterCoordinateAsync(float x, float y, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, timeToComplete));
+        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime));
 
         if(waitForAnimation)
         {
@@ -384,24 +408,24 @@ public class ConversationCharacter : MonoBehaviour
     }
 
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
-    public IEnumerator MoveCharacterToCoordinate(float x, float y, float timeToComplete = 0.2f)
+    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, timeToComplete);
+        Debug.LogFormat("{0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
         Vector3 newPosition = new Vector3(x, y);
 
-        while(timePassed <= timeToComplete)
+        while(timePassed <= animationTime)
         {
             float progress;
             
-            if(timeToComplete <= 0.0f)
+            if(animationTime <= 0.0f)
             {
                 progress = 1.0f;
             }
             else
             {
-                progress = timePassed / timeToComplete;
+                progress = timePassed / animationTime;
             }
 
             this.rectTransform.position = Vector3.Lerp(originalPosition, newPosition, progress);

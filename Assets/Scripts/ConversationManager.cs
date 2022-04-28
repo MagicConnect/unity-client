@@ -89,7 +89,7 @@ public class ConversationManager : MonoBehaviour
     // Note: Yarn Spinner doesn't support arrays as arguments, so I can't make this into a GameObject[].
     // As far as I know, it has to be this awful.
     [YarnCommand("dim_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         List<ConversationCharacter> charactersToDim = new List<ConversationCharacter>();
 
@@ -100,7 +100,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -115,7 +115,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -130,7 +130,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -145,7 +145,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -160,7 +160,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -175,7 +175,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToDim.Add(character);
-                character.StartCoroutine(character.DimCharacter(timeToComplete));
+                character.StartCoroutine(character.DimCharacter(animationTime));
             }
             else
             {
@@ -199,32 +199,32 @@ public class ConversationManager : MonoBehaviour
     }
 
     [YarnCommand("dim_two_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(DimCharacters(c1, c2, null, null, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, null, null, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("dim_three_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, null, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, null, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("dim_four_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("dim_five_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, c5, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, c5, null, animationTime, waitForAnimation));
     }
 
     // Same for 'dim_characters' but in reverse.
     [YarnCommand("undim_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         List<ConversationCharacter> charactersToUndim = new List<ConversationCharacter>();
 
@@ -235,7 +235,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -250,7 +250,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -265,7 +265,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -280,7 +280,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -295,7 +295,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -310,7 +310,7 @@ public class ConversationManager : MonoBehaviour
             if(character)
             {
                 charactersToUndim.Add(character);
-                character.StartCoroutine(character.UndimCharacter(timeToComplete));
+                character.StartCoroutine(character.UndimCharacter(animationTime));
             }
             else
             {
@@ -334,33 +334,33 @@ public class ConversationManager : MonoBehaviour
     }
 
     [YarnCommand("undim_two_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, null, null, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, null, null, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("undim_three_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, null, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, null, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("undim_four_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, null, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, null, null, animationTime, waitForAnimation));
     }
 
     [YarnCommand("undim_five_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float timeToComplete = 0.2f, bool waitForAnimation = false)
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, c5, null, timeToComplete, waitForAnimation));
+        yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, c5, null, animationTime, waitForAnimation));
     }
 
     // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
     // doesn't matter; the method handles that logic automatically.
     [YarnCommand("switch_dimmed_character")]
-    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float timeToComplete = 0.2f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.2f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
     {
         // Don't accept null references. If the writer puts in the wrong name or for some reason a character
         // wasn't loaded or something else happens to make this not work, we want to know about it.
@@ -400,25 +400,25 @@ public class ConversationManager : MonoBehaviour
 
         if (c1.isDimmed)
         {
-            c1.StartCoroutine(c1.UndimCharacter(timeToComplete));
+            c1.StartCoroutine(c1.UndimCharacter(animationTime));
         }
         else
         {
             if(!undimFirstCharacter)
             {
-                c1.StartCoroutine(c1.DimCharacter(timeToComplete));
+                c1.StartCoroutine(c1.DimCharacter(animationTime));
             }
         }
 
         if (c2.isDimmed)
         {
-            c2.StartCoroutine(c2.UndimCharacter(timeToComplete));
+            c2.StartCoroutine(c2.UndimCharacter(animationTime));
         }
         else
         {
             if(!undimSecondCharacter)
             {
-                c2.StartCoroutine(c2.DimCharacter(timeToComplete));
+                c2.StartCoroutine(c2.DimCharacter(animationTime));
             }
         }
 
