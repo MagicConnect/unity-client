@@ -61,7 +61,7 @@ public class ConversationBackground : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        trueColor = defaultImage.color;
     }
 
     // Update is called once per frame
@@ -97,13 +97,13 @@ public class ConversationBackground : MonoBehaviour
         // to keep track of. Maybe reset the alpha in the start/stop animation methods?
         Debug.LogFormat("Cutscene Background: Changing image to '{0}' over {1} seconds.", name, animationTime);
         float timePassed = 0.0f;
-        Color oldColor = defaultImage.color;
+        //Color oldColor = defaultImage.color;
 
         // Enable the alternate image so it can be seen.
         alternateImage.enabled = true;
 
         // Just to make sure, we want the image we're switching to inherit the color properties of the current image.
-        alternateImage.color = oldColor;
+        alternateImage.color = trueColor;
 
         // Most importantly, set the alternate image to have the new sprite.
         alternateImage.sprite = backgroundSprites[name];
@@ -121,7 +121,8 @@ public class ConversationBackground : MonoBehaviour
                 progress = timePassed / animationTime;
             }
 
-            defaultImage.color = new Color(oldColor.r, oldColor.g, oldColor.b, Mathf.Lerp(1.0f, 0.0f, progress));
+            //defaultImage.color = new Color(oldColor.r, oldColor.g, oldColor.b, Mathf.Lerp(1.0f, 0.0f, progress));
+            defaultImage.color = new Color(trueColor.r, trueColor.g, trueColor.b, Mathf.Lerp(trueColor.a, 0.0f, progress));
 
             timePassed += Time.deltaTime;
 
@@ -133,7 +134,7 @@ public class ConversationBackground : MonoBehaviour
         }
 
         // In case there are any issues with timing, make sure the desired result is reached.
-        defaultImage.color = new Color(oldColor.r, oldColor.g, oldColor.b, 0.0f);
+        defaultImage.color = new Color(trueColor.r, trueColor.g, trueColor.b, 0.0f);
 
         // Go ahead and hide the default image to reduce performance issues with transparencies.
         defaultImage.enabled = false;
@@ -172,7 +173,8 @@ public class ConversationBackground : MonoBehaviour
         Debug.LogFormat("Background Image: Changing background color to {0} over {1} seconds.", newColor, animationTime);
 
         float timePassed = 0.0f;
-        Color oldColor = image.color;
+        Color oldColor = defaultImage.color;
+        trueColor = newColor;
 
         while(timePassed <= animationTime)
         {
@@ -188,7 +190,8 @@ public class ConversationBackground : MonoBehaviour
                 progress = timePassed / animationTime;
             }
 
-            image.color = Color.Lerp(oldColor, newColor, progress);
+            defaultImage.color = Color.Lerp(oldColor, newColor, progress);
+            alternateImage.color = Color.Lerp(oldColor, newColor, progress);
 
             timePassed += Time.deltaTime;
 
@@ -199,7 +202,8 @@ public class ConversationBackground : MonoBehaviour
         }
 
         // After the animation completes make sure we arrive at the desired color, in case the timing wasn't exact.
-        image.color = newColor;
+        defaultImage.color = newColor;
+        alternateImage.color = newColor;
 
         colorChangeCoroutine = null;
         Debug.LogFormat("Background Image: Color change animation completed.");

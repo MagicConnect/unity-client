@@ -121,7 +121,36 @@ public class ConversationManager : MonoBehaviour
     }
 
     // Handler which allows Yarn to animate the changing of background color, with the option to wait for the animation to complete.
+    [YarnCommand("change_background_color")]
     public static IEnumerator ChangeBackgroundColorAsync(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
+        if(!staticBackground)
+        {
+            Debug.LogErrorFormat("Background Image: Unable to change color because the background image does not exist.");
+            yield break;
+        }
+
+        ConversationBackground background = staticBackground.GetComponent<ConversationBackground>();
+
+        // TODO: Potentially move this logic and all else like it into the actual animated object's class. The object
+        // should probably decide if it is necessary to cancel existing animations.
+        if(background.colorChangeCoroutine != null)
+        {
+            background.StopColorChangeAnimation();
+        }
+
+        //background.StartCoroutine(background.ChangeBackgroundColor(new Color(r, g, b, a), animationTime));
+        background.StartColorChangeAnimation(new Color(r, g, b, a), animationTime);
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => background.colorChangeCoroutine == null);
+        }
+    }
+
+    [YarnCommand("change_background_transparency")]
+    public static IEnumerator ChangeBackgroundAlphaAsync(float a, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
         if(!staticBackground)
@@ -134,36 +163,14 @@ public class ConversationManager : MonoBehaviour
 
         if(background.colorChangeCoroutine != null)
         {
-            background.StopCoroutine(background.colorChangeCoroutine);
-        }
-
-        background.StartCoroutine(background.ChangeBackgroundColor(new Color(r, g, b, a), animationTime));
-
-        if(waitForAnimation)
-        {
-            yield return new WaitUntil(() => background.colorChangeCoroutine == null);
-        }
-    }
-
-    public static IEnumerator ChangeBackgroundAlphaAsync(float a, float animationTime = 0.0f, bool waitForAnimation = false)
-    {
-        // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
-        if(!staticBackground)
-        {
-            Debug.LogErrorFormat("Background Image: Unable to change color because the background image does not exist.");
-            yield break;
-        }
-
-        if(Instance.colorChangeCoroutine != null)
-        {
-            Instance.StopCoroutine(Instance.colorChangeCoroutine);
+            background.StopColorChangeAnimation();
         }
 
         Color newColor = staticBackground.GetComponent<Image>().color;
         newColor.a = a;
 
-        ConversationBackground background = staticBackground.GetComponent<ConversationBackground>();
-        background.StartCoroutine(background.ChangeBackgroundColor(newColor, animationTime));
+        //background.StartCoroutine(background.ChangeBackgroundColor(newColor, animationTime));
+        background.StartColorChangeAnimation(newColor, animationTime);
 
         if(waitForAnimation)
         {
