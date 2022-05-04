@@ -6,9 +6,9 @@ Press Tab to open the debug window and load some scripts, or press the Continue 
 title: DemoConversation
 tags:
 ---
-<<change_background_image "Lana_Bedroom">>
-<<move_character Beryl-Vegha Center 0.0>>
-<<fade_in_character Beryl-Vegha>>
+<<change_background_image "LanaBedroom">>
+<<move_character BerylVegha Center 0.0>>
+<<fade_in_character BerylVegha>>
 Beryl: Hey! My name's Beryl!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
 Beryl: Real quick I want to try a memory game. Guess any number you want, as long as it's between 1 and 5.
@@ -29,28 +29,28 @@ Beryl: Real quick I want to try a memory game. Guess any number you want, as lon
     Beryl: 5. Got it.
 Beryl: Try to remember the number you chose, cuz I'm gonna ask you about it again later!
 Beryl: Alright, now I'm going to try disappearing.
-<<fade_out_character Beryl-Vegha 0.2 false 0.0 0.0 0.0>>
+<<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 Beryl: Can you see me? No? That means it worked!
-<<fade_in_character Beryl-Vegha 0.2 false 0.0 0.0 0.0>>
+<<fade_in_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 Beryl: Alright, now I'm gonna move around.
 Beryl: First to the far left...
-<<move_character Beryl-Vegha FarLeft>>
+<<move_character BerylVegha FarLeft>>
 Beryl: Then the far right...
-<<move_character Beryl-Vegha FarRight>>
+<<move_character BerylVegha FarRight>>
 Beryl: To the left now!
-<<move_character Beryl-Vegha Left>>
+<<move_character BerylVegha Left>>
 Beryl: How about the right?
-<<move_character Beryl-Vegha Right>>
+<<move_character BerylVegha Right>>
 Beryl: Finally, to the center of the stage!
-<<move_character Beryl-Vegha Center>>
+<<move_character BerylVegha Center>>
 Beryl: That's just the way I like it.
 Beryl: How about a little change of view? I'm a bit tired of this stuffy old room.
-<<fade_out_character Beryl-Vegha 0.2 false 0.0 0.0 0.0>>
+<<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<change_background_color 0.0 0.0 0.0 1.0 1.0>>
 You and Beryl go for a walk down the hall...
 <<change_background_image "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.
-<<fade_in_character Beryl-Vegha 0.2 false 0.0 0.0 0.0>>
+<<fade_in_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<change_background_color 1.0 1.0 1.0 1.0 1.0>>
 Beryl: A barracks? Hmm, not the most fun place to be but it'll do for now.
 Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
@@ -65,61 +65,61 @@ Beryl: Alright, how about something a little different? I'm going to try calling
 title: FriendlyConversation
 ---
 Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I want to talk to you about something.
-<<move_character Beryl-Vegha Left>>
-<<fade_in_character Lana-Elenore 0.2 false 0.0 0.0 0.0>>
-<<move_character Lana-Elenore Right>>
+<<move_character BerylVegha Left>>
+<<fade_in_character LanaElenore 0.2 false 0.0 0.0 0.0>>
+<<move_character LanaElenore Right>>
 Lana comes into the room.
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore 0.2 false false undimSecondCharacter>>
+<<switch_dimmed_character BerylVegha LanaElenore 0.2 false false undimSecondCharacter>>
 Lana: Sup.
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Beryl: Hey look Lana, we're talking to each other right now! Isn't that cool?
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Lana: Sure, I guess. Communication is important.
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Beryl: It sure is!
 Beryl: Okay Lana. Before you got here I was playing a little memory game with our friend here. I asked them to choose a number between 1 and 5. Let's see if they can remember what it was.
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Lana: That's what you called me in here for?
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Beryl: Okay, 1 through 5. Which number did you choose?
 ->1
     <<set $guessedNumber = 1>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: 1? Seriously?
 ->2
     <<set $guessedNumber = 2>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: Not what I would have chosen...
 ->3
     <<set $guessedNumber = 3>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: 3 huh? Hm.
     Lana appears to be judging you.
 ->4
     <<set $guessedNumber = 4>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: 4 is pretty okay I guess.
 ->5
     <<set $guessedNumber = 5>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: Oh yeah, the biggest number. That's what I'm talking about.
 <<if $chosenNumber == $guessedNumber>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Beryl: Yay! You guessed right! That must mean you have a pretty good memory.
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: Ohhh wow that was so amazing.
 <<else>>
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Beryl: Oh no! That's completely wrong! Better luck next time, I suppose.
-    <<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+    <<switch_dimmed_character BerylVegha LanaElenore>>
     Lana: Oh well, at least you tried. You did try, didn't you?
 <<endif>>
-<<switch_dimmed_character Beryl-Vegha Lana-Elenore>>
+<<switch_dimmed_character BerylVegha LanaElenore>>
 Beryl: Alrighty then. That's about all I had to show off for today, so I think I'm gonna go and leave you to it. Bye!
-<<fade_out_character Beryl-Vegha 0.2 false 0.0 0.0 0.0>>
+<<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 Beryl disappears.
-<<undim_character Lana-Elenore>>
+<<undim_character LanaElenore>>
 Lana: Uh...Well I guess I'll be going too. Bye.
-<<fade_out_character Lana-Elenore 0.2 false 0.0 0.0 0.0>>
+<<fade_out_character LanaElenore 0.2 false 0.0 0.0 0.0>>
 Lana quickly leaves.
 ===

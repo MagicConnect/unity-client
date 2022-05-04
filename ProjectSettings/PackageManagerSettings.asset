@@ -28,6 +28,7 @@ MonoBehaviour:
     m_Name: OpenUPM
     m_Url: https://package.openupm.com
     m_Scopes:
+    - com.coffee.ui-particle
     - com.netpyoung.webp
     - com.openupm
     - dev.yarnspinner
@@ -42,6 +43,7 @@ MonoBehaviour:
       m_Name: OpenUPM
       m_Url: https://package.openupm.com
       m_Scopes:
+      - com.coffee.ui-particle
       - com.netpyoung.webp
       - com.openupm
       - dev.yarnspinner
@@ -51,6 +53,7 @@ MonoBehaviour:
     m_Name: OpenUPM
     m_Url: https://package.openupm.com
     m_Scopes:
+    - com.coffee.ui-particle
     - com.netpyoung.webp
     - com.openupm
     - dev.yarnspinner

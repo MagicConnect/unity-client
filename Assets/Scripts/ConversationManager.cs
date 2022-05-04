@@ -10,8 +10,18 @@ public class ConversationManager : MonoBehaviour
     // The prefab of the character object to be cloned.
     public GameObject characterPrefab;
 
+    // The prefab of the speedline UI effect to be spawned.
+    public GameObject speedlineEffectPrefab;
+
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
     public List<GameObject> characters;
+
+    // Dictionary of active effects created by the Yarn Spinner scripts, identified by their given tags.
+    // TODO: Replace this with an actual pool which manages the lifetime of effects.
+    public Dictionary<string, GameObject> effects;
+
+    // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
+    public int effectTotal = 0;
 
     // Just a helpful reference to the parent of all instantiated character and npc gameobjects.
     public GameObject characterContainer;
@@ -35,6 +45,7 @@ public class ConversationManager : MonoBehaviour
     void Start()
     {
         characters = new List<GameObject>();
+        effects = new Dictionary<string, GameObject>();
 
         // Create character objects from the loaded character assets.
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
@@ -560,6 +571,70 @@ public class ConversationManager : MonoBehaviour
         if (waitForAnimation)
         {
             yield return new WaitUntil(() => !c1.isDimming && !c1.isUndimming && !c2.isDimming && !c2.isUndimming);
+        }
+    }
+
+    [YarnCommand("add_speedline_effect")]
+    public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "000000FF", float duration = -1.0f)
+    {
+        // If no name is given or there isn't already an effect by the given name, instantiate a new effect.
+        if(Instance.effects.ContainsKey(name))
+        {
+            Debug.LogErrorFormat("Cutscene: Cannot add a new effect named '{0}' because an effect by that name already exists.", name);
+            return;
+        }
+        
+        GameObject newEffect = Instantiate(Instance.speedlineEffectPrefab, position.transform);
+        Instance.effectTotal += 1;
+
+        if(name == "")
+        {
+            // Since no name was given, assign a unique default name to the effect.
+            newEffect.name = "speedline_effect_" + Instance.effectTotal;
+        }
+        else
+        {
+            newEffect.name = name;
+        }
+
+        ParticleSystem particleSystem = newEffect.GetComponentInChildren<ParticleSystem>();
+
+        // Set the desired radius of the effect.
+        ParticleSystem.ShapeModule shape = particleSystem.shape;
+        shape.radius = radius;
+
+        // Set the desired color of the effect.
+        ParticleSystem.MainModule main = particleSystem.main;
+        Color newColor = new Color(0.0f, 0.0f, 0.0f);
+
+        if(ColorUtility.TryParseHtmlString(color, out newColor))
+        {
+            main.startColor = newColor;
+        }
+        else
+        {
+            Debug.LogWarningFormat("Cutscene: Unable to parse given string '{0}' as a color value. Are you sure it's a valid hexadecimal color value?", color);
+        }
+        
+        // Set the desired duration of the effect.
+        // TODO: Make a component class specifically for effects where this can be handled.
+
+        // Add the new effect to the dictionary so it can be found later.
+        Instance.effects.Add(newEffect.name, newEffect);
+    }
+
+    [YarnCommand("remove_effect")]
+    public static void RemoveSpeedLineEffect(string name)
+    {
+        if(Instance.effects.ContainsKey(name))
+        {
+            GameObject temp = Instance.effects[name];
+            Instance.effects.Remove(name);
+            Destroy(temp);
+        }
+        else
+        {
+            Debug.LogErrorFormat("Cutscene: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
         }
     }
 }
