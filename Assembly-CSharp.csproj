@@ -47,6 +47,7 @@
      <Compile Include="Assets\Scripts\ConversationBackground.cs" />
      <Compile Include="Assets\Scripts\ConversationCharacter.cs" />
      <Compile Include="Assets\Scripts\LoadingScreenManager.cs" />
+     <Compile Include="Assets\Scripts\CutsceneObject.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -292,29 +293,14 @@
     <Reference Include="UnityEditor.UnityConnectModule">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/Managed/UnityEngine/UnityEditor.UnityConnectModule.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe2">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/Plugins/System.Runtime.CompilerServices.Unsafe2.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr4.Runtime.Standard">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
     <Reference Include="YarnSpinner.Compiler">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="YarnSpinner">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
     </Reference>
     <Reference Include="Google.Protobuf">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Google.Protobuf.dll</HintPath>
@@ -325,8 +311,20 @@
     <Reference Include="System.Reflection.TypeExtensions">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Buffers">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr4.Runtime.Standard">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
@@ -730,9 +728,6 @@
     <Reference Include="UnityEngine.UI">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/UnityEngine.UI.dll</HintPath>
     </Reference>
-    <Reference Include="unity.webp">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/unity.webp.dll</HintPath>
-    </Reference>
     <Reference Include="Unity.Mathematics">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/Unity.Mathematics.dll</HintPath>
     </Reference>
@@ -765,6 +760,9 @@
     </Reference>
     <Reference Include="Unity.2D.SpriteShape.Editor">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/Unity.2D.SpriteShape.Editor.dll</HintPath>
+    </Reference>
+    <Reference Include="Coffee.UIParticle">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/Coffee.UIParticle.dll</HintPath>
     </Reference>
     <Reference Include="Unity.2D.Common.Editor">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/ScriptAssemblies/Unity.2D.Common.Editor.dll</HintPath>

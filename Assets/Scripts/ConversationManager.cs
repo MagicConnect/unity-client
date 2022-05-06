@@ -13,18 +13,40 @@ public class ConversationManager : MonoBehaviour
     // The prefab of the speedline UI effect to be spawned.
     public GameObject speedlineEffectPrefab;
 
+    // The prefab of the cutscene object to be spawned.
+    public GameObject cutsceneObjectPrefab;
+
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
     public List<GameObject> characters;
+
+    // Dictionary of active cutscene objects.
+    // TODO: Replace with a pool that manages the lifetime of cutscene objects.
+    public Dictionary<string, GameObject> cutsceneObjects;
 
     // Dictionary of active effects created by the Yarn Spinner scripts, identified by their given tags.
     // TODO: Replace this with an actual pool which manages the lifetime of effects.
     public Dictionary<string, GameObject> effects;
+
+    // Once an object has been created, this dictionary can be used as a makeshift pool of sprites that have been loaded into memory.
+    // If the dictionary doesn't have the sprite, it can be created and added when necessary.
+    // TODO: Replace this with an actual sprite pool which keeps track of all sprites created over the client's runtime.
+    public Dictionary<string, Sprite> sprites;
+
+    // The cache identifies loaded assets by their path, not their name. If we want to check the cache of an asset of a certain name
+    // exists, without performing some LINQ queries, we'll need to know the paths of all assets of a given name.
+    // TODO: Possibly move this functionality to the cache itself. It wouldn't hurt to have another dictionary inside the cache that handles
+    // this relationship, and a series of helper methods that allow objects to ask for assets by name instead of a path.
+    public Dictionary<string, string> assetPathsByName;
 
     // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
     public int effectTotal = 0;
 
     // Just a helpful reference to the parent of all instantiated character and npc gameobjects.
     public GameObject characterContainer;
+
+    // Just a helpful reference to the parent of all weapon, item, and accessory gameobjects.
+    // TODO: Possibly combine this with the character container. Do we really need to split characters and objects from each other?
+    public GameObject objectContainer;
 
     // Reference to the background image that will display during the conversation.
     public static GameObject staticBackground;
@@ -44,8 +66,12 @@ public class ConversationManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        // TODO: Move these up to their definitions. I'm pretty sure you can do that since I do it in the WebAssetCache.
         characters = new List<GameObject>();
         effects = new Dictionary<string, GameObject>();
+        cutsceneObjects = new Dictionary<string, GameObject>();
+        sprites = new Dictionary<string, Sprite>();
+        assetPathsByName = new Dictionary<string, string>();
 
         // Create character objects from the loaded character assets.
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
@@ -71,6 +97,21 @@ public class ConversationManager : MonoBehaviour
 
                 characters.Add(newCharacter);
                 Debug.LogFormat("Added character/npc '{0}' to game.", asset.name);
+            }
+
+            // Populate the dictionary of asset names/paths.
+            // TODO: Move/delete all this so the cache can handle it.
+            List<WebAssetCache.LoadedImageAsset> weapons = WebAssetCache.Instance.GetLoadedAssetsByCategory("weapons");
+            List<WebAssetCache.LoadedImageAsset> accessories = WebAssetCache.Instance.GetLoadedAssetsByCategory("accessories");
+            List<WebAssetCache.LoadedImageAsset> items = WebAssetCache.Instance.GetLoadedAssetsByCategory("items");
+            List<WebAssetCache.LoadedImageAsset> objects = weapons.Concat(accessories).Concat(items).ToList();
+
+            foreach(WebAssetCache.LoadedImageAsset asset in objects)
+            {
+                if(!assetPathsByName.ContainsKey(asset.name))
+                {
+                    assetPathsByName.Add(asset.name, asset.path);
+                }
             }
         }
         else
@@ -635,6 +676,67 @@ public class ConversationManager : MonoBehaviour
         else
         {
             Debug.LogErrorFormat("Cutscene: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
+        }
+    }
+
+    [YarnCommand("add_object")]
+    public static void AddCutsceneObject(string objectName, string spriteName, GameObject position = null, bool visible = false)
+    {
+        // First check to make sure that an object by the given name doesn't already exist.
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene: Object cannot be created because another object with the name '{0}' already exists.", objectName);
+            return;
+        }
+
+        // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
+        // then there's nothing to do.
+        if(!Instance.assetPathsByName.ContainsKey(spriteName))
+        {
+            Debug.LogErrorFormat("Cutscene: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            return;
+        }
+
+        // Now that we know the name values are legit, spawn the object and start giving it data.
+        GameObject newObject = Instantiate(Instance.cutsceneObjectPrefab, Instance.objectContainer.transform);
+        Instance.cutsceneObjects.Add(objectName, newObject);
+
+        newObject.name = objectName;
+
+        if(position)
+        {
+            newObject.transform.position = position.transform.position;
+        }
+
+        // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
+        Image image = newObject.GetComponent<Image>();
+        if(Instance.sprites.ContainsKey(spriteName))
+        {
+            image.sprite = Instance.sprites[spriteName];
+        }
+        else
+        {
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(spriteName);
+            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+            image.sprite = newSprite;
+
+            Instance.sprites.Add(spriteName, newSprite);
+        }
+
+        if(!visible)
+        {
+            image.enabled = false;
+        }
+    }
+
+    [YarnCommand("remove_object")]
+    public static void RemoveCutsceneObject(string objectName)
+    {
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            GameObject temp = Instance.cutsceneObjects[objectName];
+            Instance.cutsceneObjects.Remove(objectName);
+            Destroy(temp);
         }
     }
 }

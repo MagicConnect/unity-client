@@ -163,6 +163,8 @@ public class WebAssetCache : MonoBehaviour
     // INSERT HERE: Data structure(s) representing the in-memory cache of our web assets.
     public Dictionary<string, LoadedImageAsset> loadedAssets {get; private set;} = new Dictionary<string, LoadedImageAsset>();
 
+    public Dictionary<string, LoadedImageAsset> loadedAssetsByName {get; private set;} = new Dictionary<string, LoadedImageAsset>();
+
     // Because we want our file I/O to be asynchronous, we're going to track any incomplete file work here so it can be handled at a later frame instead of all at once.
     Queue<Asset> queuedAssetsToCache = new Queue<Asset>();
     Queue<Asset> queuedAssetsToDelete = new Queue<Asset>();
@@ -269,7 +271,7 @@ public class WebAssetCache : MonoBehaviour
     }
 
     // This method finds all asset manifest entries of the given category and returns them as a list.
-    public List<Asset> GetAssetEntryByCategory(string category)
+    public List<Asset> GetAssetEntriesByCategory(string category)
     {
         return currentManifest.Assets.Where((a) => {
             string assetCategory = new DirectoryInfo(a.Path).Name;
@@ -289,6 +291,40 @@ public class WebAssetCache : MonoBehaviour
         */
 
         return loadedAssets.Values.Where((a) => a.category == category).ToList();
+    }
+
+    public LoadedImageAsset GetLoadedImageAssetByName(string name)
+    {
+        if(loadedAssetsByName.ContainsKey(name))
+        {
+            return loadedAssetsByName[name];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public LoadedImageAsset GetLoadedImageAssetByPath(string path)
+    {
+        if(loadedAssets.ContainsKey(path))
+        {
+            return loadedAssets[path];
+        }
+        else
+        {
+            return null;
+        }
+    }
+
+    public bool LoadedImageAssetExistsByName(string name)
+    {
+        return loadedAssetsByName.ContainsKey(name);
+    }
+
+    public bool LoadedImageAssetExistsByPath(string path)
+    {
+        return loadedAssets.ContainsKey(path);
     }
 
     // This function acts as a public launching point for the startup coroutine.
@@ -868,7 +904,16 @@ public class WebAssetCache : MonoBehaviour
                 loadedAssets.Remove(asset.Path);
             }
 
+            // If there is already an asset with that name then go ahead and overwrite it.
+            // TODO: Make sure asset names are unique before fully committing to this. There could be serious issues if there
+            // are duplicates in the manifest.
+            if(loadedAssetsByName.ContainsKey(asset.Name))
+            {
+                loadedAssetsByName.Remove(asset.Name);
+            }
+
             loadedAssets.Add(asset.Path, imageAsset);
+            loadedAssetsByName.Add(asset.Name, imageAsset);
 
             if(OnLoadingFileComplete != null)
             {
@@ -893,6 +938,7 @@ public class WebAssetCache : MonoBehaviour
 
         LoadedImageAsset imageAsset = new LoadedImageAsset(asset.Name, asset.Path, asset.Hash, texture);
         loadedAssets.Add(asset.Path, imageAsset);
+        loadedAssetsByName.Add(asset.Name, imageAsset);
 
         Debug.LogFormat("Asset at {0} loaded from cache and into memory.", asset.Path);
     }
@@ -1206,7 +1252,13 @@ public class WebAssetCache : MonoBehaviour
                             loadedAssets.Remove(newAsset.path);
                         }
 
+                        if(loadedAssetsByName.ContainsKey(newAsset.name))
+                        {
+                            loadedAssetsByName.Remove(newAsset.name);
+                        }
+
                         loadedAssets.Add(newAsset.path, newAsset);
+                        loadedAssetsByName.Add(newAsset.name, newAsset);
 
                         // Fire off the OnDownloadFinished event.
                         if (OnDownloadFinished != null)
