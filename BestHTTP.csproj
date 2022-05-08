@@ -48,8 +48,8 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\cms\EncryptedData.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\cms\CMSAuthenticatedDataGenerator.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\math\ec\custom\sec\SecT283FieldElement.cs" />
-     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\impl\bc\BcTlsRsaSigner.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\Asn1ParsingException.cs" />
+     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\impl\bc\BcTlsRsaSigner.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\impl\bc\BcTlsECDomain.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\x9\X9ObjectIdentifiers.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\math\ec\custom\gm\SM2P256V1FieldElement.cs" />
@@ -85,10 +85,10 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\modes\gcm\Tables4kGcmMultiplier.cs" />
      <Compile Include="Assets\Best HTTP\Source\Decompression\InfTree.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\macs\HMac.cs" />
+     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\bcpg\PacketTags.cs" />
      <Compile Include="Assets\Best HTTP\Examples\SocketIO3\Parsers\MsgPackParser.cs" />
      <Compile Include="Assets\Best HTTP\Source\PlatformSupport\Threading\LockHelpers.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\parameters\DsaKeyGenerationParameters.cs" />
-     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\bcpg\PacketTags.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\parameters\Ed25519PublicKeyParameters.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\impl\bc\BcTlsStreamVerifier.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\math\Primes.cs" />
@@ -281,6 +281,7 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\prng\drbg\DrbgUtilities.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\macs\KMac.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\parameters\ParametersWithIV.cs" />
+     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\x509\X509V2AttributeCertificate.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\crmf\Controls.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\parameters\X448PrivateKeyParameters.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\DerGeneralizedTime.cs" />
@@ -294,7 +295,6 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\oiw\ElGamalParameter.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\pkcs\RSASSAPSSparams.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\BerApplicationSpecific.cs" />
-     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\x509\X509V2AttributeCertificate.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\TlsServerCertificate.cs" />
      <Compile Include="Assets\Best HTTP\Source\Timings\TimingEvent.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\bcpg\sig\Features.cs" />
@@ -1479,8 +1479,8 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\impl\bc\BcTlsBlockCipherImpl.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\BerApplicationSpecificParser.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\cmp\PKIMessages.cs" />
-     <Compile Include="Assets\Best HTTP\Source\Forms\HTTPFormUsage.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\math\ec\custom\sec\SecT571R1Curve.cs" />
+     <Compile Include="Assets\Best HTTP\Source\Forms\HTTPFormUsage.cs" />
      <Compile Include="Assets\Best HTTP\Source\SocketIO\Events\EventTable.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\SignatureScheme.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\crypto\TlsSrp6Server.cs" />
@@ -1558,9 +1558,9 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\ocsp\ResponseBytes.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\pkcs\ContentInfo.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\macs\CfbBlockCipherMac.cs" />
-     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\esf\SignerLocation.cs" />
      <Compile Include="Assets\Best HTTP\Source\Core\HostConnection.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\bcpg\BcpgInputStream.cs" />
+     <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\esf\SignerLocation.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\bcpg\BcpgOutputStream.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\macs\DSTU7624Mac.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\util\io\pem\PemHeader.cs" />
@@ -1925,8 +1925,8 @@
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\asn1\Asn1Exception.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\agreement\ECDHWithKdfBasicAgreement.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\engines\SEEDWrapEngine.cs" />
-     <Compile Include="Assets\Best HTTP\Examples\SignalRCore\Person.cs" />
      <Compile Include="Assets\Best HTTP\Source\Connections\HTTPConnectionStates.cs" />
+     <Compile Include="Assets\Best HTTP\Examples\SignalRCore\Person.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\crypto\generators\DHKeyPairGenerator.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\tls\EncryptionAlgorithm.cs" />
      <Compile Include="Assets\Best HTTP\Source\SecureProtocol\x509\X509CertPairParser.cs" />
@@ -2212,32 +2212,14 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe2">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/Plugins/System.Runtime.CompilerServices.Unsafe2.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="log4netPlastic">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr4.Runtime.Standard">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
     <Reference Include="YarnSpinner.Compiler">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="YarnSpinner">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
@@ -2248,11 +2230,26 @@
     <Reference Include="CsvHelper">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="log4netPlastic">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reflection.TypeExtensions">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Buffers">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr4.Runtime.Standard">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="unityplastic">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/unityplastic.dll</HintPath>

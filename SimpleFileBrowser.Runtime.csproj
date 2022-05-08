@@ -290,32 +290,14 @@
     <Reference Include="UnityEditor.WindowsStandalone.Extensions">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/WindowsStandaloneSupport/UnityEditor.WindowsStandalone.Extensions.dll</HintPath>
     </Reference>
-    <Reference Include="System.Runtime.CompilerServices.Unsafe2">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Packages/com.netpyoung.webp@0.3.4/Plugins/System.Runtime.CompilerServices.Unsafe2.dll</HintPath>
-    </Reference>
-    <Reference Include="YarnSpinner">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
-    </Reference>
-    <Reference Include="log4netPlastic">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Buffers">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
-    </Reference>
-    <Reference Include="Newtonsoft.Json">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
-    </Reference>
-    <Reference Include="System.Numerics.Vectors">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
-    </Reference>
-    <Reference Include="Antlr4.Runtime.Standard">
-        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
-    </Reference>
     <Reference Include="YarnSpinner.Compiler">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.Compiler.dll</HintPath>
     </Reference>
     <Reference Include="System.Runtime.CompilerServices.Unsafe">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
+    <Reference Include="YarnSpinner">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/YarnSpinner.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Plastic.Antlr3.Runtime">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/Unity.Plastic.Antlr3.Runtime.dll</HintPath>
@@ -326,11 +308,26 @@
     <Reference Include="CsvHelper">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/CsvHelper.dll</HintPath>
     </Reference>
+    <Reference Include="log4netPlastic">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/log4netPlastic.dll</HintPath>
+    </Reference>
     <Reference Include="System.Reflection.TypeExtensions">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Reflection.TypeExtensions.dll</HintPath>
     </Reference>
+    <Reference Include="System.Buffers">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Buffers.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics.Vectors">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.nuget.newtonsoft-json@2.0.0/Runtime/Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System.Memory">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="Antlr4.Runtime.Standard">
+        <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
     </Reference>
     <Reference Include="unityplastic">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/com.unity.collab-proxy@1.7.1/Lib/Editor/PlasticSCM/unityplastic.dll</HintPath>
