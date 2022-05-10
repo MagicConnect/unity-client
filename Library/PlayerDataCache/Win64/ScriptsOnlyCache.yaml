@@ -2,7 +2,6 @@ ScriptsOnlyBuild:
   usedScripts:
     Assembly-CSharp.dll:
     - ActivityIconScript
-    - AssetDownloader
     - ConversationBackground
     - ConversationCharacter
     - ConversationManager
@@ -36,6 +35,8 @@ ScriptsOnlyBuild:
     - UnityEditor.U2D.IK.IKEditorManagerHelper
     Unity.2D.Tilemap.Editor.dll:
     - UnityEditor.Tilemaps.GridPaintingState
+    - UnityEditor.Tilemaps.GridPaletteBrushes
+    - UnityEditor.Tilemaps.GridPalettes
     - UnityEditor.Tilemaps.SceneViewGridManager
     - UnityEditor.Tilemaps.SceneViewOpenTilePaletteHelper
     - UnityEditor.Tilemaps.TileDragAndDropManager
@@ -125,8 +126,6 @@ ScriptsOnlyBuild:
     - Class: 114
       Script: {instanceID: 1534}
     - Class: 114
-      Script: {instanceID: 1616}
-    - Class: 114
       Script: {instanceID: 1820}
     - Class: 114
       Script: {instanceID: 2260}
@@ -192,8 +191,6 @@ ScriptsOnlyBuild:
       Script: {instanceID: 9062}
     - Class: 114
       Script: {instanceID: 9740}
-    - Class: 114
-      Script: {instanceID: 21484}
     - Class: 115
       Script: {instanceID: 0}
     - Class: 128
