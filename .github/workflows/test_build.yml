@@ -1,10 +1,17 @@
 name: New gameci build
 
 on: [push, pull_request]
+  workflow_dispatch:
+    inputs:
+      debugMode:
+        description: 'Build a debug binary?'
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   build:
-    name: Build my project
+    name: Build Windows Standalone
     runs-on: ubuntu-latest
     steps:
       # Checkout (without LFS)
@@ -51,9 +58,14 @@ jobs:
           UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          DEBUG: ${{ github.event.inputs.debugMode }}
         with:
           targetPlatform: StandaloneWindows64
           allowDirtyBuild: true
+          buildName: MagicConnect
+          versioning: Semantic
+          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
+          unityVersion: 2020.3.17f1
 
       # Output
       - uses: actions/upload-artifact@v2
