@@ -14,6 +14,11 @@ jobs:
           - StandaloneLinux64
           - StandaloneOSX
     steps:
+      - uses: kolpav/purge-artifacts-action@v1
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          expire-in: 0
+          
       # Checkout (without LFS)
       - name: Checkout repository
         uses: actions/checkout@v2
