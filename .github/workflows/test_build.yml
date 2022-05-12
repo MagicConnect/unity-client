@@ -3,8 +3,8 @@ name: New gameci build
 #on: [push, pull_request]
 on: 
   push:
-    tags:
-      - '*'
+  #  tags:
+  #    - '*'
       
   workflow_dispatch:
     inputs:
