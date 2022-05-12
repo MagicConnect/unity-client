@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using UnityEditor;
 using UnityEditor.Build.Reporting;
+using UnityEngine;
 
 namespace UnityBuilderAction
 {
@@ -131,7 +132,8 @@ namespace UnityBuilderAction
 
         private static void Build(BuildTarget buildTarget, string filePath)
         {
-            string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
+            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
+            string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
