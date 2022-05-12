@@ -1,6 +1,21 @@
 name: New gameci build
 
-on: [push, pull_request]
+#on: [push, pull_request]
+on: 
+  push:
+    tags:
+      - '*'
+      
+  workflow_dispatch:
+    inputs:
+      debugMode:
+        description: 'Build a debug binary?'
+        type: boolean
+        required: false
+        default: false
+  
+  pull_request: 
+    types: [opened]
 
 jobs:
   buildForAllSupportedPlatforms:
