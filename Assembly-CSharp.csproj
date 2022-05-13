@@ -38,6 +38,7 @@
   <ItemGroup>
      <Compile Include="Assets\Scripts\AssetDownloader.cs" />
      <Compile Include="Assets\Scripts\ActivityIconScript.cs" />
+     <Compile Include="Assets\CutsceneStandaloneBuildScript.cs" />
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\DynamicYarnLoader.cs" />
      <Compile Include="Assets\Scripts\CutsceneObject.cs" />
