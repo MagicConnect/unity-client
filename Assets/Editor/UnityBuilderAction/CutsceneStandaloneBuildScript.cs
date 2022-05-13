@@ -141,8 +141,8 @@ namespace UnityBuilderAction
             }
 
             string[] scenes = new string[2];
-            EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "testAssets/Scenes/Loading.unity").FirstOrDefault();
-            EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "testAssets/Scenes/Yarn Demo.unity").FirstOrDefault();
+            EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Loading.unity").FirstOrDefault();
+            EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Yarn Demo.unity").FirstOrDefault();
 
             if(loadingScene != null && cutsceneScene != null)
             {
