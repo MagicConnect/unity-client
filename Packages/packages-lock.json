@@ -1,11 +1,10 @@
 {
   "dependencies": {
     "com.coffee.ui-particle": {
-      "version": "3.3.10",
+      "version": "file:com.coffee.ui-particle@3.3.10",
       "depth": 0,
-      "source": "registry",
-      "dependencies": {},
-      "url": "https://package.openupm.com"
+      "source": "embedded",
+      "dependencies": {}
     },
     "com.unity.2d.animation": {
       "version": "5.0.7",
