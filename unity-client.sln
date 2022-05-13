@@ -1,0 +1,29 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BestHTTP", "BestHTTP.csproj", "{6545f1bc-248b-1538-6604-863c2ad1d840}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp", "Assembly-CSharp.csproj", "{51f35653-61fd-bcb9-30f6-7bd2d37987a9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SimpleFileBrowser.Runtime", "SimpleFileBrowser.Runtime.csproj", "{a62c9b24-d74b-ccf3-6814-0347f19766e2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Assembly-CSharp-Editor", "Assembly-CSharp-Editor.csproj", "{b954ddb3-aec1-a95e-1e6d-764b2b02ffc0}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{6545f1bc-248b-1538-6604-863c2ad1d840}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6545f1bc-248b-1538-6604-863c2ad1d840}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{51f35653-61fd-bcb9-30f6-7bd2d37987a9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{51f35653-61fd-bcb9-30f6-7bd2d37987a9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{a62c9b24-d74b-ccf3-6814-0347f19766e2}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{a62c9b24-d74b-ccf3-6814-0347f19766e2}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{b954ddb3-aec1-a95e-1e6d-764b2b02ffc0}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{b954ddb3-aec1-a95e-1e6d-764b2b02ffc0}.Debug|Any CPU.Build.0 = Debug|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
