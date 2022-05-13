@@ -133,7 +133,22 @@ namespace UnityBuilderAction
         private static void Build(BuildTarget buildTarget, string filePath)
         {
             //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
-            string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
+            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
+            string[] scenes = new string[2];
+            EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading").First();
+            EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Yarn Demo").First();
+
+            if(loadingScene != null && cutsceneScene != null)
+            {
+                scenes[0] = loadingScene.path;
+                scenes[1] = cutsceneScene.path;
+            }
+            else
+            {
+                Console.WriteLine("Loading and Cutscene scenes not found in the build list. Unable to build cutscene only client.");
+                EditorApplication.Exit(201);
+            }
+
             var buildPlayerOptions = new BuildPlayerOptions
             {
                 scenes = scenes,
