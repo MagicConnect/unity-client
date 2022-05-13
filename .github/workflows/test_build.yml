@@ -35,8 +35,8 @@ jobs:
       matrix:
         targetPlatform:
           - StandaloneWindows64
-          - StandaloneLinux64
-          - StandaloneOSX
+          #- StandaloneLinux64
+          #- StandaloneOSX
     steps:
       # Checkout (without LFS)
       - name: Checkout repository
