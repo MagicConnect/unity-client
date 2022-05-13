@@ -134,6 +134,12 @@ namespace UnityBuilderAction
         {
             //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
             //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
+            Console.WriteLine("Scenes in build settings:");
+            foreach(EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
+            {
+                Console.WriteLine(scene.path);
+            }
+
             string[] scenes = new string[2];
             EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading").First();
             EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Yarn Demo").First();
