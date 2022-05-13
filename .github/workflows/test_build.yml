@@ -63,10 +63,8 @@ jobs:
       - uses: actions/cache@v2
         with:
           path: Library
-#          key: Library-${{ matrix.targetPlatform }}-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           key: Library-${{ matrix.targetPlatform }}
           restore-keys: |
-#            Library-${{ matrix.targetPlatform }}-
             Library-
 
       # Test
