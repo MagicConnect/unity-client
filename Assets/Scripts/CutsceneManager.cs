@@ -5,7 +5,7 @@ using UnityEngine.UI;
 using System.Linq;
 using Yarn.Unity;
 
-public class ConversationManager : MonoBehaviour
+public class CutsceneManager : MonoBehaviour
 {
     // The prefab of the character object to be cloned.
     public GameObject characterPrefab;
@@ -51,13 +51,13 @@ public class ConversationManager : MonoBehaviour
     // TODO: Possibly combine this with the character container. Do we really need to split characters and objects from each other?
     public GameObject objectContainer;
 
-    // Reference to the background image that will display during the conversation.
+    // Reference to the background image that will display during the cutscene.
     public static GameObject staticBackground;
 
     // To enable smooth transitions between two background images, we need a reference to a background we can switch to.
     public static GameObject alternateBackground;
 
-    public static ConversationManager Instance;
+    public static CutsceneManager Instance;
 
     Coroutine colorChangeCoroutine;
 
@@ -119,12 +119,11 @@ public class ConversationManager : MonoBehaviour
         }
         else
         {
-            Debug.LogErrorFormat("Attempted to load conversation background when cache was not fully loaded.");
+            Debug.LogErrorFormat("Attempted to load cutscene background when cache was not fully loaded.");
         }
 
         // Find the background gameobject.
-        staticBackground = GameObject.Find("ConversationBackground");
-        //alternateBackground = GameObject.Find("ConversationBackgroundAlt");
+        staticBackground = GameObject.Find("CutsceneBackground");
 
         // Start a coroutine that watches for when it's okay to start the cutscene.
         StartCoroutine(AutomaticStartRoutine());
@@ -138,7 +137,7 @@ public class ConversationManager : MonoBehaviour
 
     // This coroutine ensures that the entire scene has been loaded in and initialized before starting the cutscene. Object pools,
     // Yarn script compilation, the works. This prevents the Dialogue System object from starting before everything is ready.
-    // TODO: For now all we have to wait for is the conversation manager itself to be ready, so by the time this coroutine starts most of
+    // TODO: For now all we have to wait for is the cutscene manager itself to be ready, so by the time this coroutine starts most of
     // the waiting is already done. Just make sure to wait a few frames before starting so everything is loaded in. Later, when we're getting
     // script information passed in and we have a bunch of other game objects to wait on, change it to watch for some 'isReady' flags or something.
     public IEnumerator AutomaticStartRoutine()
@@ -153,7 +152,7 @@ public class ConversationManager : MonoBehaviour
     //[YarnCommand("change_background_image")]
     public static void SetBackgroundImage(string name)
     {
-        staticBackground?.GetComponent<ConversationBackground>().ChangeBackgroundImage(name);
+        staticBackground?.GetComponent<CutsceneBackground>().ChangeBackgroundImage(name);
     }
 
     [YarnCommand("change_background_image")]
@@ -166,7 +165,7 @@ public class ConversationManager : MonoBehaviour
             yield break;
         }
 
-        ConversationBackground background = staticBackground.GetComponent<ConversationBackground>();
+        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
 
         // If the background is already doing an image change animation, cancel it.
         if(background.imageChangeCoroutine != null)
@@ -186,7 +185,7 @@ public class ConversationManager : MonoBehaviour
     public static void SetBackgroundColor(float r, float g, float b, float a = 1.0f)
     {
         Color color = new Color(r, g, b, a);
-        staticBackground?.GetComponent<ConversationBackground>().ChangeBackgroundColor(color);
+        staticBackground?.GetComponent<CutsceneBackground>().ChangeBackgroundColor(color);
     }
 
     // Handler which allows Yarn to animate the changing of background color, with the option to wait for the animation to complete.
@@ -200,7 +199,7 @@ public class ConversationManager : MonoBehaviour
             yield break;
         }
 
-        ConversationBackground background = staticBackground.GetComponent<ConversationBackground>();
+        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
 
         // TODO: Potentially move this logic and all else like it into the actual animated object's class. The object
         // should probably decide if it is necessary to cancel existing animations.
@@ -228,7 +227,7 @@ public class ConversationManager : MonoBehaviour
             yield break;
         }
 
-        ConversationBackground background = staticBackground.GetComponent<ConversationBackground>();
+        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
 
         if(background.colorChangeCoroutine != null)
         {
@@ -295,11 +294,11 @@ public class ConversationManager : MonoBehaviour
     [YarnCommand("dim_characters")]
     public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        List<ConversationCharacter> charactersToDim = new List<ConversationCharacter>();
+        List<CutsceneCharacter> charactersToDim = new List<CutsceneCharacter>();
 
         if(c1)
         {
-            ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c1.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -314,7 +313,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c2)
         {
-            ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c2.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -329,7 +328,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c3)
         {
-            ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c3.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -344,7 +343,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c4)
         {
-            ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c4.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -359,7 +358,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c5)
         {
-            ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c5.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -374,7 +373,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c6)
         {
-            ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c6.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -390,7 +389,7 @@ public class ConversationManager : MonoBehaviour
         if(waitForAnimation)
         {
             yield return new WaitUntil(() => {
-                foreach(ConversationCharacter character in charactersToDim)
+                foreach(CutsceneCharacter character in charactersToDim)
                 {
                     if(character.isDimming)
                     {
@@ -430,11 +429,11 @@ public class ConversationManager : MonoBehaviour
     [YarnCommand("undim_characters")]
     public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
     {
-        List<ConversationCharacter> charactersToUndim = new List<ConversationCharacter>();
+        List<CutsceneCharacter> charactersToUndim = new List<CutsceneCharacter>();
 
         if(c1)
         {
-            ConversationCharacter character = c1.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c1.GetComponent<CutsceneCharacter>();
 
             if(character)
             {
@@ -449,7 +448,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c2)
         {
-            ConversationCharacter character = c2.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c2.GetComponent<CutsceneCharacter>();
             
             if(character)
             {
@@ -464,7 +463,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c3)
         {
-            ConversationCharacter character = c3.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c3.GetComponent<CutsceneCharacter>();
             
             if(character)
             {
@@ -479,7 +478,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c4)
         {
-            ConversationCharacter character = c4.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c4.GetComponent<CutsceneCharacter>();
             
             if(character)
             {
@@ -494,7 +493,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c5)
         {
-            ConversationCharacter character = c5.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c5.GetComponent<CutsceneCharacter>();
             
             if(character)
             {
@@ -509,7 +508,7 @@ public class ConversationManager : MonoBehaviour
 
         if(c6)
         {
-            ConversationCharacter character = c6.GetComponent<ConversationCharacter>();
+            CutsceneCharacter character = c6.GetComponent<CutsceneCharacter>();
             
             if(character)
             {
@@ -525,7 +524,7 @@ public class ConversationManager : MonoBehaviour
         if(waitForAnimation)
         {
             yield return new WaitUntil(() => {
-                foreach(ConversationCharacter character in charactersToUndim)
+                foreach(CutsceneCharacter character in charactersToUndim)
                 {
                     if(character.isUndimming)
                     {
@@ -584,8 +583,8 @@ public class ConversationManager : MonoBehaviour
         }
         
         // Only actual characters/npcs/whatever can be dimmed or undimmed. If the given object doesn't support the command, abort.
-        ConversationCharacter c1 = firstCharacter.GetComponent<ConversationCharacter>();
-        ConversationCharacter c2 = secondCharacter.GetComponent<ConversationCharacter>();
+        CutsceneCharacter c1 = firstCharacter.GetComponent<CutsceneCharacter>();
+        CutsceneCharacter c2 = secondCharacter.GetComponent<CutsceneCharacter>();
 
         if(!c1 || !c2)
         {

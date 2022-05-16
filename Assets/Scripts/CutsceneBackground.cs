@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 
-public class ConversationBackground : MonoBehaviour
+public class CutsceneBackground : MonoBehaviour
 {
     // This holds all the possible background sprites that the writer can choose between, identified by
     // the name of the background in the asset manifest.
@@ -79,7 +79,7 @@ public class ConversationBackground : MonoBehaviour
         }
         else
         {
-            Debug.LogErrorFormat("Background sprite named '{0}' does not exist.", name);
+            Debug.LogErrorFormat("Cutscene Background: Background sprite named '{0}' does not exist.", name);
         }
     }
 
@@ -170,7 +170,7 @@ public class ConversationBackground : MonoBehaviour
     // is the exact same thing. We have separate handlers because we need separate Yarn commands that handle variations of the same functionality.
     public IEnumerator ChangeBackgroundColor(Color newColor, float animationTime = 0.0f)
     {
-        Debug.LogFormat("Background Image: Changing background color to {0} over {1} seconds.", newColor, animationTime);
+        Debug.LogFormat("Cutscene Background: Changing background color to {0} over {1} seconds.", newColor, animationTime);
 
         float timePassed = 0.0f;
         Color oldColor = defaultImage.color;
@@ -206,7 +206,7 @@ public class ConversationBackground : MonoBehaviour
         alternateImage.color = newColor;
 
         colorChangeCoroutine = null;
-        Debug.LogFormat("Background Image: Color change animation completed.");
+        Debug.LogFormat("Cutscene Background: Color change animation completed.");
     }
 
     public void StartColorChangeAnimation(Color newColor, float animationTime = 0.0f)
