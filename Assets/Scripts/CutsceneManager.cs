@@ -86,7 +86,7 @@ public class CutsceneManager : MonoBehaviour
 
             if(assets.Count <= 0)
             {
-                Debug.LogWarningFormat("No loaded assets returned by cache.");
+                Debug.LogWarningFormat("Cutscene Manager: No loaded assets returned by cache.");
             }
 
             foreach(WebAssetCache.LoadedImageAsset asset in assets)
@@ -99,7 +99,7 @@ public class CutsceneManager : MonoBehaviour
                 newCharacter.GetComponent<Image>().sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
 
                 characters.Add(newCharacter);
-                Debug.LogFormat("Added character/npc '{0}' to game.", asset.name);
+                Debug.LogFormat("Cutscene Manager: Added character/npc '{0}' to game.", asset.name);
             }
 
             // Populate the dictionary of asset names/paths.
@@ -119,7 +119,7 @@ public class CutsceneManager : MonoBehaviour
         }
         else
         {
-            Debug.LogErrorFormat("Attempted to load cutscene background when cache was not fully loaded.");
+            Debug.LogErrorFormat("Cutscene Manger: Attempted to load cutscene when cache was not fully loaded.");
         }
 
         // Find the background gameobject.
@@ -195,7 +195,7 @@ public class CutsceneManager : MonoBehaviour
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
         if(!staticBackground)
         {
-            Debug.LogErrorFormat("Background Image: Unable to change color because the background image does not exist.");
+            Debug.LogErrorFormat("Cutscene Background: Unable to change color because the background image does not exist.");
             yield break;
         }
 
@@ -223,7 +223,7 @@ public class CutsceneManager : MonoBehaviour
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
         if(!staticBackground)
         {
-            Debug.LogErrorFormat("Background Image: Unable to change color because the background image does not exist.");
+            Debug.LogErrorFormat("Cutscene Background: Unable to change color because the background image does not exist.");
             yield break;
         }
 
@@ -251,7 +251,7 @@ public class CutsceneManager : MonoBehaviour
     // TODO: Delete this. All of this functionality should be handled by the background image object.
     public IEnumerator ChangeBackgroundColor(Color newColor, float animationTime = 0.0f)
     {
-        Debug.LogFormat("Background Image: Changing background color to {0} over {1} seconds.", newColor, animationTime);
+        Debug.LogFormat("Cutscene Background: Changing background color to {0} over {1} seconds.", newColor, animationTime);
 
         float timePassed = 0.0f;
         Image backgroundImage = staticBackground.GetComponent<Image>();
@@ -285,7 +285,7 @@ public class CutsceneManager : MonoBehaviour
         backgroundImage.color = newColor;
 
         colorChangeCoroutine = null;
-        Debug.LogFormat("Background Image: Color change animation completed.");
+        Debug.LogFormat("Cutscene Background: Color change animation completed.");
     }
 
     // To make it easier for the writers, this method allows dimming multiple characters at once.
@@ -307,7 +307,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c1.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c1.name);
             }
         }
 
@@ -322,7 +322,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c2.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c2.name);
             }
         }
 
@@ -337,7 +337,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c3.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c3.name);
             }
         }
 
@@ -352,7 +352,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c4.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c4.name);
             }
         }
 
@@ -367,7 +367,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c5.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c5.name);
             }
         }
 
@@ -382,7 +382,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be dimmed.", c6.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be dimmed.", c6.name);
             }
         }
 
@@ -442,7 +442,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c1.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c1.name);
             }
         }
 
@@ -457,7 +457,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c2.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c2.name);
             }
         }
 
@@ -472,7 +472,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c3.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c3.name);
             }
         }
 
@@ -487,7 +487,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c4.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c4.name);
             }
         }
 
@@ -502,7 +502,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c5.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c5.name);
             }
         }
 
@@ -517,7 +517,7 @@ public class CutsceneManager : MonoBehaviour
             }
             else
             {
-                Debug.LogErrorFormat("'{0}' is not a character, npc, or item and cannot be undimmed.", c6.name);
+                Debug.LogErrorFormat("Cutscene Manager: '{0}' is not a character, npc, or item and cannot be undimmed.", c6.name);
             }
         }
 
@@ -571,12 +571,12 @@ public class CutsceneManager : MonoBehaviour
         {
             if(!firstCharacter)
             {
-                Debug.LogErrorFormat("Invalid first parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
+                Debug.LogErrorFormat("Cutscene Manager: Invalid first parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
             }
 
             if(!secondCharacter)
             {
-                Debug.LogErrorFormat("Invalid second parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
+                Debug.LogErrorFormat("Cutscene Manager: Invalid second parameter for command 'switch_dimmed_character': Yarn Spinner was unable to find a game object by the given name.");
             }
 
             yield break;
@@ -590,12 +590,12 @@ public class CutsceneManager : MonoBehaviour
         {
             if(!c1)
             {
-                Debug.LogErrorFormat("Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c1.name);
+                Debug.LogErrorFormat("Cutscene Manager: Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c1.name);
             }
 
             if(!c2)
             {
-                Debug.LogErrorFormat("Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c2.name);
+                Debug.LogErrorFormat("Cutscene Manager: Invalid parameter for command 'switch_dimmed_character': '{0}' is not an existing character, npc, or item name.", c2.name);
             }
             
             yield break;
@@ -637,7 +637,7 @@ public class CutsceneManager : MonoBehaviour
         // If no name is given or there isn't already an effect by the given name, instantiate a new effect.
         if(Instance.effects.ContainsKey(name))
         {
-            Debug.LogErrorFormat("Cutscene: Cannot add a new effect named '{0}' because an effect by that name already exists.", name);
+            Debug.LogErrorFormat("Cutscene Manager: Cannot add a new effect named '{0}' because an effect by that name already exists.", name);
             return;
         }
         
@@ -670,7 +670,7 @@ public class CutsceneManager : MonoBehaviour
         }
         else
         {
-            Debug.LogWarningFormat("Cutscene: Unable to parse given string '{0}' as a color value. Are you sure it's a valid hexadecimal color value?", color);
+            Debug.LogWarningFormat("Cutscene Manager: Unable to parse given string '{0}' as a color value. Are you sure it's a valid hexadecimal color value?", color);
         }
         
         // Set the desired duration of the effect.
@@ -691,7 +691,7 @@ public class CutsceneManager : MonoBehaviour
         }
         else
         {
-            Debug.LogErrorFormat("Cutscene: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
+            Debug.LogErrorFormat("Cutscene Manager: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
         }
     }
 
@@ -701,7 +701,7 @@ public class CutsceneManager : MonoBehaviour
         // First check to make sure that an object by the given name doesn't already exist.
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
-            Debug.LogErrorFormat("Cutscene: Object cannot be created because another object with the name '{0}' already exists.", objectName);
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because another object with the name '{0}' already exists.", objectName);
             return;
         }
 
@@ -709,7 +709,7 @@ public class CutsceneManager : MonoBehaviour
         // then there's nothing to do.
         if(!Instance.assetPathsByName.ContainsKey(spriteName))
         {
-            Debug.LogErrorFormat("Cutscene: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
             return;
         }
 

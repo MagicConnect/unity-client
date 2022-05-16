@@ -99,7 +99,7 @@ public class CutsceneObject : MonoBehaviour
         HideObject();
 
         fadeOutCoroutine = null;
-        Debug.LogFormat("{0} fade out animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Object {0}: Fade out animation complete.", gameObject.name);
     }
 
     // Command to fade a character in until they're visible. Optional rgb value arguments determine what the starting color of the
@@ -132,7 +132,7 @@ public class CutsceneObject : MonoBehaviour
 
     public IEnumerator FadeIn(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
-        Debug.LogFormat("{0} fading in over {1} seconds.", gameObject.name, animationTime);
+        Debug.LogFormat("Cutsene Object {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
         Color oldColor = new Color(r, g, b, 0.0f);
 
@@ -163,7 +163,7 @@ public class CutsceneObject : MonoBehaviour
         objectImage.color = Color.white;
 
         fadeInCoroutine = null;
-        Debug.LogFormat("{0} fade in animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Object {0}: Fade in animation complete.", gameObject.name);
     }
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
@@ -187,7 +187,7 @@ public class CutsceneObject : MonoBehaviour
 
     public IEnumerator SlideCharacter(GameObject stagePosition, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
+        Debug.LogFormat("Cutscene Object {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
 
@@ -214,7 +214,7 @@ public class CutsceneObject : MonoBehaviour
         this.rectTransform.position = stagePosition.transform.position;
 
         movingCoroutine = null;
-        Debug.LogFormat("{0}: Moving animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Object {0}: Moving animation complete.", gameObject.name);
     }
 
     [YarnCommand("move_object_to_coordinate")]
@@ -236,7 +236,7 @@ public class CutsceneObject : MonoBehaviour
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
     public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
+        Debug.LogFormat("Cutscene Object {0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
         Vector3 newPosition = new Vector3(x, y);
@@ -264,6 +264,6 @@ public class CutsceneObject : MonoBehaviour
         this.rectTransform.position = newPosition;
 
         movingCoroutine = null;
-        Debug.LogFormat("{0}: Moving animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Object {0}: Moving animation complete.", gameObject.name);
     }
 }

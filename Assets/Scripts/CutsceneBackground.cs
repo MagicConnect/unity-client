@@ -41,7 +41,7 @@ public class CutsceneBackground : MonoBehaviour
 
             if(assets.Count <= 0)
             {
-                Debug.LogWarningFormat("No loaded assets returned by cache.");
+                Debug.LogWarningFormat("Cutscene Background: No loaded assets returned by cache.");
             }
 
             foreach(WebAssetCache.LoadedImageAsset asset in assets)
@@ -49,12 +49,12 @@ public class CutsceneBackground : MonoBehaviour
                 Sprite sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f);
                 backgroundSprites.Add(asset.name, sprite);
 
-                Debug.LogFormat("Loaded background sprite '{0}'.", asset.name);
+                Debug.LogFormat("Cutscene Background: Loaded background sprite '{0}'.", asset.name);
             }
         }
         else
         {
-            Debug.LogErrorFormat("Attempted to load conversation background when cache was not fully loaded.");
+            Debug.LogErrorFormat("Cutscene Background: Attempted to load background when cache was not fully loaded.");
         }
     }
 
