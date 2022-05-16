@@ -5675,6 +5675,10 @@ PrefabInstance:
       propertyPath: yarnProject
       value: 
       objectReference: {fileID: 7545569452688597077, guid: 5fa3f0a6be9ed4a48b197efab55d3de8, type: 3}
+    - target: {fileID: 3579681405068720530, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
+      propertyPath: startAutomatically
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7084386685998634907, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -5838,6 +5842,17 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 3183266951831634833, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
   m_PrefabInstance: {fileID: 526332913}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &526332915 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 3579681405068720530, guid: 7f29e5f7ffdea4a6793cefb278b61f0c, type: 3}
+  m_PrefabInstance: {fileID: 526332913}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 841695010}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4bec29c0a230741bdac901dba8da47ee, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &545844237
 GameObject:
   m_ObjectHideFlags: 0
@@ -6851,6 +6866,7 @@ MonoBehaviour:
   characterPrefab: {fileID: 7329776566789586982, guid: e3446f9ec804f36469e8362526f9fd2a, type: 3}
   speedlineEffectPrefab: {fileID: 2760231284852882920, guid: 45fcdb24ef2a9b94d97a46006e336b3d, type: 3}
   cutsceneObjectPrefab: {fileID: 5055239544088313867, guid: 9ef02640bd32e4347aa241e10f4d7be2, type: 3}
+  dialogueSystem: {fileID: 526332915}
   characters: []
   effectTotal: 0
   characterContainer: {fileID: 1213206127}

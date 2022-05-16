@@ -16,6 +16,9 @@ public class ConversationManager : MonoBehaviour
     // The prefab of the cutscene object to be spawned.
     public GameObject cutsceneObjectPrefab;
 
+    // Reference to the dialogue system which is the core of the Yarn Spinner scripting plugin.
+    public DialogueRunner dialogueSystem;
+
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
     public List<GameObject> characters;
 
@@ -122,12 +125,26 @@ public class ConversationManager : MonoBehaviour
         // Find the background gameobject.
         staticBackground = GameObject.Find("ConversationBackground");
         //alternateBackground = GameObject.Find("ConversationBackgroundAlt");
+
+        // Start a coroutine that watches for when it's okay to start the cutscene.
+        StartCoroutine(AutomaticStartRoutine());
     }
 
     // Update is called once per frame
     void Update()
     {
         
+    }
+
+    // This coroutine ensures that the entire scene has been loaded in and initialized before starting the cutscene. Object pools,
+    // Yarn script compilation, the works. This prevents the Dialogue System object from starting before everything is ready.
+    // TODO: For now all we have to wait for is the conversation manager itself to be ready, so by the time this coroutine starts most of
+    // the waiting is already done. Just make sure to wait a few frames before starting so everything is loaded in. Later, when we're getting
+    // script information passed in and we have a bunch of other game objects to wait on, change it to watch for some 'isReady' flags or something.
+    public IEnumerator AutomaticStartRoutine()
+    {
+        yield return null;
+        dialogueSystem.StartDialogue("Start");
     }
 
     // TODO: Allow animating the change of the background image. Problem is, since we only have 1 background image and each gameobject
