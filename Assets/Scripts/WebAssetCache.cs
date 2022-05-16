@@ -757,14 +757,12 @@ public class WebAssetCache : MonoBehaviour
         await Task.Run(() =>
         {
             File.WriteAllBytes(filePath, pngTextureData);
-
-            // TODO: Somehow move this event call outside the asynchronous method, like in a callback. Any
-            // listener to this event will be forced to not use any Unity related code because of thread safety.
-            if (OnCachingFileComplete != null)
-            {
-                OnCachingFileComplete(assetName, assetPath, assetHash);
-            }
         });
+
+        if (OnCachingFileComplete != null)
+        {
+            OnCachingFileComplete(assetName, assetPath, assetHash);
+        }
     }
 
     private void AddAssetToDeletionQueue(Asset asset)
