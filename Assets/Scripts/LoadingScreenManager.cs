@@ -140,68 +140,68 @@ public class LoadingScreenManager : MonoBehaviour
         WebAssetCache.OnDeletingFileComplete -= FileDeleted;
     }
 
-    private void FileQueuedForDownload(string path)
+    private void FileQueuedForDownload(string name, string path, string hash)
     {
         numFilesToDownload += 1;
     }
 
-    private void DownloadingFile(string path)
+    private void DownloadingFile(string name, string path, string hash)
     {
-        statusMessage = string.Format("Downloading '{0}'.", path);
+        statusMessage = string.Format("Downloading '{0}'.", name);
     }
 
-    private void FileDownloaded(string path)
+    private void FileDownloaded(string name, string path, string hash)
     {
         totalDownloads += 1;
-        statusMessage = string.Format("'{0}' downloaded.", path);
+        statusMessage = string.Format("'{0}' downloaded.", name);
     }
 
-    private void FileQueuedForLoad(string path)
+    private void FileQueuedForLoad(string name, string path, string hash)
     {
         numFilesToLoad += 1;
     }
 
-    private void LoadingFile(string path)
+    private void LoadingFile(string name, string path, string hash)
     {
-        statusMessage = string.Format("Loading '{0}'.", path);
+        statusMessage = string.Format("Loading '{0}'.", name);
     }
 
-    private void FileLoaded(string path)
+    private void FileLoaded(string name, string path, string hash)
     {
         totalFilesLoaded += 1;
-        statusMessage = string.Format("'{0}' loaded.", path);
+        statusMessage = string.Format("'{0}' loaded.", name);
     }
 
-    private void FileQueuedForCache(string path)
+    private void FileQueuedForCache(string name, string path, string hash)
     {
         numFilesToCache += 1;
     }
 
-    private void CachingFile(string path)
+    private void CachingFile(string name, string path, string hash)
     {
-        statusMessage = string.Format("Caching '{0}'.", path);
+        statusMessage = string.Format("Caching '{0}'.", name);
     }
 
-    private void FileCached(string path)
+    private void FileCached(string name, string path, string hash)
     {
         totalFilesCached += 1;
-        statusMessage = string.Format("'{0}' cached.", path);
+        statusMessage = string.Format("'{0}' cached.", name);
     }
 
-    private void FileQueuedForDeletion(string path)
+    private void FileQueuedForDeletion(string name, string path, string hash)
     {
         numFilesToDelete += 1;
     }
 
-    private void DeletingFile(string path)
+    private void DeletingFile(string name, string path, string hash)
     {
-        statusMessage = string.Format("Deleting '{0}'.", path);
+        statusMessage = string.Format("Deleting '{0}'.", name);
     }
 
-    private void FileDeleted(string path)
+    private void FileDeleted(string name, string path, string hash)
     {
         totalFilesDeleted += 1;
-        statusMessage = string.Format("'{0}' deleted.", path);
+        statusMessage = string.Format("'{0}' deleted.", name);
     }
 
     private void StartupComplete()

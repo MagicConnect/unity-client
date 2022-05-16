@@ -180,27 +180,26 @@ public class WebAssetCache : MonoBehaviour
 
     #region Event Declarations
     // TODO: Clean up old event declarations, standardize event naming, implement event calls throughout code
-    // TODO: Use a namespace or a class to organize these events and make it easier for other scripts to find the
-    // event handlers.
     public static event Action OnStartupBegin;
     public static event Action OnStartupEnd;
     public static event Action OnCacheReady;
 
-    public static event Action<string> OnAssetAddedToDownloadQueue;
-    public static event Action<string> OnDownloadStarted;
-    public static event Action<string> OnDownloadFinished;
+    // The pattern for string arguments is (name, path, hash), in order of human readability.
+    public static event Action<string, string, string> OnAssetAddedToDownloadQueue;
+    public static event Action<string, string, string> OnDownloadStarted;
+    public static event Action<string, string, string> OnDownloadFinished;
 
-    public static event Action<string> OnAssetAddedToLoadQueue;
-    public static event Action<string> OnLoadingFileStarted;
-    public static event Action<string> OnLoadingFileComplete;
+    public static event Action<string, string, string> OnAssetAddedToLoadQueue;
+    public static event Action<string, string, string> OnLoadingFileStarted;
+    public static event Action<string, string, string> OnLoadingFileComplete;
 
-    public static event Action<string> OnAssetAddedToCacheQueue;
-    public static event Action<string> OnCachingFileStarted;
-    public static event Action<string> OnCachingFileComplete;
+    public static event Action<string, string, string> OnAssetAddedToCacheQueue;
+    public static event Action<string, string, string> OnCachingFileStarted;
+    public static event Action<string, string, string> OnCachingFileComplete;
 
-    public static event Action<string> OnAssetAddedToDeleteQueue;
-    public static event Action<string> OnDeletingFileStarted;
-    public static event Action<string> OnDeletingFileComplete;
+    public static event Action<string, string, string> OnAssetAddedToDeleteQueue;
+    public static event Action<string, string, string> OnDeletingFileStarted;
+    public static event Action<string, string, string> OnDeletingFileComplete;
     #endregion
 
     // This value limits the number of HTTP web requests the downloader coroutine is allowed to make at the same time.
@@ -561,7 +560,7 @@ public class WebAssetCache : MonoBehaviour
 
         if(OnAssetAddedToDownloadQueue != null)
         {
-            OnAssetAddedToDownloadQueue(asset.Path);
+            OnAssetAddedToDownloadQueue(asset.Name, asset.Path, asset.Hash);
         }
     }
 
@@ -594,7 +593,7 @@ public class WebAssetCache : MonoBehaviour
 
                 if(OnDownloadStarted != null)
                 {
-                    OnDownloadStarted(asset.Path);
+                    OnDownloadStarted(asset.Name, asset.Path, asset.Hash);
                 }
 
                 Debug.LogFormat("Download started for '{0}'.", asset.Path);
@@ -626,7 +625,7 @@ public class WebAssetCache : MonoBehaviour
 
         if(OnAssetAddedToCacheQueue != null)
         {
-            OnAssetAddedToCacheQueue(asset.Path);
+            OnAssetAddedToCacheQueue(asset.Name, asset.Path, asset.Hash);
         }
     }
 
@@ -692,14 +691,14 @@ public class WebAssetCache : MonoBehaviour
                         }
                     });
                     */
-                    Task newTask = AssetWriteTask(assetData.Path, filePath, pngTexture);
+                    Task newTask = AssetWriteTask(assetData.Name, assetData.Path, assetData.Hash, filePath, pngTexture);
 
                     activeTasks.Add(newTask);
                     Debug.LogFormat("{0} of {1} tasks running.", activeTasks.Count, SystemInfo.processorCount);
 
                     if (OnCachingFileStarted != null)
                     {
-                        OnCachingFileStarted(assetData.Path);
+                        OnCachingFileStarted(assetData.Name, assetData.Path, assetData.Hash);
                     }
                 }
                 else
@@ -752,15 +751,18 @@ public class WebAssetCache : MonoBehaviour
     }
 
     // The asynchronous task responsible for writing image asset data to a file in the background.
-    private async Task AssetWriteTask(string assetPath, string filePath, byte[] pngTextureData)
+    // TODO: Possibly compress first three arguments into an asset reference, or depending on how the callback is implemented maybe remove them entirely.
+    private async Task AssetWriteTask(string assetName, string assetPath, string assetHash, string filePath, byte[] pngTextureData)
     {
         await Task.Run(() =>
         {
             File.WriteAllBytes(filePath, pngTextureData);
 
+            // TODO: Somehow move this event call outside the asynchronous method, like in a callback. Any
+            // listener to this event will be forced to not use any Unity related code because of thread safety.
             if (OnCachingFileComplete != null)
             {
-                OnCachingFileComplete(assetPath);
+                OnCachingFileComplete(assetName, assetPath, assetHash);
             }
         });
     }
@@ -776,7 +778,7 @@ public class WebAssetCache : MonoBehaviour
 
         if(OnAssetAddedToDeleteQueue != null)
         {
-            OnAssetAddedToDeleteQueue(asset.Path);
+            OnAssetAddedToDeleteQueue(asset.Name, asset.Path, asset.Hash);
         }
     }
 
@@ -797,14 +799,14 @@ public class WebAssetCache : MonoBehaviour
                 // but for consistency's sake we'll do it anyway.
                 if(OnDeletingFileStarted != null)
                 {
-                    OnDeletingFileStarted(asset.Path);
+                    OnDeletingFileStarted(asset.Name, asset.Path, asset.Hash);
                 }
 
                 File.Delete(filePath);
 
                 if(OnDeletingFileComplete != null)
                 {
-                    OnDeletingFileComplete(asset.Path);
+                    OnDeletingFileComplete(asset.Name, asset.Path, asset.Hash);
                 }
 
                 Debug.LogFormat("Deleted '{0}' from the cache.", asset.Path);
@@ -832,7 +834,7 @@ public class WebAssetCache : MonoBehaviour
 
         if(OnAssetAddedToLoadQueue != null)
         {
-            OnAssetAddedToLoadQueue(asset.Path);
+            OnAssetAddedToLoadQueue(asset.Name, asset.Path, asset.Hash);
         }
     }
 
@@ -880,7 +882,7 @@ public class WebAssetCache : MonoBehaviour
 
         if(OnLoadingFileStarted != null)
         {
-            OnLoadingFileStarted(asset.Path);
+            OnLoadingFileStarted(asset.Name, asset.Path, asset.Hash);
         }
 
         // The 'file:///' string tells the web request to load a local file instead of trying to connect to a URL.
@@ -917,7 +919,7 @@ public class WebAssetCache : MonoBehaviour
 
             if(OnLoadingFileComplete != null)
             {
-                OnLoadingFileComplete(asset.Path);
+                OnLoadingFileComplete(asset.Name, asset.Path, asset.Hash);
             }
 
             Debug.LogFormat("Asset at {0} loaded from cache and into memory.", asset.Path);
@@ -1263,7 +1265,7 @@ public class WebAssetCache : MonoBehaviour
                         // Fire off the OnDownloadFinished event.
                         if (OnDownloadFinished != null)
                         {
-                            OnDownloadFinished(newAsset.path);
+                            OnDownloadFinished(newAsset.name, newAsset.path, newAsset.hash);
                         }
 
                         AddAssetToCachingQueue(assetData);
