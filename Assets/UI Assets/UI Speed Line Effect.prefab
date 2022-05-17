@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 2760231284852882921}
   - component: {fileID: 2760231284852882935}
   - component: {fileID: 2760231284852882934}
+  - component: {fileID: 8396072217432981166}
   m_Layer: 5
   m_Name: UI Speed Line Effect
   m_TagString: Untagged
@@ -74,6 +75,18 @@ MonoBehaviour:
   m_Particles:
   - {fileID: 8892481045432800279}
   m_ShrinkByMaterial: 0
+--- !u!114 &8396072217432981166
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2760231284852882920}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ec5a93c4f80c3d40984ba630c9c63a1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &2760231285401382212
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -83,7 +96,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1998598782409004602, guid: ba1048fe488e0ba44bba90efc0fc5b8f, type: 3}
       propertyPath: m_Enabled
-      value: 1
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 1998598782409004602, guid: ba1048fe488e0ba44bba90efc0fc5b8f, type: 3}
       propertyPath: m_LengthScale
