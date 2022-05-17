@@ -18,15 +18,6 @@ on:
     types: [opened]
 
 jobs:
-  purgeOldArtifacts:
-    name: Purge artifacts from old workflows
-    runs-on: ubuntu-latest
-    steps:
-      - uses: kolpav/purge-artifacts-action@v1
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          expire-in: 0
-
   buildForAllSupportedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: windows-2019
