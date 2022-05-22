@@ -73,3 +73,5 @@ crashlytics-build.properties
 
 # Sensitive Firebase files
 /[Aa]ssets/[Ff]irebase [Ff]iles/
+[Gg]oogle-[Ss]ervices.json
+[Gg]oogle[Ss]ervice-[Ii]nfo.plist
