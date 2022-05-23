@@ -70,9 +70,3 @@ crashlytics-build.properties
 # Temporary auto-generated Android Assets
 /[Aa]ssets/[Ss]treamingAssets/aa.meta
 /[Aa]ssets/[Ss]treamingAssets/aa/*
-
-# Sensitive Firebase files
-/[Aa]ssets/[Ff]irebase [Ff]iles/
-[Gg]oogle-[Ss]ervices.json
-[Gg]oogle[Ss]ervice-[Ii]nfo.plist
-[Gg]oogle-[Ss]ervices-[Dd]esktop.json
