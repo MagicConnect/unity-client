@@ -48,6 +48,7 @@
      <Compile Include="Assets\Scripts\CutsceneBackground.cs" />
      <Compile Include="Assets\Scripts\CutsceneCharacter.cs" />
      <Compile Include="Assets\Scripts\LoadingScreenManager.cs" />
+     <Compile Include="Assets\Scripts\CutsceneUIController.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
@@ -325,6 +326,12 @@
     </Reference>
     <Reference Include="Antlr4.Runtime.Standard">
         <HintPath>C:/Users/Dan/Desktop/magicon/unity-client/Library/PackageCache/dev.yarnspinner.unity@2.1.0/Runtime/DLLs/Antlr4.Runtime.Standard.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Xcode">
+        <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Xcode.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEditor.iOS.Extensions.Common">
+        <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/PlaybackEngines/iOSSupport/UnityEditor.iOS.Extensions.Common.dll</HintPath>
     </Reference>
     <Reference Include="netstandard">
         <HintPath>C:/Program Files/Unity/Hub/Editor/2020.3.17f1/Editor/Data/NetStandard/ref/2.0.0/netstandard.dll</HintPath>
