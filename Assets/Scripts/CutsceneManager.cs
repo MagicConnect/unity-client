@@ -148,6 +148,42 @@ public class CutsceneManager : MonoBehaviour
         dialogueSystem.StartDialogue("Start");
     }
 
+    public void StartCutscene()
+    {}
+
+    // Performs all necessary cleanup and shutdown procedures for ending the cutscene. For now, just hide all cutscene objects and fade to black.
+    // Later we can worry about "garbage collection" after the object pools are created, and which part of the game comes after the cutscene
+    // could (and probably should) be handled by whatever game manager started the cutscene in the first place.
+    public void EndCutscene()
+    {
+        // Set the background color to black.
+        staticBackground.GetComponent<CutsceneBackground>().StartColorChangeAnimation(Color.black);
+
+        // Hide all cutscene objects.
+        // TODO: This really shows the need for having a unified "cutscene object" and polymorphism to differentiate between them all.
+        // Do we really need 3 or more separate systems for handling these things when they all share so much functionality?
+        foreach(GameObject character in characters)
+        {
+            character.GetComponent<CutsceneCharacter>().HideCharacter();
+        }
+
+        foreach(KeyValuePair<string, GameObject> effect in effects.ToList())
+        {
+            effect.Value.GetComponent<CutsceneObject>().HideObject();
+        }
+
+        foreach(KeyValuePair<string, GameObject> cutsceneObject in cutsceneObjects.ToList())
+        {
+            cutsceneObject.Value.GetComponent<CutsceneObject>().HideObject();
+        }
+
+        // Hide the dialogue window.
+        // TODO: Set up some standard way of hiding and showing the dialogue window. Will most likely be a part of the dialogue window
+        // reverse engineering/customization that will come later.
+        dialogueSystem.Stop();
+        dialogueSystem.gameObject.SetActive(false);
+    }
+
     // TODO: Allow animating the change of the background image. Problem is, since we only have 1 background image and each gameobject
     // can only have one image component (afaik), we need to modify the spawning of background images so we have two we can switch between.
     // The alternative is some nonsense with mixing two images programmatically, which is probably way more work for no extra reward.

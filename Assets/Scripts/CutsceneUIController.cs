@@ -11,6 +11,8 @@ public class CutsceneUIController : MonoBehaviour
 
     public GameObject skipCutsceneDialogue;
 
+    public CutsceneManager cutsceneManager;
+
     public bool isGamePaused = false;
 
     public bool isSkipDialogueActive = false;
@@ -220,7 +222,8 @@ public class CutsceneUIController : MonoBehaviour
 
     public void OnSkipCutsceneYesClicked()
     {
-
+        HideSkipDialogue();
+        cutsceneManager.EndCutscene();
     }
 
     public void OnSkipCutsceneNoClicked()
