@@ -29,6 +29,8 @@ public class ExitDialogueUIController : MonoBehaviour
 
     public void ShowDialogue()
     {
+        gameObject.SetActive(true);
+
         if(exitAnimation != null)
         {
             StopCoroutine(exitAnimation);
@@ -49,12 +51,31 @@ public class ExitDialogueUIController : MonoBehaviour
 
     public IEnumerator ShowAnimationCoroutine()
     {
-        yield break;
+        canvasGroup.blocksRaycasts = true;
+
+        while (canvasGroup.alpha < 1.0f)
+        {
+            canvasGroup.alpha += animationSpeed * Time.unscaledDeltaTime;
+
+            yield return null;
+        }
+
+        exitAnimation = null;
     }
 
     public IEnumerator HideAnimationCoroutine()
     {
-        yield break;
+        canvasGroup.blocksRaycasts = false;
+
+        while (canvasGroup.alpha > 0.0f)
+        {
+            canvasGroup.alpha -= animationSpeed * Time.unscaledDeltaTime;
+
+            yield return null;
+        }
+
+        gameObject.SetActive(false);
+        exitAnimation = null;
     }
 
     public void OnYesButtonClicked()
@@ -63,6 +84,8 @@ public class ExitDialogueUIController : MonoBehaviour
         {
             OnExitDialogueYesClicked();
         }
+
+        Application.Quit();
     }
 
     public void OnNoButtonClicked()

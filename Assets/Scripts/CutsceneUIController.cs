@@ -7,6 +7,8 @@ public class CutsceneUIController : MonoBehaviour
 {
     public GameObject pauseScreenOverlay;
 
+    public ExitDialogueUIController exitDialogue;
+
     public bool isGamePaused = false;
 
     // When pausing the cutscene, the timescale is temporarily set to 0. When unpausing the game,
@@ -21,7 +23,7 @@ public class CutsceneUIController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SubscribeToEvents();
     }
 
     // Update is called once per frame
@@ -38,6 +40,21 @@ public class CutsceneUIController : MonoBehaviour
                 PauseCutscene();
             }
         }
+    }
+
+    void OnDestroy()
+    {
+        UnsubFromEvents();
+    }
+
+    private void SubscribeToEvents()
+    {
+        exitDialogue.OnExitDialogueNoClicked += OnExitDialogueNoClicked;
+    }
+
+    private void UnsubFromEvents()
+    {
+        exitDialogue.OnExitDialogueNoClicked -= OnExitDialogueNoClicked;
     }
 
     public void PauseCutscene()
@@ -110,5 +127,15 @@ public class CutsceneUIController : MonoBehaviour
         {
             PauseCutscene();
         }
+    }
+
+    public void OnExitButtonClicked()
+    {
+        exitDialogue.ShowDialogue();
+    }
+
+    public void OnExitDialogueNoClicked()
+    {
+        exitDialogue.HideDialogue();
     }
 }
