@@ -41,14 +41,15 @@
      <Compile Include="Assets\Scripts\Character.cs" />
      <Compile Include="Assets\Scripts\DynamicYarnLoader.cs" />
      <Compile Include="Assets\Scripts\CutsceneObject.cs" />
+     <Compile Include="Assets\Scripts\ExitDialogueUIController.cs" />
      <Compile Include="Assets\Scripts\DialogueDebugWindow.cs" />
      <Compile Include="Assets\Scripts\WebAssetCache.cs" />
      <Compile Include="Assets\Scripts\StageDirector.cs" />
      <Compile Include="Assets\Scripts\CutsceneManager.cs" />
      <Compile Include="Assets\Scripts\CutsceneBackground.cs" />
+     <Compile Include="Assets\Scripts\CutsceneUIController.cs" />
      <Compile Include="Assets\Scripts\CutsceneCharacter.cs" />
      <Compile Include="Assets\Scripts\LoadingScreenManager.cs" />
-     <Compile Include="Assets\Scripts\CutsceneUIController.cs" />
      <None Include="Assets\TextMesh Pro\Shaders\TMPro.cginc" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_SDF-Mobile Overlay.shader" />
      <None Include="Assets\TextMesh Pro\Shaders\TMP_Bitmap.shader" />
