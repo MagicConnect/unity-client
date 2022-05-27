@@ -9,7 +9,11 @@ public class CutsceneUIController : MonoBehaviour
 
     public ExitDialogueUIController exitDialogue;
 
+    public GameObject skipCutsceneDialogue;
+
     public bool isGamePaused = false;
+
+    public bool isSkipDialogueActive = false;
 
     // When pausing the cutscene, the timescale is temporarily set to 0. When unpausing the game,
     // the original timescale needs to be restored. If a custom timescale was being used, that
@@ -18,7 +22,11 @@ public class CutsceneUIController : MonoBehaviour
 
     public Coroutine pauseAnimation;
 
+    public Coroutine skipDialogueAnimation;
+
     public float pauseAnimationSpeed = 20.0f;
+
+    public float skipAnimationSpeed = 20.0f;
 
     // Start is called before the first frame update
     void Start()
@@ -90,7 +98,8 @@ public class CutsceneUIController : MonoBehaviour
 
         if(!isGamePaused)
         {
-            canvasGroup.alpha = 1.0f;
+            //canvasGroup.alpha = 1.0f;
+            canvasGroup.blocksRaycasts = false;
 
             while(canvasGroup.alpha > 0.0f)
             {
@@ -104,7 +113,8 @@ public class CutsceneUIController : MonoBehaviour
         else
         {
             pauseScreenOverlay.SetActive(true);
-            canvasGroup.alpha = 0.0f;
+            canvasGroup.blocksRaycasts = true;
+            //canvasGroup.alpha = 0.0f;
 
             while(canvasGroup.alpha < 1.0f)
             {
@@ -115,6 +125,70 @@ public class CutsceneUIController : MonoBehaviour
         }
 
         pauseAnimation = null;
+    }
+
+    public void ShowSkipDialogue()
+    {
+        //previousTimescale = Time.timeScale;
+        //Time.timeScale = 0.0f;
+        //isGamePaused = true;
+        isSkipDialogueActive = true;
+
+        if(skipDialogueAnimation != null)
+        {
+            StopCoroutine(skipDialogueAnimation);
+        }
+
+        skipDialogueAnimation = StartCoroutine(SkipAnimationCoroutine());
+    }
+
+    public void HideSkipDialogue()
+    {
+        //Time.timeScale = previousTimescale;
+        //isGamePaused = false;
+        isSkipDialogueActive = false;
+
+        if(skipDialogueAnimation != null)
+        {
+            StopCoroutine(skipDialogueAnimation);
+        }
+
+        skipDialogueAnimation = StartCoroutine(SkipAnimationCoroutine());
+    }
+
+    public IEnumerator SkipAnimationCoroutine()
+    {
+        CanvasGroup canvasGroup = skipCutsceneDialogue.GetComponent<CanvasGroup>();
+
+        if(!isSkipDialogueActive)
+        {
+            //canvasGroup.alpha = 1.0f;
+            canvasGroup.blocksRaycasts = false;
+
+            while(canvasGroup.alpha > 0.0f)
+            {
+                canvasGroup.alpha -= skipAnimationSpeed * Time.unscaledDeltaTime;
+
+                yield return null;
+            }
+
+            skipCutsceneDialogue.SetActive(false);
+        }
+        else
+        {
+            skipCutsceneDialogue.SetActive(true);
+            canvasGroup.blocksRaycasts = true;
+            //canvasGroup.alpha = 0.0f;
+
+            while(canvasGroup.alpha < 1.0f)
+            {
+                canvasGroup.alpha += skipAnimationSpeed * Time.unscaledDeltaTime;
+
+                yield return null;
+            }
+        }
+
+        skipDialogueAnimation = null;
     }
 
     public void OnPauseButtonClicked()
@@ -137,5 +211,20 @@ public class CutsceneUIController : MonoBehaviour
     public void OnExitDialogueNoClicked()
     {
         exitDialogue.HideDialogue();
+    }
+
+    public void OnSkipCutsceneButtonClicked()
+    {
+        ShowSkipDialogue();
+    }
+
+    public void OnSkipCutsceneYesClicked()
+    {
+
+    }
+
+    public void OnSkipCutsceneNoClicked()
+    {
+        HideSkipDialogue();
     }
 }
