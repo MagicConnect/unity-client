@@ -7,7 +7,7 @@ using UnityEngine.UI;
 public class CutsceneObject : MonoBehaviour
 {
     private Image objectImage;
-    private RectTransform rectTransform;
+    public RectTransform rectTransform;
 
     public Coroutine movingCoroutine;
     public Coroutine fadeOutCoroutine;
@@ -39,7 +39,7 @@ public class CutsceneObject : MonoBehaviour
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("fade_out_object")]
-    public IEnumerator FadeOutAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutObjectAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -56,7 +56,7 @@ public class CutsceneObject : MonoBehaviour
             fadeInCoroutine = null;
         }
 
-        fadeOutCoroutine = StartCoroutine(FadeOut(animationTime, r, g, b));
+        fadeOutCoroutine = StartCoroutine(FadeOutObject(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -64,7 +64,7 @@ public class CutsceneObject : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeOut(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutObject(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         Debug.LogFormat("{0} fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -106,7 +106,7 @@ public class CutsceneObject : MonoBehaviour
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("fade_in_object")]
-    public IEnumerator FadeInAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInObjectAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -122,7 +122,7 @@ public class CutsceneObject : MonoBehaviour
             fadeOutCoroutine = null;
         }
 
-        fadeInCoroutine = StartCoroutine(FadeIn(animationTime, r, g, b));
+        fadeInCoroutine = StartCoroutine(FadeInObject(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -130,7 +130,7 @@ public class CutsceneObject : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeIn(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInObject(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         Debug.LogFormat("Cutsene Object {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -168,7 +168,7 @@ public class CutsceneObject : MonoBehaviour
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_object")]
-    public IEnumerator SlideCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveObjectAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -177,7 +177,7 @@ public class CutsceneObject : MonoBehaviour
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(SlideCharacter(stagePosition, animationTime));
+        movingCoroutine = StartCoroutine(MoveObject(stagePosition, animationTime));
 
         if(waitForAnimation)
         {
@@ -185,7 +185,7 @@ public class CutsceneObject : MonoBehaviour
         }
     }
 
-    public IEnumerator SlideCharacter(GameObject stagePosition, float animationTime = 0.2f)
+    public IEnumerator MoveObject(GameObject stagePosition, float animationTime = 0.2f)
     {
         Debug.LogFormat("Cutscene Object {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
@@ -218,14 +218,14 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("move_object_to_coordinate")]
-    public IEnumerator MoveCharacterCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveObjectCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime));
+        movingCoroutine = StartCoroutine(MoveObjectToCoordinate(x, y, animationTime));
 
         if(waitForAnimation)
         {
@@ -234,7 +234,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
-    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.2f)
+    public IEnumerator MoveObjectToCoordinate(float x, float y, float animationTime = 0.2f)
     {
         Debug.LogFormat("Cutscene Object {0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;

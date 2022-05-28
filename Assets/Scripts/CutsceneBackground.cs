@@ -4,7 +4,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 
-public class CutsceneBackground : MonoBehaviour
+public class CutsceneBackground : CutsceneObject
 {
     // This holds all the possible background sprites that the writer can choose between, identified by
     // the name of the background in the asset manifest.

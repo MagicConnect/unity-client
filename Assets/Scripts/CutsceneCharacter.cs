@@ -4,11 +4,11 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 
-public class CutsceneCharacter : MonoBehaviour
+public class CutsceneCharacter : CutsceneObject
 {
     // References to the object's components so they don't have to be searched for every time they're needed.
     private Image characterImage;
-    private RectTransform rectTransform;
+    //private RectTransform rectTransform;
 
     public bool isDimming = false;
 
@@ -20,9 +20,9 @@ public class CutsceneCharacter : MonoBehaviour
     // these coroutine handlers will be necessary.
     Coroutine dimmingCoroutine;
     Coroutine undimmingCoroutine;
-    Coroutine movingCoroutine;
-    Coroutine fadeInCoroutine;
-    Coroutine fadeOutCoroutine;
+    //Coroutine movingCoroutine;
+    //Coroutine fadeInCoroutine;
+    //Coroutine fadeOutCoroutine;
 
     void Awake()
     {
@@ -342,7 +342,7 @@ public class CutsceneCharacter : MonoBehaviour
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_character")]
-    public IEnumerator SlideCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -351,7 +351,7 @@ public class CutsceneCharacter : MonoBehaviour
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(SlideCharacter(stagePosition, animationTime));
+        movingCoroutine = StartCoroutine(MoveCharacter(stagePosition, animationTime));
 
         if(waitForAnimation)
         {
@@ -359,7 +359,7 @@ public class CutsceneCharacter : MonoBehaviour
         }
     }
 
-    public IEnumerator SlideCharacter(GameObject stagePosition, float animationTime = 0.2f)
+    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.2f)
     {
         Debug.LogFormat("Cutscene Character {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;

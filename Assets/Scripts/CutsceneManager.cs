@@ -327,7 +327,8 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // To make it easier for the writers, this method allows dimming multiple characters at once.
-    // Note: Yarn Spinner doesn't support arrays as arguments, so I can't make this into a GameObject[].
+    // Note: Yarn Spinner doesn't support arrays as arguments, and you can't define the same command twice,
+    // so I can't make this into a GameObject[] or use the same command name for each overloaded method.
     // As far as I know, it has to be this awful.
     [YarnCommand("dim_characters")]
     public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
