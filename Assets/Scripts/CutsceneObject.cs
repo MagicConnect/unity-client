@@ -103,7 +103,7 @@ public class CutsceneObject : MonoBehaviour
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("fade_out_object")]
-    public IEnumerator FadeOutObjectAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutObject_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -170,7 +170,7 @@ public class CutsceneObject : MonoBehaviour
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("fade_in_object")]
-    public IEnumerator FadeInObjectAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInObject_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -232,7 +232,7 @@ public class CutsceneObject : MonoBehaviour
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_object")]
-    public IEnumerator MoveObjectAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveObject_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -282,7 +282,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("move_object_to_coordinate")]
-    public IEnumerator MoveObjectCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveObjectCoordinate_Handler(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {

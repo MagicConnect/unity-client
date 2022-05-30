@@ -194,7 +194,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     [YarnCommand("change_background_image")]
-    public static IEnumerator ChangeBackgroundImageAsync(string name, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator ChangeBackgroundImage_Handler(string name, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // Make sure there is a background image object to interact with before proceeding.
         if(!staticBackground)
@@ -256,7 +256,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     [YarnCommand("change_background_transparency")]
-    public static IEnumerator ChangeBackgroundAlphaAsync(float a, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator ChangeBackgroundAlpha_Handler(float a, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
         if(!staticBackground)

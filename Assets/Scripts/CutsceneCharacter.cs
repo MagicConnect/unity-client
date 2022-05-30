@@ -79,7 +79,7 @@ public class CutsceneCharacter : CutsceneObject
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("fade_out_character")]
-    public IEnumerator FadeOutAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -96,7 +96,7 @@ public class CutsceneCharacter : CutsceneObject
             fadeInCoroutine = null;
         }
 
-        fadeOutCoroutine = StartCoroutine(FadeOut(animationTime, r, g, b));
+        fadeOutCoroutine = StartCoroutine(FadeOutCharacter(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -104,7 +104,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator FadeOut(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -146,7 +146,7 @@ public class CutsceneCharacter : CutsceneObject
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("fade_in_character")]
-    public IEnumerator FadeInAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -162,7 +162,7 @@ public class CutsceneCharacter : CutsceneObject
             fadeOutCoroutine = null;
         }
 
-        fadeInCoroutine = StartCoroutine(FadeIn(animationTime, r, g, b));
+        fadeInCoroutine = StartCoroutine(FadeInCharacter(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -170,7 +170,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator FadeIn(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -219,7 +219,7 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("dim_character")]
-    public IEnumerator DimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -281,7 +281,7 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("undim_character")]
-    public IEnumerator UndimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -342,7 +342,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_character")]
-    public IEnumerator MoveCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -392,7 +392,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     [YarnCommand("move_character_to_coordinate")]
-    public IEnumerator MoveCharacterCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
