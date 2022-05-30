@@ -318,7 +318,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3883349543465695351, guid: 322d860eb4f70264c976c06e225eb512, type: 3}
       propertyPath: autoAdvance
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 3883349543654009861, guid: 322d860eb4f70264c976c06e225eb512, type: 3}
       propertyPath: m_AnchorMax.y
@@ -621,6 +621,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697f214ca429ef445ac135bc1cae4655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   defaultImage: {fileID: 0}
   alternateImage: {fileID: 0}
   trueColor: {r: 0, g: 0, b: 0, a: 0}
@@ -12029,6 +12030,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697f214ca429ef445ac135bc1cae4655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   defaultImage: {fileID: 0}
   alternateImage: {fileID: 0}
   trueColor: {r: 0, g: 0, b: 0, a: 0}
@@ -12359,6 +12361,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 697f214ca429ef445ac135bc1cae4655, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
   defaultImage: {fileID: 1977990745}
   alternateImage: {fileID: 634583464}
   trueColor: {r: 0, g: 0, b: 0, a: 0}

@@ -13,6 +13,11 @@ public class CutsceneObject : MonoBehaviour
     public Coroutine fadeOutCoroutine;
     public Coroutine fadeInCoroutine;
 
+    void Awake()
+    {
+
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,11 +31,70 @@ public class CutsceneObject : MonoBehaviour
         
     }
 
+    [YarnCommand("set_object_scale")]
+    public void SetObjectScale(float x, float y, float z)
+    {
+        rectTransform.localScale = new Vector3(x, y, z);
+    }
+
+    [YarnCommand("animate_object_scale")]
+    public IEnumerator AnimateObjectScale(float x, float y, float z, float animationTime, bool waitForAnimation)
+    {
+        yield break;
+    }
+
+    public IEnumerator AnimateObjectScaleAsync(float x, float y, float z, float animationTIme)
+    {
+        yield break;
+    }
+
+    [YarnCommand("set_object_rotation")]
+    public void SetObjectRotation(float x, float y, float z)
+    {
+        rectTransform.Rotate(x, y, z);
+    }
+
+    [YarnCommand("animate_object_rotation")]
+    public IEnumerator AnimateObjectRotation(float x, float y, float z, float animationTime, bool waitForAnimation)
+    {
+        yield break;
+    }
+
+    public IEnumerator AnimateObjectRotationAsync(float x, float y, float z, float animationTime)
+    {
+        yield break;
+    }
+
+    // Starts a rotation "effect" that plays until told to stop. The x,y,z values are the rate of rotation in degrees per second.
+    [YarnCommand("set_continuous_rotation")]
+    public void ContinuousObjectRotation(float x, float y, float z)
+    {
+
+    }
+
+    // This rotation coroutine will run until told to stop.
+    public IEnumerator ContinuousObjectRotationCoroutine(float x, float y, float z)
+    {
+        yield break;
+    }
+
+    // Stops any rotation animations playing on the object, including the continous rotation.
+    [YarnCommand("stop_object_rotation")]
+    public void StopObjectRotation()
+    {
+
+    }
+
+    // TODO: Show and hide object currently work for sprite-based cutscene objects. It probably won't work for other objects with
+    // different rendering components, like particle effects. Either adapt these for multiple cutscene object types, or move the functionality
+    // to the descendant components.
+    [YarnCommand("hide_object")]
     public void HideObject()
     {
         objectImage.enabled = false;
     }
 
+    [YarnCommand("show_object")]
     public void ShowObject()
     {
         objectImage.enabled = true;
