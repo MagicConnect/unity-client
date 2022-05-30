@@ -12,6 +12,8 @@ public class CutsceneObject : MonoBehaviour
     public Coroutine movingCoroutine;
     public Coroutine fadeOutCoroutine;
     public Coroutine fadeInCoroutine;
+    public Coroutine scalingCoroutine;
+    public Coroutine rotationCoroutine;
 
     void Awake()
     {
@@ -38,14 +40,54 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("animate_object_scale")]
-    public IEnumerator AnimateObjectScale(float x, float y, float z, float animationTime, bool waitForAnimation)
+    public IEnumerator AnimateObjectScale_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
     {
-        yield break;
+        // If there's already a scaling animation running, cancel it.
+        if(scalingCoroutine != null)
+        {
+            StopCoroutine(scalingCoroutine);
+        }
+
+        scalingCoroutine = StartCoroutine(AnimateObjectScale(x, y, z, animationTime));
+        
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => scalingCoroutine == null);
+        }
     }
 
-    public IEnumerator AnimateObjectScaleAsync(float x, float y, float z, float animationTIme)
+    public IEnumerator AnimateObjectScale(float x, float y, float z, float animationTime)
     {
-        yield break;
+        Debug.LogFormat("{0} scaling by ({1}, {2}, {3}) over {4} seconds.", gameObject.name, animationTime);
+        float timePassed = 0.0f;
+        Vector3 originalScale = rectTransform.localScale;
+        Vector3 newScale = new Vector3(x, y, z);
+
+        while(timePassed <= animationTime)
+        {
+            float progress;
+
+            // Make sure not to divide by 0.
+            if(animationTime <= 0.0f)
+            {
+                progress = 1.0f;
+            }
+            else
+            {
+                progress = timePassed / animationTime;
+            }
+
+            rectTransform.localScale = Vector3.Lerp(originalScale, newScale, progress);
+
+            timePassed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Make sure the desired scale result is set after the animation completes, in case the timing was off.
+        rectTransform.localScale = newScale;
+
+        scalingCoroutine = null;
+        Debug.LogFormat("Cutscene Object {0}: Scaling animation complete.", gameObject.name);
     }
 
     [YarnCommand("set_object_rotation")]
@@ -55,34 +97,89 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("animate_object_rotation")]
-    public IEnumerator AnimateObjectRotation(float x, float y, float z, float animationTime, bool waitForAnimation)
+    public IEnumerator AnimateObjectRotation_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
     {
-        yield break;
+        // If there's already a rotation animation running, cancel it.
+        if(rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
+
+        rotationCoroutine = StartCoroutine(AnimateObjectRotation(x, y, z, animationTime));
+        
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => rotationCoroutine == null);
+        }
     }
 
-    public IEnumerator AnimateObjectRotationAsync(float x, float y, float z, float animationTime)
+    public IEnumerator AnimateObjectRotation(float x, float y, float z, float animationTime)
     {
-        yield break;
+        Debug.LogFormat("{0} rotating by ({1}, {2}, {3}) over {4} seconds.", gameObject.name, animationTime);
+        float timePassed = 0.0f;
+        Quaternion originalRotation = rectTransform.rotation;
+        Quaternion newRotation = Quaternion.Euler(x, y, z);
+
+        while(timePassed <= animationTime)
+        {
+            float progress;
+
+            // Make sure not to divide by 0.
+            if(animationTime <= 0.0f)
+            {
+                progress = 1.0f;
+            }
+            else
+            {
+                progress = timePassed / animationTime;
+            }
+
+            rectTransform.rotation = Quaternion.Lerp(originalRotation, newRotation, progress);
+
+            timePassed += Time.deltaTime;
+            yield return null;
+        }
+
+        // Make sure the desired rotation result is set after the animation completes, in case the timing was off.
+        rectTransform.rotation = newRotation;
+
+        rotationCoroutine = null;
+        Debug.LogFormat("Cutscene Object {0}: Rotation animation complete.", gameObject.name);
     }
 
     // Starts a rotation "effect" that plays until told to stop. The x,y,z values are the rate of rotation in degrees per second.
-    [YarnCommand("set_continuous_rotation")]
-    public void ContinuousObjectRotation(float x, float y, float z)
+    [YarnCommand("start_continuous_rotation")]
+    public void StartContinuousObjectRotation(float x, float y, float z)
     {
+        // If there's already a rotation animation running, cancel it.
+        if(rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+        }
 
+        rotationCoroutine = StartCoroutine(ContinuousObjectRotation(x, y, z));
     }
 
     // This rotation coroutine will run until told to stop.
-    public IEnumerator ContinuousObjectRotationCoroutine(float x, float y, float z)
+    public IEnumerator ContinuousObjectRotation(float x, float y, float z)
     {
-        yield break;
+        while(true)
+        {
+            rectTransform.Rotate(x * Time.deltaTime, y * Time.deltaTime, z * Time.deltaTime);
+
+            yield return null;
+        }
     }
 
     // Stops any rotation animations playing on the object, including the continous rotation.
     [YarnCommand("stop_object_rotation")]
     public void StopObjectRotation()
     {
-
+        if(rotationCoroutine != null)
+        {
+            StopCoroutine(rotationCoroutine);
+            rotationCoroutine = null;
+        }
     }
 
     // TODO: Show and hide object currently work for sprite-based cutscene objects. It probably won't work for other objects with
