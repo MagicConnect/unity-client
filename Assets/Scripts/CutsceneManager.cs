@@ -145,7 +145,19 @@ public class CutsceneManager : MonoBehaviour
     public IEnumerator AutomaticStartRoutine()
     {
         yield return null;
+
+        // Once we're sure the scene has been setup and all objects have been created, compile a list of
+        // gameobject names so we can "reserve" them and prevent the writers from making duplicate names.
+        BuildReservedNameList();
+
         dialogueSystem.StartDialogue("Start");
+    }
+
+    public void BuildReservedNameList()
+    {
+        // Search through all gameobjects in the scene and add their names to the list.
+
+        // Add any manually reserved names here, if any.
     }
 
     public void StartCutscene()
@@ -793,5 +805,108 @@ public class CutsceneManager : MonoBehaviour
             Instance.cutsceneObjects.Remove(objectName);
             Destroy(temp);
         }
+    }
+
+    [YarnCommand("add_character")]
+    public static void AddCharacter(string objectName, string characterName, float x = 0.0f, float y = 0.0f, float z = 0.0f, bool visible = false)
+    {
+        // NOTE: For now there isn't a huge difference between a base cutscene object and a character. The split in creation
+        // methods needs to exist so that we'll be prepared for when more features are added in the future. The more content is built
+        // upon the old method of doing things, the nastier the mess we'll be in when the methods need to be changed.
+
+        // TODO: The way we're storing cutscene objects of various types needs to change entirely. Ideally they would be handled by
+        // a dedicated object pool or manager component, but for now we need a central dictionary that stores all objects together.
+        // Otherwise, every time an object is created we'll have to code against 4 or more data structures for any kind of advanced
+        // functionality, which will be a nightmare to write and maintain.
+
+        // First check to make sure that a character by the given name doesn't already exist.
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
+            return;
+        }
+
+        // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
+        // then there's nothing to do.
+        if(!Instance.assetPathsByName.ContainsKey(characterName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            return;
+        }
+
+        // Now that we know the name values are legit, spawn the object and start giving it data.
+        GameObject newObject = Instantiate(Instance.characterPrefab, Instance.characterContainer.transform);
+        newObject.name = objectName;
+
+        // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
+        Image image = newObject.GetComponent<Image>();
+        if(Instance.sprites.ContainsKey(characterName))
+        {
+            image.sprite = Instance.sprites[characterName];
+        }
+        else
+        {
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(characterName);
+            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+            image.sprite = newSprite;
+
+            Instance.sprites.Add(characterName, newSprite);
+        }
+
+        // If the object isn't meant to be seen after spawning, disable its rendering component.
+        if(!visible)
+        {
+            newObject.GetComponent<CutsceneCharacter>().HideCharacter();
+        }
+
+        // Add the new object to the list so it can be tracked.
+        Instance.characters.Add(newObject);
+    }
+
+    [YarnCommand("add_background")]
+    public static void AddBackground(string objectName, string spriteName, bool visible = false)
+    {
+        // First check to make sure that a character by the given name doesn't already exist.
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
+            return;
+        }
+
+        // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
+        // then there's nothing to do.
+        if(!Instance.assetPathsByName.ContainsKey(spriteName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            return;
+        }
+
+        // Now that we know the name values are legit, spawn the object and start giving it data.
+        GameObject newObject = Instantiate(Instance.characterPrefab, Instance.characterContainer.transform);
+        newObject.name = objectName;
+
+        // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
+        Image image = newObject.GetComponent<Image>();
+        if(Instance.sprites.ContainsKey(spriteName))
+        {
+            image.sprite = Instance.sprites[spriteName];
+        }
+        else
+        {
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(spriteName);
+            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+            image.sprite = newSprite;
+
+            Instance.sprites.Add(spriteName, newSprite);
+        }
+
+        // If the object isn't meant to be seen after spawning, disable its rendering component.
+        if(!visible)
+        {
+            newObject.GetComponent<CutsceneCharacter>().HideCharacter();
+        }
+
+        // Add the new object to the list so it can be tracked.
+        Instance.characters.Add(newObject);
     }
 }
