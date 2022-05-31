@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using Yarn.Unity;
 
 public class CutsceneUIController : MonoBehaviour
 {
@@ -12,6 +13,8 @@ public class CutsceneUIController : MonoBehaviour
     public GameObject skipCutsceneDialogue;
 
     public CutsceneManager cutsceneManager;
+
+    public CustomLineView lineView;
 
     public bool isGamePaused = false;
 
@@ -207,6 +210,7 @@ public class CutsceneUIController : MonoBehaviour
 
     public void OnExitButtonClicked()
     {
+        Debug.LogFormat("CutsceneUIController: OnExitButtonClicked().");
         exitDialogue.ShowDialogue();
     }
 
@@ -229,5 +233,10 @@ public class CutsceneUIController : MonoBehaviour
     public void OnSkipCutsceneNoClicked()
     {
         HideSkipDialogue();
+    }
+
+    public void OnAutoAdvanceButtonClicked()
+    {
+        lineView.autoAdvance = !lineView.autoAdvance;
     }
 }

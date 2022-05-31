@@ -19,7 +19,7 @@ public class CutsceneManager : MonoBehaviour
     // Reference to the dialogue system which is the core of the Yarn Spinner scripting plugin.
     public DialogueRunner dialogueSystem;
 
-    public LineView lineView;
+    //public LineView lineView;
 
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
     public List<GameObject> characters;
