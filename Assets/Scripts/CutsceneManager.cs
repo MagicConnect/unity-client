@@ -19,39 +19,48 @@ public class CutsceneManager : MonoBehaviour
     // Reference to the dialogue system which is the core of the Yarn Spinner scripting plugin.
     public DialogueRunner dialogueSystem;
 
-    //public LineView lineView;
-
-    // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
-    public List<GameObject> characters;
-
-    // Dictionary of active cutscene objects.
-    // TODO: Replace with a pool that manages the lifetime of cutscene objects.
-    public Dictionary<string, GameObject> cutsceneObjects;
-
-    // Dictionary of active effects created by the Yarn Spinner scripts, identified by their given tags.
-    // TODO: Replace this with an actual pool which manages the lifetime of effects.
-    public Dictionary<string, GameObject> effects;
-
-    // Once an object has been created, this dictionary can be used as a makeshift pool of sprites that have been loaded into memory.
-    // If the dictionary doesn't have the sprite, it can be created and added when necessary.
-    // TODO: Replace this with an actual sprite pool which keeps track of all sprites created over the client's runtime.
-    public Dictionary<string, Sprite> sprites;
-
-    // The cache identifies loaded assets by their path, not their name. If we want to check the cache of an asset of a certain name
-    // exists, without performing some LINQ queries, we'll need to know the paths of all assets of a given name.
-    // TODO: Possibly move this functionality to the cache itself. It wouldn't hurt to have another dictionary inside the cache that handles
-    // this relationship, and a series of helper methods that allow objects to ask for assets by name instead of a path.
-    public Dictionary<string, string> assetPathsByName;
-
-    // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
-    public int effectTotal = 0;
-
     // Just a helpful reference to the parent of all instantiated character and npc gameobjects.
     public GameObject characterContainer;
 
     // Just a helpful reference to the parent of all weapon, item, and accessory gameobjects.
     // TODO: Possibly combine this with the character container. Do we really need to split characters and objects from each other?
     public GameObject objectContainer;
+
+    public GameObject backgroundsContainer;
+
+    // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
+    public List<GameObject> characters = new List<GameObject>();
+
+    public Dictionary<string, GameObject> cutsceneCharacters = new Dictionary<string, GameObject>();
+
+    // Dictionary of active cutscene objects.
+    // TODO: Replace with a pool that manages the lifetime of cutscene objects.
+    public Dictionary<string, GameObject> cutsceneObjects = new Dictionary<string, GameObject>();
+
+    // Dictionary of active effects created by the Yarn Spinner scripts, identified by their given tags.
+    // TODO: Replace this with an actual pool which manages the lifetime of effects.
+    public Dictionary<string, GameObject> effects = new Dictionary<string, GameObject>();
+
+    // Once an object has been created, this dictionary can be used as a makeshift pool of sprites that have been loaded into memory.
+    // If the dictionary doesn't have the sprite, it can be created and added when necessary.
+    // TODO: Replace this with an actual sprite pool which keeps track of all sprites created over the client's runtime.
+    public Dictionary<string, Sprite> sprites = new Dictionary<string, Sprite>();
+
+    public Dictionary<string, GameObject> cutsceneBackgrounds = new Dictionary<string, GameObject>();
+
+    // The cache identifies loaded assets by their path, not their name. If we want to check the cache of an asset of a certain name
+    // exists, without performing some LINQ queries, we'll need to know the paths of all assets of a given name.
+    // TODO: Possibly move this functionality to the cache itself. It wouldn't hurt to have another dictionary inside the cache that handles
+    // this relationship, and a series of helper methods that allow objects to ask for assets by name instead of a path.
+    public Dictionary<string, string> assetPathsByName = new Dictionary<string, string>();
+
+    // A set of reserved names that all newly created cutscene objects must be checked against. This is primarily intended
+    // for keeping Yarn Spinner scripts from screwing with important pre-existing game objects in the scene. For preventing naming conflicts
+    // with other cutscene objects a separate data structure should be used.
+    public HashSet<string> reservedNames = new HashSet<string>();
+
+    // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
+    public int effectTotal = 0;
 
     // Reference to the background image that will display during the cutscene.
     public static GameObject staticBackground;
@@ -71,13 +80,7 @@ public class CutsceneManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // TODO: Move these up to their definitions. I'm pretty sure you can do that since I do it in the WebAssetCache.
-        characters = new List<GameObject>();
-        effects = new Dictionary<string, GameObject>();
-        cutsceneObjects = new Dictionary<string, GameObject>();
-        sprites = new Dictionary<string, Sprite>();
-        assetPathsByName = new Dictionary<string, string>();
-
+        /*
         // Create character objects from the loaded character assets.
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
         if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse)
@@ -121,9 +124,9 @@ public class CutsceneManager : MonoBehaviour
         }
         else
         {
-            Debug.LogErrorFormat("Cutscene Manger: Attempted to load cutscene when cache was not fully loaded.");
+            Debug.LogErrorFormat("Cutscene Manager: Attempted to load cutscene when cache was not fully loaded.");
         }
-
+        */
         // Find the background gameobject.
         staticBackground = GameObject.Find("CutsceneBackground");
 
@@ -146,19 +149,61 @@ public class CutsceneManager : MonoBehaviour
     {
         yield return null;
 
+        // Get a list of all valid assets that are in the cache and can be used by cutscene objects.
+        BuildAssetNameLists();
+
         // Once we're sure the scene has been setup and all objects have been created, compile a list of
         // gameobject names so we can "reserve" them and prevent the writers from making duplicate names.
         BuildReservedNameList();
 
+        // Deal with any arguments passed in via the command line.
+        ReadCommandLineArguments();
+
         dialogueSystem.StartDialogue("Start");
+    }
+
+    public void BuildAssetNameLists()
+    {
+        // Populate the dictionary of asset names/paths.
+        // TODO: Move/delete all this so the cache can handle it.
+        /*List<WebAssetCache.LoadedImageAsset> characters = WebAssetCache.Instance.GetLoadedAssetsByCategory("characters");
+        List<WebAssetCache.LoadedImageAsset> npcs = WebAssetCache.Instance.GetLoadedAssetsByCategory("npcs");
+        List<WebAssetCache.LoadedImageAsset> weapons = WebAssetCache.Instance.GetLoadedAssetsByCategory("weapons");
+        List<WebAssetCache.LoadedImageAsset> accessories = WebAssetCache.Instance.GetLoadedAssetsByCategory("accessories");
+        List<WebAssetCache.LoadedImageAsset> items = WebAssetCache.Instance.GetLoadedAssetsByCategory("items");
+        List<WebAssetCache.LoadedImageAsset> backgrounds = WebAssetCache.Instance.GetLoadedAssetsByCategory("backgrounds");
+        List<WebAssetCache.LoadedImageAsset> objects = weapons.Concat(accessories).Concat(items).ToList();*/
+
+        List<WebAssetCache.LoadedImageAsset> assets = WebAssetCache.Instance.GetLoadedAssetsByCategory("characters", "npcs", "weapons", "accessories", "items", "backgrounds");
+
+        foreach(WebAssetCache.LoadedImageAsset asset in assets)
+        {
+            if(!assetPathsByName.ContainsKey(asset.name))
+            {
+                assetPathsByName.Add(asset.name, asset.path);
+            }
+        }
     }
 
     public void BuildReservedNameList()
     {
         // Search through all gameobjects in the scene and add their names to the list.
+        var objectsInScene = GameObject.FindObjectsOfType<GameObject>(true);
+
+        //Debug.LogFormat("Existing game objects:");
+        foreach(GameObject objectInScene in objectsInScene)
+        {
+            //Debug.LogFormat("{0}", objectInScene.name);
+            reservedNames.Add(objectInScene.name);
+        }
 
         // Add any manually reserved names here, if any.
+
+        Debug.LogFormat("CutsceneManager: List of reserved cutscene object names built. {0} names reserved.", objectsInScene.Length);
     }
+
+    public void ReadCommandLineArguments()
+    {}
 
     public void StartCutscene()
     {}
@@ -749,7 +794,14 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("add_object")]
     public static void AddCutsceneObject(string objectName, string spriteName, GameObject position = null, bool visible = false)
     {
-        // First check to make sure that an object by the given name doesn't already exist.
+        // Check to make sure the object name isn't in the list of reserved names.
+        if(Instance.reservedNames.Contains(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the given name {0} is reserved by the client.", objectName);
+            return;
+        }
+
+        // Check to make sure that a cutscene object by the given name doesn't already exist.
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because another object with the name '{0}' already exists.", objectName);
@@ -819,7 +871,14 @@ public class CutsceneManager : MonoBehaviour
         // Otherwise, every time an object is created we'll have to code against 4 or more data structures for any kind of advanced
         // functionality, which will be a nightmare to write and maintain.
 
-        // First check to make sure that a character by the given name doesn't already exist.
+        // Check to make sure the object name isn't in the list of reserved names.
+        if(Instance.reservedNames.Contains(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because the given name {0} is reserved by the client.", objectName);
+            return;
+        }
+
+        // Check to make sure that a character by the given name doesn't already exist.
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
@@ -859,17 +918,25 @@ public class CutsceneManager : MonoBehaviour
             newObject.GetComponent<CutsceneCharacter>().HideCharacter();
         }
 
-        // Add the new object to the list so it can be tracked.
+        // Add the new object to the list(s) so it can be tracked.
         Instance.characters.Add(newObject);
+        Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
     [YarnCommand("add_background")]
     public static void AddBackground(string objectName, string spriteName, bool visible = false)
     {
-        // First check to make sure that a character by the given name doesn't already exist.
+        // Check to make sure the object name isn't in the list of reserved names.
+        if(Instance.reservedNames.Contains(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the given name {0} is reserved by the client.", objectName);
+            return;
+        }
+
+        // Check to make sure that a character by the given name doesn't already exist.
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
-            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because another object with the name '{0}' already exists.", objectName);
             return;
         }
 
@@ -877,7 +944,7 @@ public class CutsceneManager : MonoBehaviour
         // then there's nothing to do.
         if(!Instance.assetPathsByName.ContainsKey(spriteName))
         {
-            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
             return;
         }
 
@@ -903,10 +970,11 @@ public class CutsceneManager : MonoBehaviour
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
         {
-            newObject.GetComponent<CutsceneCharacter>().HideCharacter();
+            newObject.GetComponent<CutsceneBackground>().HideObject();
         }
 
         // Add the new object to the list so it can be tracked.
-        Instance.characters.Add(newObject);
+        Instance.cutsceneObjects.Add(objectName, newObject);
+        Instance.cutsceneBackgrounds.Add(objectName, newObject);
     }
 }

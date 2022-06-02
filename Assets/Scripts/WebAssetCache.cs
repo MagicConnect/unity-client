@@ -281,15 +281,20 @@ public class WebAssetCache : MonoBehaviour
     // Get all the loaded image assets of a given category.
     public List<LoadedImageAsset> GetLoadedAssetsByCategory(string category)
     {
-        // DELETE
-        /*
-        foreach(KeyValuePair<string, LoadedImageAsset> asset in loadedAssets)
-        {
-            Debug.LogFormat("Asset name: {0} Asset category: {1}", asset.Value.name, asset.Value.category);
-        }
-        */
-
         return loadedAssets.Values.Where((a) => a.category == category).ToList();
+    }
+
+    // The above method but for specifying multiple categories instead of just one.
+    public List<LoadedImageAsset> GetLoadedAssetsByCategory(params string[] categories)
+    {
+        List<LoadedImageAsset> assets = new List<LoadedImageAsset>();
+
+        foreach(string category in categories)
+        {
+            assets.Concat(loadedAssets.Values.Where((a) => a.category == category).ToList());
+        }
+
+        return assets;
     }
 
     public LoadedImageAsset GetLoadedImageAssetByName(string name)
