@@ -291,7 +291,8 @@ public class WebAssetCache : MonoBehaviour
 
         foreach(string category in categories)
         {
-            assets.Concat(loadedAssets.Values.Where((a) => a.category == category).ToList());
+            var newAssets = loadedAssets.Values.Where((a) => a.category == category).ToList();
+            assets.AddRange(newAssets);
         }
 
         return assets;

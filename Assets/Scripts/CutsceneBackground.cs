@@ -28,12 +28,23 @@ public class CutsceneBackground : CutsceneObject
 
     public Coroutine imageChangeCoroutine {get; private set;}
 
+    // Until we have a pool for sprites and other assets, we need a reference to the cutscene manager where all the loaded
+    // sprites are stored.
+    public CutsceneManager cutsceneManager;
+
     void Awake()
     {
         // Set the image component and configure it for proper display.
-        image = GetComponent<Image>();
-        image.preserveAspect = true;
+        //image = GetComponent<Image>();
+        //image.preserveAspect = true;
 
+        cutsceneManager = GameObject.Find("Cutscene Manager").GetComponent<CutsceneManager>();
+        rectTransform = GetComponent<RectTransform>();
+
+        defaultImage.preserveAspect = true;
+        alternateImage.preserveAspect = true;
+
+        /*
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
         if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse)
         {
@@ -56,6 +67,7 @@ public class CutsceneBackground : CutsceneObject
         {
             Debug.LogErrorFormat("Cutscene Background: Attempted to load background when cache was not fully loaded.");
         }
+        */
     }
 
     // Start is called before the first frame update
@@ -71,24 +83,48 @@ public class CutsceneBackground : CutsceneObject
     }
 
     // Change the background image to a loaded sprite of the given name.
-    public void ChangeBackgroundImage(string name)
+    [YarnCommand("set_background_image")]
+    public void SetImage(string name)
     {
-        if(backgroundSprites.ContainsKey(name))
+        // Get the sprite from the pool (cutscene manager).
+        Sprite newSprite = cutsceneManager.GetSprite(name);
+        if(newSprite)
         {
-            image.sprite = backgroundSprites[name];
+            // I don't think the alternate image needs to be changed at all.
+            defaultImage.sprite = newSprite;
         }
         else
         {
-            Debug.LogErrorFormat("Cutscene Background: Background sprite named '{0}' does not exist.", name);
+            // If the sprite reference is null then it wasn't possible to get one using the given asset name.
+            Debug.LogErrorFormat("Cutscene Background ({0}): Cannot change image because there is no sprite with the name '{1}'.", gameObject.name, name);
+            return;
         }
     }
 
-    public IEnumerator ChangeBackgroundImage(string name, float animationTime = 0.0f)
+    [YarnCommand("change_background_image")]
+    public IEnumerator AnimateImageChange_Handler(string name, float animationTime = 0.0f, bool waitForAnimation = false)
     {
-        if(!backgroundSprites.ContainsKey(name))
+        if(imageChangeCoroutine != null)
         {
-            Debug.LogFormat("Cutscene Background: Cannot change image to '{0}' because no image by that name exists.", name);
-            imageChangeCoroutine = null;
+            StopCoroutine(imageChangeCoroutine);
+        }
+
+        imageChangeCoroutine = StartCoroutine(ChangeImage(name, animationTime));
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => imageChangeCoroutine == null);
+        }
+    }
+
+    public IEnumerator ChangeImage(string name, float animationTime = 0.0f)
+    {
+        // Get the sprite from the pool (cutscene manager).
+        Sprite newSprite = cutsceneManager.GetSprite(name);
+        if(!newSprite)
+        {
+            // If the sprite reference is null then it wasn't possible to get one using the given asset name.
+            Debug.LogErrorFormat("Cutscene Background ({0}): Cannot change image because there is no sprite with the name '{1}'.");
             yield break;
         }
 
@@ -106,7 +142,7 @@ public class CutsceneBackground : CutsceneObject
         alternateImage.color = trueColor;
 
         // Most importantly, set the alternate image to have the new sprite.
-        alternateImage.sprite = backgroundSprites[name];
+        alternateImage.sprite = newSprite;
 
         while(timePassed <= animationTime)
         {
@@ -151,7 +187,7 @@ public class CutsceneBackground : CutsceneObject
 
     public void StartImageChangeAnimation(string name, float animationTime = 0.0f)
     {
-        imageChangeCoroutine = StartCoroutine(ChangeBackgroundImage(name, animationTime));
+        imageChangeCoroutine = StartCoroutine(ChangeImage(name, animationTime));
     }
 
     public void StopImageChangeAnimation()
@@ -161,14 +197,69 @@ public class CutsceneBackground : CutsceneObject
     }
 
     // Change the background image's color to the one given.
-    public void ChangeBackgroundColor(Color color)
+    [YarnCommand("set_background_color")]
+    public void SetColor(float r, float g, float b, float a = 1.0f)
     {
-        image.color = color;
+        // TODO: If the color is changed while an image or color change animation is occurring it could cause problems.
+        // Or it could be fine. Keep this method in mind if there are any bugs.
+        Color color = new Color(r, g, b, a);
+        trueColor = color;
+
+        // If there is no animation currently ongoing, change the image's color as well. Otherwise, this is probably being
+        // handled by the animation coroutine.
+        if(colorChangeCoroutine == null)
+        {
+            defaultImage.color = color;
+        }
+    }
+
+    [YarnCommand("set_background_alpha")]
+    public void SetAlpha(float a)
+    {
+        trueColor.a = a;
+
+        if(colorChangeCoroutine == null)
+        {
+            Color color = new Color(trueColor.r, trueColor.g, trueColor.b, a);
+            defaultImage.color = color;
+        }
+    }
+
+    [YarnCommand("change_background_alpha")]
+    public IEnumerator ChangeAlpha_Handler(float a, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        if(colorChangeCoroutine != null)
+        {
+            StopCoroutine(colorChangeCoroutine);
+        }
+
+        colorChangeCoroutine = StartCoroutine(ChangeColor(new Color(trueColor.r, trueColor.g, trueColor.b, a), animationTime));
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => colorChangeCoroutine == null);
+        }
+    }
+
+    [YarnCommand("change_background_color")]
+    public IEnumerator ChangeColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        if(colorChangeCoroutine != null)
+        {
+            StopCoroutine(colorChangeCoroutine);
+        }
+
+        colorChangeCoroutine = StartCoroutine(ChangeColor(new Color(r, g, b, a), animationTime));
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => colorChangeCoroutine == null);
+        }
     }
 
     // The above handler coroutines will share the same background animation coroutine, because essentially changing color and alpha
     // is the exact same thing. We have separate handlers because we need separate Yarn commands that handle variations of the same functionality.
-    public IEnumerator ChangeBackgroundColor(Color newColor, float animationTime = 0.0f)
+    public IEnumerator ChangeColor(Color newColor, float animationTime = 0.0f)
     {
         Debug.LogFormat("Cutscene Background: Changing background color to {0} over {1} seconds.", newColor, animationTime);
 
@@ -211,12 +302,26 @@ public class CutsceneBackground : CutsceneObject
 
     public void StartColorChangeAnimation(Color newColor, float animationTime = 0.0f)
     {
-        colorChangeCoroutine = StartCoroutine(ChangeBackgroundColor(newColor, animationTime));
+        colorChangeCoroutine = StartCoroutine(ChangeColor(newColor, animationTime));
     }
 
     public void StopColorChangeAnimation()
     {
         StopCoroutine(colorChangeCoroutine);
         colorChangeCoroutine = null;
+    }
+
+    [YarnCommand("show_background")]
+    public void HideBackground()
+    {
+        defaultImage.enabled = false;
+        alternateImage.enabled = false;
+    }
+
+    [YarnCommand("hide_background")]
+    public void ShowBackground()
+    {
+        defaultImage.enabled = true;
+        alternateImage.enabled = true;
     }
 }

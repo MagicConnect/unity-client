@@ -16,6 +16,8 @@ public class CutsceneManager : MonoBehaviour
     // The prefab of the cutscene object to be spawned.
     public GameObject cutsceneObjectPrefab;
 
+    public GameObject backgroundPrefab;
+
     // Reference to the dialogue system which is the core of the Yarn Spinner scripting plugin.
     public DialogueRunner dialogueSystem;
 
@@ -147,6 +149,10 @@ public class CutsceneManager : MonoBehaviour
     // script information passed in and we have a bunch of other game objects to wait on, change it to watch for some 'isReady' flags or something.
     public IEnumerator AutomaticStartRoutine()
     {
+        // Make sure the asset cache has been fully initialized before continuing.
+        yield return new WaitUntil(() => WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse);
+
+        // Wait an additional frame to make sure all object Start() methods have been called.
         yield return null;
 
         // Get a list of all valid assets that are in the cache and can be used by cutscene objects.
@@ -158,6 +164,9 @@ public class CutsceneManager : MonoBehaviour
 
         // Deal with any arguments passed in via the command line.
         ReadCommandLineArguments();
+
+        // Spawn any essential cutscene objects.
+        SpawnDefaultObjects();
 
         dialogueSystem.StartDialogue("Start");
     }
@@ -181,8 +190,11 @@ public class CutsceneManager : MonoBehaviour
             if(!assetPathsByName.ContainsKey(asset.name))
             {
                 assetPathsByName.Add(asset.name, asset.path);
+                Debug.LogFormat("Cutscene Manager: Asset path added to list -> {0} : {1}", asset.name, asset.path);
             }
         }
+
+        Debug.LogFormat("Cutscene Manager: Cutscene asset list built. {0} assets in the list.", assetPathsByName.Count);
     }
 
     public void BuildReservedNameList()
@@ -199,11 +211,21 @@ public class CutsceneManager : MonoBehaviour
 
         // Add any manually reserved names here, if any.
 
-        Debug.LogFormat("CutsceneManager: List of reserved cutscene object names built. {0} names reserved.", objectsInScene.Length);
+        Debug.LogFormat("Cutscene Manager: List of reserved cutscene object names built. {0} names reserved.", objectsInScene.Length);
     }
 
     public void ReadCommandLineArguments()
     {}
+
+    public void SpawnDefaultObjects()
+    {
+        // There needs to be a background object which will render the default background color. This color should be seen
+        // if and when there is nothing visible on screen.
+        // NOTE: Alternatively just make a default background color object that can't be interacted with. Not even a cutscene object, just
+        // a UI element.
+        //AddBackground("DefaultBackground", "LanaBedroom", true);
+        //cutsceneBackgrounds["DefaultBackground"].GetComponent<CutsceneBackground>().SetColor(Color.black.r, Color.black.g, Color.black.b);
+    }
 
     public void StartCutscene()
     {}
@@ -247,10 +269,10 @@ public class CutsceneManager : MonoBehaviour
     //[YarnCommand("change_background_image")]
     public static void SetBackgroundImage(string name)
     {
-        staticBackground?.GetComponent<CutsceneBackground>().ChangeBackgroundImage(name);
+        staticBackground?.GetComponent<CutsceneBackground>().ChangeImage(name);
     }
 
-    [YarnCommand("change_background_image")]
+    //[YarnCommand("change_background_image")]
     public static IEnumerator ChangeBackgroundImage_Handler(string name, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // Make sure there is a background image object to interact with before proceeding.
@@ -280,11 +302,11 @@ public class CutsceneManager : MonoBehaviour
     public static void SetBackgroundColor(float r, float g, float b, float a = 1.0f)
     {
         Color color = new Color(r, g, b, a);
-        staticBackground?.GetComponent<CutsceneBackground>().ChangeBackgroundColor(color);
+        staticBackground?.GetComponent<CutsceneBackground>().ChangeColor(color);
     }
 
     // Handler which allows Yarn to animate the changing of background color, with the option to wait for the animation to complete.
-    [YarnCommand("change_background_color")]
+    //[YarnCommand("change_background_color")]
     public static IEnumerator ChangeBackgroundColorAsync(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
@@ -312,7 +334,7 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("change_background_transparency")]
+    //[YarnCommand("change_background_transparency")]
     public static IEnumerator ChangeBackgroundAlpha_Handler(float a, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
@@ -829,6 +851,8 @@ public class CutsceneManager : MonoBehaviour
 
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
         Image image = newObject.GetComponent<Image>();
+        image.sprite = Instance.GetSprite(spriteName);
+        /*
         if(Instance.sprites.ContainsKey(spriteName))
         {
             image.sprite = Instance.sprites[spriteName];
@@ -840,7 +864,7 @@ public class CutsceneManager : MonoBehaviour
             image.sprite = newSprite;
 
             Instance.sprites.Add(spriteName, newSprite);
-        }
+        }*/
 
         if(!visible)
         {
@@ -899,6 +923,8 @@ public class CutsceneManager : MonoBehaviour
 
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
         Image image = newObject.GetComponent<Image>();
+        image.sprite = Instance.GetSprite(characterName);
+        /*
         if(Instance.sprites.ContainsKey(characterName))
         {
             image.sprite = Instance.sprites[characterName];
@@ -910,7 +936,7 @@ public class CutsceneManager : MonoBehaviour
             image.sprite = newSprite;
 
             Instance.sprites.Add(characterName, newSprite);
-        }
+        }*/
 
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
@@ -921,6 +947,18 @@ public class CutsceneManager : MonoBehaviour
         // Add the new object to the list(s) so it can be tracked.
         Instance.characters.Add(newObject);
         Instance.cutsceneObjects.Add(objectName, newObject);
+    }
+
+    [YarnCommand("remove_character")]
+    public static void RemoveCharacter(string objectName)
+    {
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            GameObject temp = Instance.cutsceneObjects[objectName];
+            Instance.cutsceneObjects.Remove(objectName);
+            Instance.characters.Remove(temp);
+            Destroy(temp);
+        }
     }
 
     [YarnCommand("add_background")]
@@ -942,18 +980,21 @@ public class CutsceneManager : MonoBehaviour
 
         // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
         // then there's nothing to do.
+        // NOTE: Probably redundant. Either handled by the existing GetSprite() method, or will be handled by a sprite pool.
         if(!Instance.assetPathsByName.ContainsKey(spriteName))
         {
-            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", spriteName);
             return;
         }
 
         // Now that we know the name values are legit, spawn the object and start giving it data.
-        GameObject newObject = Instantiate(Instance.characterPrefab, Instance.characterContainer.transform);
+        GameObject newObject = Instantiate(Instance.backgroundPrefab, Instance.backgroundsContainer.transform);
         newObject.name = objectName;
 
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
-        Image image = newObject.GetComponent<Image>();
+        // NOTE: This should now be handled by the background object itself.
+        newObject.GetComponent<CutsceneBackground>().SetImage(spriteName);
+        /*Image image = newObject.GetComponent<Image>();
         if(Instance.sprites.ContainsKey(spriteName))
         {
             image.sprite = Instance.sprites[spriteName];
@@ -965,16 +1006,57 @@ public class CutsceneManager : MonoBehaviour
             image.sprite = newSprite;
 
             Instance.sprites.Add(spriteName, newSprite);
-        }
+        }*/
 
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
         {
-            newObject.GetComponent<CutsceneBackground>().HideObject();
+            newObject.GetComponent<CutsceneBackground>().HideBackground();
         }
 
         // Add the new object to the list so it can be tracked.
         Instance.cutsceneObjects.Add(objectName, newObject);
         Instance.cutsceneBackgrounds.Add(objectName, newObject);
+    }
+
+    [YarnCommand("remove_background")]
+    public static void RemoveBackground(string objectName)
+    {
+        if(Instance.cutsceneObjects.ContainsKey(objectName) && Instance.cutsceneBackgrounds.ContainsKey(objectName))
+        {
+            GameObject temp = Instance.cutsceneObjects[objectName];
+            Instance.cutsceneObjects.Remove(objectName);
+            Instance.cutsceneBackgrounds.Remove(objectName);
+            Destroy(temp);
+        }
+    }
+
+    // Until we have a pool of sprites and other assets, we need some methods that manage creating and passing around assets that other objects need.
+    public Sprite GetSprite(string spriteName)
+    {
+        // If the sprite already exists in the pool, return it.
+        if(sprites.ContainsKey(name))
+        {
+            return sprites[name];
+        }
+        else
+        {
+            // The sprite doesn't exist yet so it needs to be created, if possible.
+
+            // Make sure the sprite name corresponds to a texture asset that exists in the cache, and that it is allowed to be used for cutscene objects.
+            if(!assetPathsByName.ContainsKey(spriteName))
+            {
+                Debug.LogErrorFormat("Cutscene Manager: Sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", spriteName);
+                return null;
+            }
+
+            // Create the new sprite, add it to the pool, and pass it on to whoever asked for it.
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByPath(assetPathsByName[spriteName]);
+            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+
+            Instance.sprites.Add(spriteName, newSprite);
+
+            return newSprite;
+        }
     }
 }

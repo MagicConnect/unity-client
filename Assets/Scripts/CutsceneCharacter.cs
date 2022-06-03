@@ -7,7 +7,7 @@ using Yarn.Unity;
 public class CutsceneCharacter : CutsceneObject
 {
     // References to the object's components so they don't have to be searched for every time they're needed.
-    private Image characterImage;
+    public Image characterImage;
     //private RectTransform rectTransform;
 
     public bool isDimming = false;
@@ -26,17 +26,17 @@ public class CutsceneCharacter : CutsceneObject
 
     void Awake()
     {
-        
-    }
-
-    // Start is called before the first frame update
-    void Start()
-    {
         characterImage = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
 
         // Don't show the character after creation unless told to by the yarn script.
         HideCharacter();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame

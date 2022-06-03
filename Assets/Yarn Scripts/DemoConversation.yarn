@@ -6,8 +6,11 @@ Press Tab to open the debug window and load some scripts, or press the Continue 
 title: DemoConversation
 tags:
 ---
-<<change_background_image "LanaBedroom">>
-<<move_character BerylVegha Center 0.0>>
+<<add_background "BasicBackground" "LanaBedroom" visible>>
+<<set_background_color BasicBackground 0.0 0.0 0.0>>
+<<add_character "BerylVegha" "BerylVegha">>
+<<add_character "LanaElenore" "LanaElenore">>
+<<change_background_color BasicBackground 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<fade_in_character BerylVegha>>
 <<add_object "test_axe" "Axe1s001" null visible>>
 Beryl: Hey! My name's Beryl!
@@ -48,12 +51,12 @@ Beryl: Finally, to the center of the stage!
 Beryl: That's just the way I like it.
 Beryl: How about a little change of view? I'm a bit tired of this stuffy old room.
 <<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
-<<change_background_color 0.0 0.0 0.0 1.0 1.0>>
+<<change_background_color BasicBackground 0.0 0.0 0.0 1.0 1.0>>
 You and Beryl go for a walk down the hall...
 <<change_background_image "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.
 <<fade_in_character BerylVegha 0.2 false 0.0 0.0 0.0>>
-<<change_background_color 1.0 1.0 1.0 1.0 1.0>>
+<<change_background_color BasicBackground 1.0 1.0 1.0 1.0 1.0>>
 Beryl: A barracks? Hmm, not the most fun place to be but it'll do for now.
 Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
 -> Sure
