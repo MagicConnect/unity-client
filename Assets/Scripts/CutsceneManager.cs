@@ -16,7 +16,11 @@ public class CutsceneManager : MonoBehaviour
     // The prefab of the cutscene object to be spawned.
     public GameObject cutsceneObjectPrefab;
 
+    // The prefab of the background object to be spawned.
     public GameObject backgroundPrefab;
+
+    // The CutsceneUIController component of this game object which we use to interact with the UI.
+    public CutsceneUIController uiController;
 
     // Reference to the dialogue system which is the core of the Yarn Spinner scripting plugin.
     public DialogueRunner dialogueSystem;
@@ -214,8 +218,186 @@ public class CutsceneManager : MonoBehaviour
         Debug.LogFormat("Cutscene Manager: List of reserved cutscene object names built. {0} names reserved.", objectsInScene.Length);
     }
 
+    // Helper method for getting a desired command line argument.
+    public string GetArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+
+        for(int i = 0; i < args.Length; i += 1)
+        {
+            if(args[i] == name && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
+        }
+
+        return null;
+    }
+
+    // Helper method for getting the existence of a command line argument, for when arguments can have no values.
+    public bool HasArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+
+        for(int i = 0; i < args.Length; i += 1)
+        {
+            if(args[i] == name)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    // Method for getting relevant arguments from the command line interface and configuring the scene before the cutscene starts.
+    // These arguments should override whatever default settings are saved in the scene or by the user.
     public void ReadCommandLineArguments()
-    {}
+    {
+        /*
+        Debug.LogErrorFormat("Command Line Arguments:");
+        foreach(string argument in System.Environment.GetCommandLineArgs())
+        {
+            Debug.LogErrorFormat("Argument: {0}", argument);
+        }
+        */
+
+        //Dictionary<string, string[]> commands = new Dictionary<string, string[]>();
+        //commands.Add("-")
+
+        // Check for a help request and display the valid commands and their arguments (keep it cutscene specific, if possible).
+        if(HasArg("-help"))
+        {
+            // Uncomment this if we want to support "-help <command>" type arguments.
+            /*
+            string help = GetArg("-help");
+
+            if(help != null && help.ElementAt(0) != '-')
+            {
+
+            }
+            else
+            {
+                
+            }
+            */
+
+            // Build the output text into a single string to avoid having a massive stacktrace attached to each line of output.
+            string logOutput = "";
+            logOutput += "Cutscene Manager: Valid command line arguments and their parameters are:\n";
+            logOutput += "\tauto_advance -> on, off\n";
+            logOutput += "\thold_time -> floating point number >= 0.0f\n";
+            logOutput += "\ttypewriter -> on, off\n";
+            logOutput += "\ttext_speed -> floating point number >= 1.0f\n";
+            logOutput += "\ttext_speed_preset -> very_slow, slow, medium, fast, very_fast\n";
+            logOutput += "\tcutscene_script -> path of Yarn Spinner script or script folder to be run by the cutscene\n";
+            Debug.LogFormat(logOutput);
+        }
+
+        // Get the default auto-advance setting.
+        //Debug.LogErrorFormat("Argument Name: '-autoadvance' Argument Value: 'on' Actual Result: '{0}'", GetArg("-autoadvance"));
+        string autoAdvance = GetArg("-auto_advance");
+        string[] autoAdvanceOptions = {"on", "off"};
+
+        if(autoAdvance != null)
+        {
+            if(autoAdvance == "on")
+            {
+                // Autoadvance of the Yarn Spinner script should be turned on.
+                uiController.SetAutoAdvanceEnabled(true);
+            }
+            else if(autoAdvance == "off")
+            {
+                // Autoadvance of the Yarn Spinner script should be turned off.
+                uiController.SetAutoAdvanceEnabled(false);
+            }
+            else
+            {
+                // The value we got back isn't something we recognize. Let the user know.
+                Debug.LogErrorFormat("Cutscene Manager: Unrecognized value '{0}' given for '-auto_advance' argument. Valid options are: {1}.", autoAdvance, autoAdvanceOptions);
+            }
+        }
+
+        // Get the hold time for the auto-advance setting.
+        string holdTime = GetArg("-hold_time");
+
+        if(holdTime != null)
+        {
+            // Try and parse the value into a float and pass it to the UI controller.
+            float parsedHoldTime = 0.0f;
+            if(float.TryParse(holdTime, out parsedHoldTime))
+            {
+                uiController.SetAutoHoldTime(parsedHoldTime);
+            }
+            else
+            {
+                Debug.LogErrorFormat("Cutscene Manager: Unrecognized value '{0}' given for '-hold_time' argument. Value must be a floating point number.", holdTime);
+            }
+        }
+
+        // Get the typewriter toggle setting.
+        string typewriterSetting = GetArg("-typewriter");
+        
+        if(typewriterSetting != null)
+        {
+            if(typewriterSetting == "on")
+            {
+                uiController.SetTypewriterEffectEnabled(true);
+            }
+            else if(typewriterSetting == "off")
+            {
+                uiController.SetTypewriterEffectEnabled(false);
+            }
+            else
+            {
+                // The value we got back isn't something we recognize. Let the user know.
+                Debug.LogErrorFormat("Cutscene Manager: Unrecognized value '{0}' given for '-auto_advance' argument. Valid options are: 'on', 'off'.", typewriterSetting);
+            }
+        }
+
+        // Get the text display speed (preset version).
+        string textSpeed = GetArg("-text_speed_preset");
+        string[] textSpeedOptions = {"very_slow", "slow", "medium", "fast", "very_fast"};
+
+        if(textSpeed != null)
+        {
+            // If the given value is valid pass it along to the UI controller.
+            if(textSpeedOptions.Contains(textSpeed))
+            {
+                uiController.SetTextSpeed(textSpeed);
+            }
+            else
+            {
+                // The value we got back isn't something we recognize. Let the user know.
+                Debug.LogErrorFormat("Cutscene Manager: Unrecognized value '{0}' given for '-text_speed_preset' argument. Valid options are: {1}.", textSpeed, textSpeedOptions);
+            }
+        }
+
+        // Get the text display speed (characters per second version).
+        textSpeed = GetArg("-text_speed");
+
+        if(textSpeed != null)
+        {
+            // Try and parse the value into a float and pass it to the UI controller.
+            float parsedTextSpeed = 0.0f;
+            if(float.TryParse(textSpeed, out parsedTextSpeed))
+            {
+                uiController.SetTextSpeed(parsedTextSpeed);
+            }
+            else
+            {
+                Debug.LogErrorFormat("Cutscene Manager: Unrecognized value '{0}' given for '-text_speed' argument. Value must be a floating point number.", textSpeed);
+            }
+        }
+
+        // Get the Yarn Spinner script/folder we should load for this cutscene.
+        string cutsceneScript = GetArg("-cutscene_script");
+
+        if(cutsceneScript != null)
+        {
+            
+        }
+    }
 
     public void SpawnDefaultObjects()
     {

@@ -16,6 +16,9 @@ public class CutsceneUIController : MonoBehaviour
 
     public CustomLineView lineView;
 
+    // The little icon for the auto-advance toggle button.
+    public Image autoAdvanceArrow;
+
     public bool isGamePaused = false;
 
     public bool isSkipDialogueActive = false;
@@ -33,10 +36,17 @@ public class CutsceneUIController : MonoBehaviour
 
     public float skipAnimationSpeed = 20.0f;
 
+    public float presetVerySlow = 10.0f;
+    public float presetSlow = 20.0f;
+    public float presetMedium = 30.0f;
+    public float presetFast = 40.0f;
+    public float presetVeryFast = 50.0f;
+
     // Start is called before the first frame update
     void Start()
     {
         SubscribeToEvents();
+        UpdateAutoAdvanceButton();
     }
 
     // Update is called once per frame
@@ -238,5 +248,82 @@ public class CutsceneUIController : MonoBehaviour
     public void OnAutoAdvanceButtonClicked()
     {
         lineView.autoAdvance = !lineView.autoAdvance;
+        UpdateAutoAdvanceButton();
+    }
+
+    // Method for other objects to change the text auto-advance setting. Refreshes the auto-advance button after the change.
+    public void SetAutoAdvanceEnabled(bool value)
+    {
+        lineView.autoAdvance = value;
+        UpdateAutoAdvanceButton();
+    }
+
+    // Change the auto-advance button icon to represent the current setting.
+    public void UpdateAutoAdvanceButton()
+    {
+        if(lineView.autoAdvance)
+        {
+            autoAdvanceArrow.color = Color.white;
+        }
+        else
+        {
+            autoAdvanceArrow.color = Color.gray;
+        }
+    }
+
+    public void SetAutoHoldTime(float seconds)
+    {
+        // Make sure the hold time isn't set to a negative number. That wouldn't make any sense.
+        if(seconds >= 0.0f)
+        {
+            lineView.holdTime = seconds;
+        }
+        else
+        {
+            lineView.holdTime = 0.0f;
+        }
+    }
+
+    public void SetTypewriterEffectEnabled(bool value)
+    {
+        lineView.useTypewriterEffect = value;
+    }
+
+    public void SetTextSpeed(float charactersPerSecond)
+    {
+        // Make sure the characters per second isn't 0 or a negative number.
+        if(charactersPerSecond >= 1.0f)
+        {
+            lineView.typewriterEffectSpeed = charactersPerSecond;
+        }
+        else
+        {
+            lineView.typewriterEffectSpeed = 1.0f;
+        }
+    }
+
+    public void SetTextSpeed(string preset)
+    {
+        switch(preset)
+        {
+            case "very_slow": 
+                lineView.typewriterEffectSpeed = presetVerySlow;
+                break;
+            case "slow": 
+                lineView.typewriterEffectSpeed = presetSlow;
+                break;
+            case "medium": 
+                lineView.typewriterEffectSpeed = presetMedium;
+                break;
+            case "fast": 
+                lineView.typewriterEffectSpeed = presetFast;
+                break;
+            case "very_fast": 
+                lineView.typewriterEffectSpeed = presetVeryFast;
+                break;
+            default:
+                Debug.LogErrorFormat("Cutscene UI Controller: No typewriter speed preset for '{0}' exists.", preset); 
+                break;
+        }
     }
 }

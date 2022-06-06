@@ -6707,6 +6707,7 @@ MonoBehaviour:
   skipCutsceneDialogue: {fileID: 4702430465549553260}
   cutsceneManager: {fileID: 918595217}
   lineView: {fileID: 4962932705471157694}
+  autoAdvanceArrow: {fileID: 5933637997995048533}
   isGamePaused: 0
   isSkipDialogueActive: 0
   pauseAnimationSpeed: 20
