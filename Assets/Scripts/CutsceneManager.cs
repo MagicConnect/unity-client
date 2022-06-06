@@ -68,9 +68,6 @@ public class CutsceneManager : MonoBehaviour
     // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
     public int effectTotal = 0;
 
-    // Reference to the background image that will display during the cutscene.
-    public static GameObject staticBackground;
-
     // To enable smooth transitions between two background images, we need a reference to a background we can switch to.
     public static GameObject alternateBackground;
 
@@ -86,9 +83,6 @@ public class CutsceneManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        // Find the background gameobject.
-        staticBackground = GameObject.Find("CutsceneBackground");
-
         // Start a coroutine that watches for when it's okay to start the cutscene.
         StartCoroutine(AutomaticStartRoutine());
     }
@@ -357,148 +351,6 @@ public class CutsceneManager : MonoBehaviour
         // reverse engineering/customization that will come later.
         dialogueSystem.Stop();
         dialogueSystem.gameObject.SetActive(false);
-    }
-
-    // TODO: Allow animating the change of the background image. Problem is, since we only have 1 background image and each gameobject
-    // can only have one image component (afaik), we need to modify the spawning of background images so we have two we can switch between.
-    // The alternative is some nonsense with mixing two images programmatically, which is probably way more work for no extra reward.
-    //[YarnCommand("change_background_image")]
-    public static void SetBackgroundImage(string name)
-    {
-        staticBackground?.GetComponent<CutsceneBackground>().ChangeImage(name);
-    }
-
-    //[YarnCommand("change_background_image")]
-    public static IEnumerator ChangeBackgroundImage_Handler(string name, float animationTime = 0.0f, bool waitForAnimation = false)
-    {
-        // Make sure there is a background image object to interact with before proceeding.
-        if(!staticBackground)
-        {
-            Debug.LogErrorFormat("Cutscene Background: Background object could not be found. Please make sure object is created before use.");
-            yield break;
-        }
-
-        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
-
-        // If the background is already doing an image change animation, cancel it.
-        if(background.imageChangeCoroutine != null)
-        {
-            background.StopImageChangeAnimation();
-        }
-
-        background.StartImageChangeAnimation(name, animationTime);
-
-        if(waitForAnimation)
-        {
-            yield return new WaitUntil(() => background.imageChangeCoroutine == null);
-        }
-    }
-
-    //[YarnCommand("change_background_color")]
-    public static void SetBackgroundColor(float r, float g, float b, float a = 1.0f)
-    {
-        Color color = new Color(r, g, b, a);
-        staticBackground?.GetComponent<CutsceneBackground>().ChangeColor(color);
-    }
-
-    // Handler which allows Yarn to animate the changing of background color, with the option to wait for the animation to complete.
-    //[YarnCommand("change_background_color")]
-    public static IEnumerator ChangeBackgroundColorAsync(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
-    {
-        // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
-        if(!staticBackground)
-        {
-            Debug.LogErrorFormat("Cutscene Background: Unable to change color because the background image does not exist.");
-            yield break;
-        }
-
-        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
-
-        // TODO: Potentially move this logic and all else like it into the actual animated object's class. The object
-        // should probably decide if it is necessary to cancel existing animations.
-        if(background.colorChangeCoroutine != null)
-        {
-            background.StopColorChangeAnimation();
-        }
-
-        //background.StartCoroutine(background.ChangeBackgroundColor(new Color(r, g, b, a), animationTime));
-        background.StartColorChangeAnimation(new Color(r, g, b, a), animationTime);
-
-        if(waitForAnimation)
-        {
-            yield return new WaitUntil(() => background.colorChangeCoroutine == null);
-        }
-    }
-
-    //[YarnCommand("change_background_transparency")]
-    public static IEnumerator ChangeBackgroundAlpha_Handler(float a, float animationTime = 0.0f, bool waitForAnimation = false)
-    {
-        // If there isn't a static background image of some kind, something went wrong and we need to get out of here.
-        if(!staticBackground)
-        {
-            Debug.LogErrorFormat("Cutscene Background: Unable to change color because the background image does not exist.");
-            yield break;
-        }
-
-        CutsceneBackground background = staticBackground.GetComponent<CutsceneBackground>();
-
-        if(background.colorChangeCoroutine != null)
-        {
-            background.StopColorChangeAnimation();
-        }
-
-        Color newColor = staticBackground.GetComponent<Image>().color;
-        newColor.a = a;
-
-        //background.StartCoroutine(background.ChangeBackgroundColor(newColor, animationTime));
-        background.StartColorChangeAnimation(newColor, animationTime);
-
-        if(waitForAnimation)
-        {
-            yield return new WaitUntil(() => background.colorChangeCoroutine == null);
-        }
-    }
-
-    // The above handler coroutines will share the same background animation coroutine, because essentially changing color and alpha
-    // is the exact same thing. We have separate handlers because we need separate Yarn commands that handle variations of the same functionality.
-    // TODO: Delete this. All of this functionality should be handled by the background image object.
-    public IEnumerator ChangeBackgroundColor(Color newColor, float animationTime = 0.0f)
-    {
-        Debug.LogFormat("Cutscene Background: Changing background color to {0} over {1} seconds.", newColor, animationTime);
-
-        float timePassed = 0.0f;
-        Image backgroundImage = staticBackground.GetComponent<Image>();
-        Color oldColor = backgroundImage.color;
-
-        while(timePassed <= animationTime)
-        {
-            float progress = 0.0f;
-
-            // Make sure not to divide by 0.
-            if(animationTime <= 0.0f)
-            {
-                progress = 1.0f;
-            }
-            else
-            {
-                progress = timePassed / animationTime;
-            }
-
-            backgroundImage.color = Color.Lerp(oldColor, newColor, progress);
-
-            timePassed += Time.deltaTime;
-
-            if(timePassed < animationTime)
-            {
-                yield return null;
-            }
-        }
-
-        // After the animation completes make sure we arrive at the desired color, in case the timing wasn't exact.
-        backgroundImage.color = newColor;
-
-        colorChangeCoroutine = null;
-        Debug.LogFormat("Cutscene Background: Color change animation completed.");
     }
 
     // To make it easier for the writers, this method allows dimming multiple characters at once.
@@ -972,11 +824,6 @@ public class CutsceneManager : MonoBehaviour
         // NOTE: For now there isn't a huge difference between a base cutscene object and a character. The split in creation
         // methods needs to exist so that we'll be prepared for when more features are added in the future. The more content is built
         // upon the old method of doing things, the nastier the mess we'll be in when the methods need to be changed.
-
-        // TODO: The way we're storing cutscene objects of various types needs to change entirely. Ideally they would be handled by
-        // a dedicated object pool or manager component, but for now we need a central dictionary that stores all objects together.
-        // Otherwise, every time an object is created we'll have to code against 4 or more data structures for any kind of advanced
-        // functionality, which will be a nightmare to write and maintain.
 
         // Check to make sure the object name isn't in the list of reserved names.
         if(Instance.reservedNames.Contains(objectName))
