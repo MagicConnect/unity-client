@@ -186,13 +186,13 @@ public class CutsceneObject : MonoBehaviour
     // different rendering components, like particle effects. Either adapt these for multiple cutscene object types, or move the functionality
     // to the descendant components.
     [YarnCommand("hide_object")]
-    public void HideObject()
+    public virtual void HideObject()
     {
         objectImage.enabled = false;
     }
 
     [YarnCommand("show_object")]
-    public void ShowObject()
+    public virtual void ShowObject()
     {
         objectImage.enabled = true;
     }

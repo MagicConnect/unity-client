@@ -8,7 +8,6 @@ public class CutsceneCharacter : CutsceneObject
 {
     // References to the object's components so they don't have to be searched for every time they're needed.
     public Image characterImage;
-    //private RectTransform rectTransform;
 
     public bool isDimming = false;
 
@@ -20,9 +19,6 @@ public class CutsceneCharacter : CutsceneObject
     // these coroutine handlers will be necessary.
     Coroutine dimmingCoroutine;
     Coroutine undimmingCoroutine;
-    //Coroutine movingCoroutine;
-    //Coroutine fadeInCoroutine;
-    //Coroutine fadeOutCoroutine;
 
     void Awake()
     {
@@ -30,7 +26,7 @@ public class CutsceneCharacter : CutsceneObject
         rectTransform = GetComponent<RectTransform>();
 
         // Don't show the character after creation unless told to by the yarn script.
-        HideCharacter();
+        HideObject();
     }
 
     // Start is called before the first frame update
@@ -55,24 +51,21 @@ public class CutsceneCharacter : CutsceneObject
     // queued coroutines are stopped and set to null. If a boolean flag is set during the coroutine to indicate
     // the game object's state, reset the flag. So on and so forth.
 
-    [YarnCommand("show_character")]
-    public void ShowCharacter()
+    [YarnCommand("hide_character")]
+    public override void HideObject()
     {
-        //gameObject.GetComponent<SpriteRenderer>().enabled = true;
-        characterImage.enabled = true;
+        characterImage.enabled = false;
     }
 
-    [YarnCommand("hide_character")]
-    public void HideCharacter()
+    [YarnCommand("show_character")]
+    public override void ShowObject()
     {
-        //gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        characterImage.enabled = false;
+        characterImage.enabled = true;
     }
 
     //[YarnCommand("move_character")]
     public void MoveCharacter(GameObject stagePosition)
     {
-        //gameObject.transform.position = stagePosition.transform.position;
         rectTransform.position = stagePosition.GetComponent<RectTransform>().position;
     }
 
@@ -136,7 +129,7 @@ public class CutsceneCharacter : CutsceneObject
 
         // The character is already invisible, but just in case lets deactivate the image too. There might be a performance
         // cost from having too many transparent objects floating around.
-        HideCharacter();
+        HideObject();
 
         fadeOutCoroutine = null;
         Debug.LogFormat("Cutscene Character {0}: fade out animation complete.", gameObject.name);
@@ -177,7 +170,7 @@ public class CutsceneCharacter : CutsceneObject
         Color oldColor = new Color(r, g, b, 0.0f);
 
         // Make sure the character is capable of being seen. By default character images are deactivated until used.
-        ShowCharacter();
+        ShowObject();
 
         while(timePassed <= animationTime)
         {
@@ -204,16 +197,6 @@ public class CutsceneCharacter : CutsceneObject
 
         fadeInCoroutine = null;
         Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
-    }
-
-    public IEnumerator ShowCharacterAnimation(float timeToComplete)
-    {
-        yield return null;
-    }
-
-    public IEnumerator HideCharacterAnimation(float timeToComplete)
-    {
-        yield return null;
     }
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep

@@ -339,16 +339,9 @@ public class CutsceneManager : MonoBehaviour
     public void EndCutscene()
     {
         // Set the background color to black.
-        staticBackground.GetComponent<CutsceneBackground>().StartColorChangeAnimation(Color.black);
+        //staticBackground.GetComponent<CutsceneBackground>().StartColorChangeAnimation(Color.black);
 
         // Hide all cutscene objects.
-        // TODO: This really shows the need for having a unified "cutscene object" and polymorphism to differentiate between them all.
-        // Do we really need 3 or more separate systems for handling these things when they all share so much functionality?
-        foreach(GameObject character in characters)
-        {
-            character.GetComponent<CutsceneCharacter>().HideCharacter();
-        }
-
         foreach(KeyValuePair<string, GameObject> effect in effects.ToList())
         {
             effect.Value.GetComponent<CutsceneObject>().HideObject();
@@ -1018,7 +1011,7 @@ public class CutsceneManager : MonoBehaviour
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
         {
-            newObject.GetComponent<CutsceneCharacter>().HideCharacter();
+            newObject.GetComponent<CutsceneCharacter>().HideObject();
         }
 
         // Add the new object to the list(s) so it can be tracked.
@@ -1075,7 +1068,7 @@ public class CutsceneManager : MonoBehaviour
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
         {
-            newObject.GetComponent<CutsceneBackground>().HideBackground();
+            newObject.GetComponent<CutsceneBackground>().HideObject();
         }
 
         // Add the new object to the list so it can be tracked.

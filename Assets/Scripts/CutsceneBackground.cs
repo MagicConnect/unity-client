@@ -311,15 +311,27 @@ public class CutsceneBackground : CutsceneObject
         colorChangeCoroutine = null;
     }
 
-    [YarnCommand("show_background")]
     public void HideBackground()
     {
         defaultImage.enabled = false;
         alternateImage.enabled = false;
     }
 
-    [YarnCommand("hide_background")]
+    [YarnCommand("show_background")]
+    public override void HideObject()
+    {
+        defaultImage.enabled = false;
+        alternateImage.enabled = false;
+    }
+
     public void ShowBackground()
+    {
+        defaultImage.enabled = true;
+        alternateImage.enabled = true;
+    }
+
+    [YarnCommand("hide_background")]
+    public override void ShowObject()
     {
         defaultImage.enabled = true;
         alternateImage.enabled = true;
