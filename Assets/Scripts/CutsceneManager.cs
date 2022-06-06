@@ -290,7 +290,8 @@ public class CutsceneManager : MonoBehaviour
             logOutput += "\ttypewriter -> on, off\n";
             logOutput += "\ttext_speed -> floating point number >= 1.0f\n";
             logOutput += "\ttext_speed_preset -> very_slow, slow, medium, fast, very_fast\n";
-            logOutput += "\tcutscene_script -> path of Yarn Spinner script or script folder to be run by the cutscene\n";
+            logOutput += "\tcutscene_script -> path of Yarn Spinner script to be run by the cutscene\n";
+            logOutput += "\tcutscene_directory -> path of the directory containing Yarn Spinner scripts to be run by the cutscene\n";
             Debug.LogFormat(logOutput);
         }
 
@@ -390,12 +391,20 @@ public class CutsceneManager : MonoBehaviour
             }
         }
 
-        // Get the Yarn Spinner script/folder we should load for this cutscene.
+        // Get the Yarn Spinner script we should load for this cutscene.
         string cutsceneScript = GetArg("-cutscene_script");
 
         if(cutsceneScript != null)
         {
-            
+            dialogueSystem.GetComponent<DynamicYarnLoader>().LoadScriptFile(cutsceneScript);
+        }
+
+        // Get the Yarn Spinner directory we should load for this cutscene.
+        string cutsceneDirectory = GetArg("-cutscene_directory");
+
+        if(cutsceneDirectory != null)
+        {
+            dialogueSystem.GetComponent<DynamicYarnLoader>().LoadScriptDirectory(cutsceneDirectory);
         }
     }
 

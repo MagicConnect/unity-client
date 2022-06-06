@@ -16,6 +16,50 @@ public class DynamicYarnLoader : MonoBehaviour
         dr = GetComponent<DialogueRunner>();
     }
 
+    // Loads the text from a single Yarn script and then passes it into the LoadScript() method.
+    public void LoadScriptFile(string path)
+    {
+        if(File.Exists(path) && Path.HasExtension(".yarn"))
+        {
+            // Load the yarn file and add its contents to the script.
+            Debug.LogFormat("Loading Yarnspinner script '{0}'.", path);
+            string yarnScriptContents = "";
+            yarnScriptContents += File.ReadAllText(path);
+            yarnScriptContents += "\n";
+
+            LoadScript(yarnScriptContents);
+        }
+        else
+        {
+            Debug.LogErrorFormat("'{0}' is not a valid path to a Yarn Spinner script file.", path);
+        }
+    }
+
+    // Loads the text from all Yarn scripts in a given directory and passes them to the LoadScript() method.
+    public void LoadScriptDirectory(string path)
+    {
+        if(Directory.Exists(path))
+        {
+            // Enumerate all yarn files in the given directory, then add them to the script.
+            Debug.LogFormat("Loading all Yarnspinner scripts in '{0}'", path);
+            string yarnScriptContents = "";
+            var yarnScripts = Directory.EnumerateFiles(path, "*.yarn", SearchOption.TopDirectoryOnly);
+
+            foreach (string script in yarnScripts)
+            {
+                Debug.LogFormat("Loading Yarnspinner script '{0}'.", script);
+                yarnScriptContents += File.ReadAllText(script);
+                yarnScriptContents += "\n";
+            }
+
+            LoadScript(yarnScriptContents);
+        }
+        else
+        {
+            Debug.LogErrorFormat("'{0}' is not a valid path to a directory containing Yarn Spinner script files.", path);
+        }
+    }
+
     // Compiles a given yarn script, creates a new yarn project from it, and gives it to the dialogue runner.
     public void LoadScript(string sourceText, string assetPath = "default.yarn")
     {
