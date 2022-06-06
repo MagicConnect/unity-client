@@ -86,53 +86,6 @@ public class CutsceneManager : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        /*
-        // Create character objects from the loaded character assets.
-        // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
-        if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse)
-        {
-            List<WebAssetCache.LoadedImageAsset> characterAssets = WebAssetCache.Instance.GetLoadedAssetsByCategory("characters");
-            List<WebAssetCache.LoadedImageAsset> npcAssets = WebAssetCache.Instance.GetLoadedAssetsByCategory("npcs");
-            List<WebAssetCache.LoadedImageAsset> assets = characterAssets.Concat(npcAssets).ToList();
-
-            if(assets.Count <= 0)
-            {
-                Debug.LogWarningFormat("Cutscene Manager: No loaded assets returned by cache.");
-            }
-
-            foreach(WebAssetCache.LoadedImageAsset asset in assets)
-            {
-                GameObject newCharacter = Instantiate(characterPrefab, characterContainer.transform);
-
-                newCharacter.name = asset.name;
-                // Note: SpriteMeshType.FullRect loads faster because it creates a simple quad, but has worse runtime performance. 
-                // SpriteMeshType.Tight incurs a huge loading time penalty with high resolution assets though so this'll have to be configured/benchmarked later.
-                newCharacter.GetComponent<Image>().sprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
-
-                characters.Add(newCharacter);
-                Debug.LogFormat("Cutscene Manager: Added character/npc '{0}' to game.", asset.name);
-            }
-
-            // Populate the dictionary of asset names/paths.
-            // TODO: Move/delete all this so the cache can handle it.
-            List<WebAssetCache.LoadedImageAsset> weapons = WebAssetCache.Instance.GetLoadedAssetsByCategory("weapons");
-            List<WebAssetCache.LoadedImageAsset> accessories = WebAssetCache.Instance.GetLoadedAssetsByCategory("accessories");
-            List<WebAssetCache.LoadedImageAsset> items = WebAssetCache.Instance.GetLoadedAssetsByCategory("items");
-            List<WebAssetCache.LoadedImageAsset> objects = weapons.Concat(accessories).Concat(items).ToList();
-
-            foreach(WebAssetCache.LoadedImageAsset asset in objects)
-            {
-                if(!assetPathsByName.ContainsKey(asset.name))
-                {
-                    assetPathsByName.Add(asset.name, asset.path);
-                }
-            }
-        }
-        else
-        {
-            Debug.LogErrorFormat("Cutscene Manager: Attempted to load cutscene when cache was not fully loaded.");
-        }
-        */
         // Find the background gameobject.
         staticBackground = GameObject.Find("CutsceneBackground");
 
@@ -177,16 +130,6 @@ public class CutsceneManager : MonoBehaviour
 
     public void BuildAssetNameLists()
     {
-        // Populate the dictionary of asset names/paths.
-        // TODO: Move/delete all this so the cache can handle it.
-        /*List<WebAssetCache.LoadedImageAsset> characters = WebAssetCache.Instance.GetLoadedAssetsByCategory("characters");
-        List<WebAssetCache.LoadedImageAsset> npcs = WebAssetCache.Instance.GetLoadedAssetsByCategory("npcs");
-        List<WebAssetCache.LoadedImageAsset> weapons = WebAssetCache.Instance.GetLoadedAssetsByCategory("weapons");
-        List<WebAssetCache.LoadedImageAsset> accessories = WebAssetCache.Instance.GetLoadedAssetsByCategory("accessories");
-        List<WebAssetCache.LoadedImageAsset> items = WebAssetCache.Instance.GetLoadedAssetsByCategory("items");
-        List<WebAssetCache.LoadedImageAsset> backgrounds = WebAssetCache.Instance.GetLoadedAssetsByCategory("backgrounds");
-        List<WebAssetCache.LoadedImageAsset> objects = weapons.Concat(accessories).Concat(items).ToList();*/
-
         List<WebAssetCache.LoadedImageAsset> assets = WebAssetCache.Instance.GetLoadedAssetsByCategory("characters", "npcs", "weapons", "accessories", "items", "backgrounds");
 
         foreach(WebAssetCache.LoadedImageAsset asset in assets)
@@ -206,10 +149,8 @@ public class CutsceneManager : MonoBehaviour
         // Search through all gameobjects in the scene and add their names to the list.
         var objectsInScene = GameObject.FindObjectsOfType<GameObject>(true);
 
-        //Debug.LogFormat("Existing game objects:");
         foreach(GameObject objectInScene in objectsInScene)
         {
-            //Debug.LogFormat("{0}", objectInScene.name);
             reservedNames.Add(objectInScene.name);
         }
 
@@ -254,34 +195,9 @@ public class CutsceneManager : MonoBehaviour
     // These arguments should override whatever default settings are saved in the scene or by the user.
     public void ReadCommandLineArguments()
     {
-        /*
-        Debug.LogErrorFormat("Command Line Arguments:");
-        foreach(string argument in System.Environment.GetCommandLineArgs())
-        {
-            Debug.LogErrorFormat("Argument: {0}", argument);
-        }
-        */
-
-        //Dictionary<string, string[]> commands = new Dictionary<string, string[]>();
-        //commands.Add("-")
-
         // Check for a help request and display the valid commands and their arguments (keep it cutscene specific, if possible).
         if(HasArg("-help"))
         {
-            // Uncomment this if we want to support "-help <command>" type arguments.
-            /*
-            string help = GetArg("-help");
-
-            if(help != null && help.ElementAt(0) != '-')
-            {
-
-            }
-            else
-            {
-                
-            }
-            */
-
             // Build the output text into a single string to avoid having a massive stacktrace attached to each line of output.
             string logOutput = "";
             logOutput += "Cutscene Manager: Valid command line arguments and their parameters are:\n";
@@ -296,7 +212,6 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Get the default auto-advance setting.
-        //Debug.LogErrorFormat("Argument Name: '-autoadvance' Argument Value: 'on' Actual Result: '{0}'", GetArg("-autoadvance"));
         string autoAdvance = GetArg("-auto_advance");
         string[] autoAdvanceOptions = {"on", "off"};
 
@@ -410,16 +325,13 @@ public class CutsceneManager : MonoBehaviour
 
     public void SpawnDefaultObjects()
     {
-        // There needs to be a background object which will render the default background color. This color should be seen
-        // if and when there is nothing visible on screen.
-        // NOTE: Alternatively just make a default background color object that can't be interacted with. Not even a cutscene object, just
-        // a UI element.
-        //AddBackground("DefaultBackground", "LanaBedroom", true);
-        //cutsceneBackgrounds["DefaultBackground"].GetComponent<CutsceneBackground>().SetColor(Color.black.r, Color.black.g, Color.black.b);
+        
     }
 
     public void StartCutscene()
-    {}
+    {
+
+    }
 
     // Performs all necessary cleanup and shutdown procedures for ending the cutscene. For now, just hide all cutscene objects and fade to black.
     // Later we can worry about "garbage collection" after the object pools are created, and which part of the game comes after the cutscene
@@ -1043,19 +955,6 @@ public class CutsceneManager : MonoBehaviour
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
         Image image = newObject.GetComponent<Image>();
         image.sprite = Instance.GetSprite(spriteName);
-        /*
-        if(Instance.sprites.ContainsKey(spriteName))
-        {
-            image.sprite = Instance.sprites[spriteName];
-        }
-        else
-        {
-            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(spriteName);
-            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
-            image.sprite = newSprite;
-
-            Instance.sprites.Add(spriteName, newSprite);
-        }*/
 
         if(!visible)
         {
@@ -1115,19 +1014,6 @@ public class CutsceneManager : MonoBehaviour
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
         Image image = newObject.GetComponent<Image>();
         image.sprite = Instance.GetSprite(characterName);
-        /*
-        if(Instance.sprites.ContainsKey(characterName))
-        {
-            image.sprite = Instance.sprites[characterName];
-        }
-        else
-        {
-            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(characterName);
-            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
-            image.sprite = newSprite;
-
-            Instance.sprites.Add(characterName, newSprite);
-        }*/
 
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
@@ -1185,19 +1071,6 @@ public class CutsceneManager : MonoBehaviour
         // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
         // NOTE: This should now be handled by the background object itself.
         newObject.GetComponent<CutsceneBackground>().SetImage(spriteName);
-        /*Image image = newObject.GetComponent<Image>();
-        if(Instance.sprites.ContainsKey(spriteName))
-        {
-            image.sprite = Instance.sprites[spriteName];
-        }
-        else
-        {
-            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(spriteName);
-            Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
-            image.sprite = newSprite;
-
-            Instance.sprites.Add(spriteName, newSprite);
-        }*/
 
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)

@@ -113,7 +113,6 @@ public class CutsceneUIController : MonoBehaviour
 
         if(!isGamePaused)
         {
-            //canvasGroup.alpha = 1.0f;
             canvasGroup.blocksRaycasts = false;
 
             while(canvasGroup.alpha > 0.0f)
@@ -129,7 +128,6 @@ public class CutsceneUIController : MonoBehaviour
         {
             pauseScreenOverlay.SetActive(true);
             canvasGroup.blocksRaycasts = true;
-            //canvasGroup.alpha = 0.0f;
 
             while(canvasGroup.alpha < 1.0f)
             {
@@ -144,9 +142,6 @@ public class CutsceneUIController : MonoBehaviour
 
     public void ShowSkipDialogue()
     {
-        //previousTimescale = Time.timeScale;
-        //Time.timeScale = 0.0f;
-        //isGamePaused = true;
         isSkipDialogueActive = true;
 
         if(skipDialogueAnimation != null)
@@ -159,8 +154,6 @@ public class CutsceneUIController : MonoBehaviour
 
     public void HideSkipDialogue()
     {
-        //Time.timeScale = previousTimescale;
-        //isGamePaused = false;
         isSkipDialogueActive = false;
 
         if(skipDialogueAnimation != null)
@@ -177,7 +170,6 @@ public class CutsceneUIController : MonoBehaviour
 
         if(!isSkipDialogueActive)
         {
-            //canvasGroup.alpha = 1.0f;
             canvasGroup.blocksRaycasts = false;
 
             while(canvasGroup.alpha > 0.0f)
@@ -193,7 +185,6 @@ public class CutsceneUIController : MonoBehaviour
         {
             skipCutsceneDialogue.SetActive(true);
             canvasGroup.blocksRaycasts = true;
-            //canvasGroup.alpha = 0.0f;
 
             while(canvasGroup.alpha < 1.0f)
             {
