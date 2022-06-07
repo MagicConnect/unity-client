@@ -10,9 +10,9 @@ tags:
 <<set_background_color BasicBackground 0.0 0.0 0.0>>
 <<add_character "BerylVegha" "BerylVegha">>
 <<add_character "LanaElenore" "LanaElenore">>
+<<move_character BerylVegha Center 0.0>>
 <<change_background_color BasicBackground 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<fade_in_character BerylVegha>>
-<<add_object "test_axe" "Axe1s001" null visible>>
 Beryl: Hey! My name's Beryl!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
 Beryl: Real quick I want to try a memory game. Guess any number you want, as long as it's between 1 and 5.
@@ -34,7 +34,6 @@ Beryl: Real quick I want to try a memory game. Guess any number you want, as lon
 Beryl: Try to remember the number you chose, cuz I'm gonna ask you about it again later!
 Beryl: Alright, now I'm going to try disappearing.
 <<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
-<<remove_object "test_axe">>
 Beryl: Can you see me? No? That means it worked!
 <<fade_in_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 Beryl: Alright, now I'm gonna move around.
@@ -53,7 +52,7 @@ Beryl: How about a little change of view? I'm a bit tired of this stuffy old roo
 <<fade_out_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<change_background_color BasicBackground 0.0 0.0 0.0 1.0 1.0>>
 You and Beryl go for a walk down the hall...
-<<change_background_image "Barracks" 1.0>>
+<<change_background_image BasicBackground "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.
 <<fade_in_character BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<change_background_color BasicBackground 1.0 1.0 1.0 1.0 1.0>>
@@ -127,4 +126,5 @@ Beryl disappears.
 Lana: Uh...Well I guess I'll be going too. Bye.
 <<fade_out_character LanaElenore 0.2 false 0.0 0.0 0.0>>
 Lana quickly leaves.
+<<change_background_color BasicBackground 0.0 0.0 0.0 1.0 1.0 waitForAnimation>>
 ===
