@@ -2466,7 +2466,7 @@ MonoBehaviour:
   autoStart: 1
   autoLoadScene: 1
   autoStartTime: 1
-  yarnDemoScene: Yarn Demo
+  yarnDemoScene: Cutscene
 --- !u!1 &1531979604
 GameObject:
   m_ObjectHideFlags: 0
