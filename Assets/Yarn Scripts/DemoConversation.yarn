@@ -11,6 +11,7 @@ tags:
 <<add_character "BerylVegha" "BerylVegha">>
 <<add_character "LanaElenore" "LanaElenore">>
 <<move_character BerylVegha Center 0.0>>
+<<move_character LanaElenore Center 0.0>>
 <<change_background_color BasicBackground 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<fade_in_character BerylVegha>>
 Beryl: Hey! My name's Beryl!
