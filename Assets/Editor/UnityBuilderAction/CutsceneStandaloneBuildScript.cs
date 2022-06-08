@@ -323,6 +323,7 @@ namespace UnityBuilderAction
             ExitWithResult(buildSummary.result);
         }
 
+        [MenuItem("MyTools/Build Cutscene Only - Remote Windows")]
         public static void BuildCutsceneRemoteWindows64()
         {
             // Gather values from args
@@ -368,7 +369,7 @@ namespace UnityBuilderAction
 
             BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
             ReportSummary(buildSummary);
-            ExitWithResult(buildSummary.result);
+            //ExitWithResult(buildSummary.result);
         }
     }
 }
