@@ -367,9 +367,13 @@ namespace UnityBuilderAction
             buildPlayerOptions.options = BuildOptions.Development;
             buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
 
-            BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
-            ReportSummary(buildSummary);
+            //BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
+            //ReportSummary(buildSummary);
             //ExitWithResult(buildSummary.result);
+
+            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildSummary summary = report.summary;
+            ReportSummary(summary);
         }
     }
 }
