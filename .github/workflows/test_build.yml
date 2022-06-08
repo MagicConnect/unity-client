@@ -75,7 +75,7 @@ jobs:
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
-          customParameters: -Development -AllowDebugging
+          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
 
       # Output
@@ -83,6 +83,11 @@ jobs:
         with:
           name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
+
+      # Return License
+      - name: Return license
+        uses: game-ci/unity-return-license@v2
+        if: always()
 
   buildForLinuxBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
@@ -152,6 +157,11 @@ jobs:
           name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
+      # Return License
+      - name: Return license
+        uses: game-ci/unity-return-license@v2
+        if: always()
+
   buildForMacOSBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
     runs-on: macos-latest
@@ -219,3 +229,8 @@ jobs:
         with:
           name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
+
+      # Return License
+      - name: Return license
+        uses: game-ci/unity-return-license@v2
+        if: always()
