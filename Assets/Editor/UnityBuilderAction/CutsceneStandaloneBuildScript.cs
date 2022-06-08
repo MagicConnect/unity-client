@@ -326,7 +326,7 @@ namespace UnityBuilderAction
         public static void BuildCutsceneRemoteWindows64()
         {
             // Gather values from args
-            Dictionary<string, string> options = GetValidatedOptions();
+            //Dictionary<string, string> options = GetValidatedOptions();
 
             // Apply build target
             //var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
@@ -362,7 +362,7 @@ namespace UnityBuilderAction
             BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
             buildPlayerOptions.scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
             buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
-            buildPlayerOptions.locationPathName = options["customBuildPath"];
+            buildPlayerOptions.locationPathName = "Build/StandaloneWindows64/MagicConnect_CutsceneOnly.exe";
             buildPlayerOptions.options = BuildOptions.Development;
             buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
 
