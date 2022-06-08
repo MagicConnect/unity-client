@@ -211,5 +211,68 @@ namespace UnityBuilderAction
                     break;
             }
         }
+
+        [MenuItem("MyTools/Build Cutscene Only - Current Target")]
+        public static void BuildCutsceneLocalCurrentTarget()
+        {
+            BuildCutsceneLocal(EditorUserBuildSettings.activeBuildTarget);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Windows64")]
+        public static void BuildCutsceneLocalWindows64()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneWindows64);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Linux64")]
+        public static void BuildCutsceneLocalLinux64()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneLinux64);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - OSX")]
+        public static void BuildCutsceneLocalOSX()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneOSX);
+        }
+
+        public static void BuildCutsceneLocal(BuildTarget buildTarget)
+        {
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            buildPlayerOptions.scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
+            buildPlayerOptions.target = buildTarget;
+            buildPlayerOptions.options = BuildOptions.None;
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+
+            switch(buildTarget)
+            {
+                case BuildTarget.StandaloneWindows64:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneWindows64/MagicConnect_CutsceneOnly.exe");
+                    break;
+                case BuildTarget.StandaloneLinux64:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneLinux64/MagicConnect_CutsceneOnly");
+                    break;
+                case BuildTarget.StandaloneOSX:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneOSX/MagicConnect_CutsceneOnly");
+                    break;
+                default:
+                    Debug.LogErrorFormat("Cutscene Only Build for build target '{0}' not yet supported. Using default locationPathName.");
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/MagicConnect_CutsceneOnly");
+                    break;
+            }
+
+            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildSummary summary = report.summary;
+
+            if(summary.result == BuildResult.Succeeded)
+            {
+                Debug.LogFormat("Cutscene Only Build succeeded: {0} bytes", summary.totalSize);
+            }
+
+            if(summary.result == BuildResult.Failed)
+            {
+                Debug.LogFormat("Cutscene Only Build failed");
+            }
+        }
     }
 }
