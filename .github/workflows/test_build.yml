@@ -84,10 +84,10 @@ jobs:
           name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
-      # Return License
-      - name: Return license
-        uses: game-ci/unity-return-license@v2
-        if: always()
+      # Return License - (Only Linux Supported)
+      #- name: Return license
+      #  uses: game-ci/unity-return-license@v2
+      #  if: always()
 
   buildForLinuxBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
@@ -230,7 +230,7 @@ jobs:
           name: MagicConnect-${{ matrix.targetPlatform }}
           path: build/${{ matrix.targetPlatform }}
 
-      # Return License
-      - name: Return license
-        uses: game-ci/unity-return-license@v2
-        if: always()
+      # Return License - (Only Linux Supported)
+      #- name: Return license
+      #  uses: game-ci/unity-return-license@v2
+      #  if: always()
