@@ -144,7 +144,7 @@ namespace UnityBuilderAction
 //                options = UnityEditor.BuildOptions.Development
             };
             buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
-            buildPlayerOptions.options = BuildOptions.Development;
+            //buildPlayerOptions.options = BuildOptions.Development;
 
             BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
             ReportSummary(buildSummary);
