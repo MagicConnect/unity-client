@@ -75,7 +75,7 @@ jobs:
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
-          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
+          customParameters: -Development -AllowDebugging
           unityVersion: 2020.3.17f1
 
       # Output
