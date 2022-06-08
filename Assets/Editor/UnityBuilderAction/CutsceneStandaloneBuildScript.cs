@@ -132,7 +132,8 @@ namespace UnityBuilderAction
 
         private static void Build(BuildTarget buildTarget, string filePath)
         {
-            string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
+            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
+            string[] scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
@@ -142,6 +143,7 @@ namespace UnityBuilderAction
                 locationPathName = filePath,
 //                options = UnityEditor.BuildOptions.Development
             };
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
 
             BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
             ReportSummary(buildSummary);
