@@ -1,4 +1,4 @@
-name: Build cutscene only
+name: Build All Platforms
 
 #on: [push, pull_request]
 on:   
@@ -9,6 +9,9 @@ on:
         type: boolean
         required: false
         default: false
+  
+  pull_request: 
+    types: [opened]
 
 jobs:
   buildForWindowsBasedPlatforms:
@@ -74,7 +77,6 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
-          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -94,9 +96,7 @@ jobs:
       fail-fast: false
       matrix:
         targetPlatform:
-          #- StandaloneWindows64
           - StandaloneLinux64
-          #- StandaloneOSX
     steps:
       # Checkout (without LFS)
       - name: Checkout repository
@@ -150,7 +150,6 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
-          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -170,8 +169,6 @@ jobs:
       fail-fast: false
       matrix:
         targetPlatform:
-          #- StandaloneWindows64
-          #- StandaloneLinux64
           - StandaloneOSX
     steps:
       # Checkout (without LFS)
@@ -226,7 +223,6 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
-          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2

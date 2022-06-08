@@ -1,4 +1,4 @@
-name: New gameci build
+name: Cutscene All Platforms - Ubuntu Runner
 
 #on: [push, pull_request]
 on:   
@@ -9,14 +9,11 @@ on:
         type: boolean
         required: false
         default: false
-  
-  pull_request: 
-    types: [opened]
 
 jobs:
   buildForWindowsBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
-    runs-on: windows-2019
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
@@ -77,6 +74,7 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
+          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -85,9 +83,9 @@ jobs:
           path: build/${{ matrix.targetPlatform }}
 
       # Return License - (Only Linux Supported)
-      #- name: Return license
-      #  uses: game-ci/unity-return-license@v2
-      #  if: always()
+      - name: Return license
+        uses: game-ci/unity-return-license@v2
+        if: always()
 
   buildForLinuxBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
@@ -96,7 +94,9 @@ jobs:
       fail-fast: false
       matrix:
         targetPlatform:
+          #- StandaloneWindows64
           - StandaloneLinux64
+          #- StandaloneOSX
     steps:
       # Checkout (without LFS)
       - name: Checkout repository
@@ -150,6 +150,7 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
+          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -164,11 +165,13 @@ jobs:
 
   buildForMacOSBasedPlatforms:
     name: Build for ${{ matrix.targetPlatform }}
-    runs-on: macos-latest
+    runs-on: ubuntu-latest
     strategy:
       fail-fast: false
       matrix:
         targetPlatform:
+          #- StandaloneWindows64
+          #- StandaloneLinux64
           - StandaloneOSX
     steps:
       # Checkout (without LFS)
@@ -223,6 +226,7 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
+          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2
@@ -231,6 +235,6 @@ jobs:
           path: build/${{ matrix.targetPlatform }}
 
       # Return License - (Only Linux Supported)
-      #- name: Return license
-      #  uses: game-ci/unity-return-license@v2
-      #  if: always()
+      - name: Return license
+        uses: game-ci/unity-return-license@v2
+        if: always()
