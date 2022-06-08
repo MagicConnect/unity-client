@@ -74,7 +74,7 @@ jobs:
           versioning: Semantic
           customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
           unityVersion: 2020.3.17f1
-          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.BuildCutsceneRemoteWindows64
+          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
       # Output
       - uses: actions/upload-artifact@v2

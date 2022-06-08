@@ -23,10 +23,7 @@ namespace UnityBuilderAction
             // Set version for this build
             PlayerSettings.bundleVersion = options["buildVersion"];
             PlayerSettings.macOS.buildNumber = options["buildVersion"];
-            //PlayerSettings.Android.bundleVersionCode = int.Parse(options["androidVersionCode"]);
-            string androidVersionCode = "";
-            options.TryGetValue("androidVersionCode", out androidVersionCode);
-            PlayerSettings.Android.bundleVersionCode = int.Parse(androidVersionCode);
+            PlayerSettings.Android.bundleVersionCode = int.Parse(options["androidVersionCode"]);
 
             // Apply build target
             var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
@@ -135,28 +132,7 @@ namespace UnityBuilderAction
 
         private static void Build(BuildTarget buildTarget, string filePath)
         {
-            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
-            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
-            Console.WriteLine("Scenes in build settings:");
-            foreach(EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
-            {
-                Console.WriteLine(scene.path);
-            }
-
-            string[] scenes = new string[2];
-            EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Loading.unity").FirstOrDefault();
-            EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Cutscene.unity").FirstOrDefault();
-
-            if(loadingScene != null && cutsceneScene != null)
-            {
-                scenes[0] = loadingScene.path;
-                scenes[1] = cutsceneScene.path;
-            }
-            else
-            {
-                Console.WriteLine("Loading and Cutscene scenes not found in the build list. Unable to build cutscene only client.");
-                EditorApplication.Exit(201);
-            }
+            string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
