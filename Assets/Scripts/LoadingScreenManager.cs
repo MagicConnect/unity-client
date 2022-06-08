@@ -48,8 +48,11 @@ public class LoadingScreenManager : MonoBehaviour
     // How long to wait before starting to load the game automatically.
     public float autoStartTime = 1.0f;
 
-    // Name of the yarn spinner scene to be loaded.
-    public string yarnDemoScene;
+    // Name of the cutscene scene to be loaded.
+    public string cutsceneScene;
+
+    // Name of the login scene to be loaded.
+    public string loginScene;
 
     Coroutine yarnSceneLoader;
 
@@ -71,7 +74,11 @@ public class LoadingScreenManager : MonoBehaviour
         // If the cache is done loading, do any cleanup or preparation necessary and load the next scene.
         if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse && yarnSceneLoader == null)
         {
-            yarnSceneLoader = StartCoroutine(LoadYarnSceneAsync());
+#if CUTSCENE_ONLY_BUILD            
+            yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
+#else
+            yarnSceneLoader = StartCoroutine(LoadLoginSceneAsync());
+#endif            
         }
 
         timeToRefresh += Time.deltaTime;
@@ -254,9 +261,21 @@ public class LoadingScreenManager : MonoBehaviour
         progressPercentage.text = string.Format("{0}%", totalProgress * 100.0f);
     }
 
-    private IEnumerator LoadYarnSceneAsync()
+    // Loads the cutscene scene directly. To be used with Cutscene Only builds.
+    private IEnumerator LoadCutsceneSceneAsync()
     {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(yarnDemoScene);
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(cutsceneScene);
+
+        while(!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    // Loads the login screen scene.
+    private IEnumerator LoadLoginSceneAsync()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(loginScene);
 
         while(!asyncLoad.isDone)
         {
