@@ -2468,6 +2468,7 @@ MonoBehaviour:
   autoStartTime: 1
   cutsceneScene: Cutscene
   loginScene: Login
+  loadCutscene: 0
 --- !u!1 &1531979604
 GameObject:
   m_ObjectHideFlags: 0

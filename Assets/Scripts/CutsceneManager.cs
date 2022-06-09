@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Linq;
@@ -193,7 +194,7 @@ public class CutsceneManager : MonoBehaviour
         if(HasArg("-help"))
         {
             // Build the output text into a single string to avoid having a massive stacktrace attached to each line of output.
-            string logOutput = "";
+            /*string logOutput = "";
             logOutput += "Cutscene Manager: Valid command line arguments and their parameters are:\n";
             logOutput += "\tauto_advance -> on, off\n";
             logOutput += "\thold_time -> floating point number >= 0.0f\n";
@@ -203,6 +204,17 @@ public class CutsceneManager : MonoBehaviour
             logOutput += "\tcutscene_script -> path of Yarn Spinner script to be run by the cutscene\n";
             logOutput += "\tcutscene_directory -> path of the directory containing Yarn Spinner scripts to be run by the cutscene\n";
             Debug.LogFormat(logOutput);
+            */
+
+            Console.WriteLine("Cutscene Manager: Valid command line arguments and their parameters are:");
+            Console.WriteLine("auto_advance -> on, off");
+            Console.WriteLine("hold_time -> floating point number >= 0.0");
+            Console.WriteLine("typewriter -> on, off");
+            Console.WriteLine("text_speed -> floating point number >= 1.0");
+            Console.WriteLine("text_speed_preset -> very_slow, slow, medium, fast, very_fast");
+            Console.WriteLine("cutscene_script -> path of Yarn Spinner script to be run by the cutscene");
+            Console.WriteLine("cutscene_directory -> path of the directory containing Yarn Spinner scripts to be run by the cutscene (all scripts in directory will be loaded)");
+            Application.Quit();
         }
 
         // Get the default auto-advance setting.
