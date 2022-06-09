@@ -56,6 +56,9 @@ public class LoadingScreenManager : MonoBehaviour
 
     Coroutine yarnSceneLoader;
 
+    // Testing cutscene only builds in the editor isn't fun, so this should help.
+    public bool loadCutscene = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -77,7 +80,14 @@ public class LoadingScreenManager : MonoBehaviour
 #if CUTSCENE_ONLY_BUILD            
             yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
 #else
-            yarnSceneLoader = StartCoroutine(LoadLoginSceneAsync());
+            if(!loadCutscene)
+            {
+                yarnSceneLoader = StartCoroutine(LoadLoginSceneAsync());
+            }
+            else
+            {
+                yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
+            }
 #endif            
         }
 

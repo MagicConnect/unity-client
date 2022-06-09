@@ -803,7 +803,11 @@ public class CutsceneManager : MonoBehaviour
 
         if(!visible)
         {
-            image.enabled = false;
+            newObject.GetComponent<CutsceneObject>().HideObject();
+        }
+        else
+        {
+            newObject.GetComponent<CutsceneObject>().ShowObject();
         }
     }
 
@@ -859,6 +863,10 @@ public class CutsceneManager : MonoBehaviour
         if(!visible)
         {
             newObject.GetComponent<CutsceneCharacter>().HideObject();
+        }
+        else
+        {
+            newObject.GetComponent<CutsceneCharacter>().ShowObject();
         }
 
         // Add the new object to the list(s) so it can be tracked.
@@ -916,6 +924,10 @@ public class CutsceneManager : MonoBehaviour
         if(!visible)
         {
             newObject.GetComponent<CutsceneBackground>().HideObject();
+        }
+        else
+        {
+            newObject.GetComponent<CutsceneBackground>().ShowObject();
         }
 
         // Add the new object to the list so it can be tracked.
