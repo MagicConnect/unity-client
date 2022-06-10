@@ -17,6 +17,14 @@ public class LoginScreenController : MonoBehaviour
     // Reference to our firebase handler, which handles interfacing with the firebase SDK.
     public FirebaseHandler firebase;
 
+    public TMP_Text displayNameText;
+
+    public TMP_Text emailText;
+
+    public TMP_Text userIdText;
+
+    public TMP_Text userTokenText;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -26,7 +34,7 @@ public class LoginScreenController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        UpdateUserInfoDisplay();
     }
 
     public void OnRegisterUserButtonClicked()
@@ -51,5 +59,26 @@ public class LoginScreenController : MonoBehaviour
         {
             Debug.LogError("OnSignInButtonClicked(): Firebase Authentication is not ready to be used. No sign in attempt will be made.");
         }
+    }
+
+    public void OnSignOutButtonClicked()
+    {
+        if(firebase.IsReadyForUse)
+        {
+            firebase.SignOutUser();
+        }
+        else
+        {
+            Debug.LogError("OnSignOutButtonClicked(): Firebase Authentication has not been initialized. No sign out attempt will be made.");
+        }
+    }
+
+    // Method for updating any UI elements relating to user information (usernames, account id's, etc.).
+    public void UpdateUserInfoDisplay()
+    {
+        displayNameText.text = string.Format("Display Name: {0}", firebase.displayName);
+        emailText.text = string.Format("Email Address: {0}", firebase.emailAddress);
+        userIdText.text = string.Format("User ID: {0}", firebase.userId);
+        userTokenText.text = string.Format("User Token: {0}", firebase.userToken);
     }
 }

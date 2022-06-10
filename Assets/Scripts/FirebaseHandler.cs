@@ -20,7 +20,13 @@ public class FirebaseHandler : MonoBehaviour
     // Information about the signed in user.
     public string displayName = "";
     public string emailAddress = "";
+    public string phoneNumber = "";
+    public string userId = "";
+    public string providerId = "";
+    public UserMetadata userMetadata;
     public Uri photoUrl;
+
+    public string userToken = "";
 
     // Flag which indicates that Firebase is ready to be used by the client.
     public bool IsReadyForUse = false;
@@ -130,6 +136,21 @@ public class FirebaseHandler : MonoBehaviour
                 // TODO: The tutorial tried to use a raw string here instead of a Uri object. Probably a typo but check this against the sample project
                 // to see what's up.
                 //photoUrl = user.PhotoUrl ?? new Uri("");
+                userId = user.UserId;
+                phoneNumber = user.PhoneNumber;
+                providerId = user.ProviderId;
+                userMetadata = user.Metadata;
+                
+                GetToken();
+            }
+            else
+            {
+                displayName = "";
+                emailAddress = "";
+                userId = "";
+                phoneNumber = "";
+                providerId = "";
+                userMetadata = null;
             }
         }
     }
@@ -176,6 +197,31 @@ public class FirebaseHandler : MonoBehaviour
         });
     }
 
+    public void SignOutUser()
+    {
+        auth.SignOut();
+    }
+
     public void TestDeleteUser()
     {}
+
+    public void GetToken()
+    {
+        user.TokenAsync(true).ContinueWith(task => {
+            if(task.IsCanceled)
+            {
+                Debug.LogError("GetToken(): TokenAsync was canceled.");
+                return;
+            }
+            
+            if(task.IsFaulted)
+            {
+                Debug.LogErrorFormat(this, "TokenAsync encountered an error: {0}", task.Exception);
+                return;
+            }
+
+            userToken = task.Result;
+            Debug.LogFormat(this, "User token retrieved: {0}", userToken);
+        });
+    }
 }
