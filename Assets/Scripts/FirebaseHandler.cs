@@ -25,6 +25,8 @@ public class FirebaseHandler : MonoBehaviour
     // Flag which indicates that Firebase is ready to be used by the client.
     public bool IsReadyForUse = false;
 
+    public bool UseTestFirebaseProject = true;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -59,9 +61,46 @@ public class FirebaseHandler : MonoBehaviour
     void InitializeFirebase()
     {
         Debug.Log("Firebase Handler: Initializing Firebase...");
-        app = Firebase.FirebaseApp.DefaultInstance;
 
-        auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+        // Which Firebase project we connect to depends on whether we're testing or in production.
+        // TODO: Change this to a pre-processor definition so we can make test builds and production builds without having
+        // to change this flag each time.
+        if(UseTestFirebaseProject)
+        {
+            Debug.Log("Using Test Firebase project.");
+
+            // Prepare app options for test project.
+            Firebase.AppOptions testAppOptions = new Firebase.AppOptions{
+                ApiKey = "AIzaSyA9iUOmdDu4rB2pe7rTzjBZwjLvAxn3xyY",
+                AppId = "com.magic.connect",
+                ProjectId = "magic-connect-ecf82"
+            };
+
+            var testApp = Firebase.FirebaseApp.Create(testAppOptions, "Test");
+            var testAuth = Firebase.Auth.FirebaseAuth.GetAuth(testApp);
+
+            app = testApp;
+            auth = testAuth;
+        }
+        else
+        {
+            // Prepare app options for production project.
+            Firebase.AppOptions prodAppOptions = new Firebase.AppOptions{
+                ApiKey = "",
+                AppId = "",
+                ProjectId = ""
+            };
+
+            var prodApp = Firebase.FirebaseApp.Create(prodAppOptions, "Test");
+            var prodAuth = Firebase.Auth.FirebaseAuth.GetAuth(prodApp);
+
+            app = prodApp;
+            auth = prodAuth;
+        }
+
+        //app = Firebase.FirebaseApp.DefaultInstance;
+        //auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
+
         auth.StateChanged += AuthStateChanged;
         AuthStateChanged(this, null);
 
