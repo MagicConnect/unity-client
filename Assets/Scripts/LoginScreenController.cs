@@ -1,8 +1,10 @@
 using System.Collections;
 using System.Collections.Generic;
+using System;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using BestHTTP;
 
 public class LoginScreenController : MonoBehaviour
 {
@@ -71,6 +73,59 @@ public class LoginScreenController : MonoBehaviour
         {
             Debug.LogError("OnSignOutButtonClicked(): Firebase Authentication has not been initialized. No sign out attempt will be made.");
         }
+    }
+
+    public void OnTestApiCallButtonClicked()
+    {
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me"), OnApiRequestFinished);
+
+        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+        request.Send();
+    }
+
+    public void OnApiRequestFinished(HTTPRequest request, HTTPResponse response)
+    {
+        switch(request.State)
+        {
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(response.IsSuccess)
+                {
+                    // Dump all headers and their values into the console.
+                    Debug.LogFormat(this, "API Response Headers/Values:");
+                    foreach(string header in response.Headers.Keys)
+                    {
+                        Debug.LogFormat(this, "Header: {0} Value(s): {1}", header, response.Headers[header]);
+                    }
+
+                    Debug.LogFormat(this, "Response Data: {0}", response.DataAsText);
+                    Debug.LogFormat(this, "Status Code: {0} Message: {1}", response.StatusCode, response.Message);
+                    Debug.LogFormat(this, "Major Version: {0} Minor Version: {1}", response.VersionMajor, response.VersionMinor);
+                    Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
+                }
+                else
+                {
+                    Debug.LogWarningFormat("Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", response.StatusCode, response.Message, response.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Request finished with an error: " + (request.Exception != null ? (request.Exception.Message + "\n" + request.Exception.StackTrace) : "No Exception"));
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Request aborted.");
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Connection timed out.");
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Processing the request timed out.");
+                break;
+        }// end switch block
     }
 
     // Method for updating any UI elements relating to user information (usernames, account id's, etc.).
