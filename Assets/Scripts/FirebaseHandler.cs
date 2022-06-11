@@ -12,6 +12,10 @@ using Firebase.Auth;
 
 public class FirebaseHandler : MonoBehaviour
 {
+    // There should only be one Firebase handler, which is kept alive for the duration of the client's runtime.
+    // This reference helps us keep track of it.
+    public static FirebaseHandler Instance;
+
     // Object references for interacting with Firebase.
     private FirebaseApp app;
     private FirebaseAuth auth;
@@ -32,6 +36,22 @@ public class FirebaseHandler : MonoBehaviour
     public bool IsReadyForUse = false;
 
     public bool UseTestFirebaseProject = true;
+
+    // Awake is called upon creation of the gameobject.
+    void Awake()
+    {
+        // Set up our singleton instance of the class.
+        if(Instance != null)
+        {
+            // If we already have an instance of this class, destroy this instance.
+            Destroy(gameObject);
+            return;
+        }
+
+        // If there is no instance of this class, set it and mark it so Unity doesn't destroy it between scene changes.
+        Instance = this;
+        DontDestroyOnLoad(gameObject);
+    }
 
     // Start is called before the first frame update
     void Start()
