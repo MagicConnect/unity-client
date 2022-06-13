@@ -4,11 +4,10 @@ using UnityEngine;
 using UnityEngine.UI;
 using Yarn.Unity;
 
-public class ConversationCharacter : MonoBehaviour
+public class CutsceneCharacter : CutsceneObject
 {
     // References to the object's components so they don't have to be searched for every time they're needed.
-    private Image characterImage;
-    private RectTransform rectTransform;
+    public Image characterImage;
 
     public bool isDimming = false;
 
@@ -20,23 +19,20 @@ public class ConversationCharacter : MonoBehaviour
     // these coroutine handlers will be necessary.
     Coroutine dimmingCoroutine;
     Coroutine undimmingCoroutine;
-    Coroutine movingCoroutine;
-    Coroutine fadeInCoroutine;
-    Coroutine fadeOutCoroutine;
 
     void Awake()
-    {
-        
-    }
-
-    // Start is called before the first frame update
-    void Start()
     {
         characterImage = GetComponent<Image>();
         rectTransform = GetComponent<RectTransform>();
 
         // Don't show the character after creation unless told to by the yarn script.
-        HideCharacter();
+        HideObject();
+    }
+
+    // Start is called before the first frame update
+    void Start()
+    {
+        
     }
 
     // Update is called once per frame
@@ -55,31 +51,28 @@ public class ConversationCharacter : MonoBehaviour
     // queued coroutines are stopped and set to null. If a boolean flag is set during the coroutine to indicate
     // the game object's state, reset the flag. So on and so forth.
 
-    [YarnCommand("show_character")]
-    public void ShowCharacter()
+    [YarnCommand("hide_character")]
+    public override void HideObject()
     {
-        //gameObject.GetComponent<SpriteRenderer>().enabled = true;
-        characterImage.enabled = true;
+        characterImage.enabled = false;
     }
 
-    [YarnCommand("hide_character")]
-    public void HideCharacter()
+    [YarnCommand("show_character")]
+    public override void ShowObject()
     {
-        //gameObject.GetComponent<SpriteRenderer>().enabled = false;
-        characterImage.enabled = false;
+        characterImage.enabled = true;
     }
 
     //[YarnCommand("move_character")]
     public void MoveCharacter(GameObject stagePosition)
     {
-        //gameObject.transform.position = stagePosition.transform.position;
         rectTransform.position = stagePosition.GetComponent<RectTransform>().position;
     }
 
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("fade_out_character")]
-    public IEnumerator FadeOutAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -96,7 +89,7 @@ public class ConversationCharacter : MonoBehaviour
             fadeInCoroutine = null;
         }
 
-        fadeOutCoroutine = StartCoroutine(FadeOut(animationTime, r, g, b));
+        fadeOutCoroutine = StartCoroutine(FadeOutCharacter(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -104,9 +97,9 @@ public class ConversationCharacter : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeOut(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
-        Debug.LogFormat("{0} fading out over {1} seconds.", gameObject.name, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
         Color newColor = new Color(r, g, b, 0.0f);
         Color oldColor = characterImage.color;
@@ -136,17 +129,17 @@ public class ConversationCharacter : MonoBehaviour
 
         // The character is already invisible, but just in case lets deactivate the image too. There might be a performance
         // cost from having too many transparent objects floating around.
-        HideCharacter();
+        HideObject();
 
         fadeOutCoroutine = null;
-        Debug.LogFormat("{0} fade out animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Character {0}: fade out animation complete.", gameObject.name);
     }
 
     // Command to fade a character in until they're visible. Optional rgb value arguments determine what the starting color of the
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("fade_in_character")]
-    public IEnumerator FadeInAsync(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -162,7 +155,7 @@ public class ConversationCharacter : MonoBehaviour
             fadeOutCoroutine = null;
         }
 
-        fadeInCoroutine = StartCoroutine(FadeIn(animationTime, r, g, b));
+        fadeInCoroutine = StartCoroutine(FadeInCharacter(animationTime, r, g, b));
         
         if(waitForAnimation)
         {
@@ -170,14 +163,14 @@ public class ConversationCharacter : MonoBehaviour
         }
     }
 
-    public IEnumerator FadeIn(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
-        Debug.LogFormat("{0} fading in over {1} seconds.", gameObject.name, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
         Color oldColor = new Color(r, g, b, 0.0f);
 
         // Make sure the character is capable of being seen. By default character images are deactivated until used.
-        ShowCharacter();
+        ShowObject();
 
         while(timePassed <= animationTime)
         {
@@ -203,23 +196,13 @@ public class ConversationCharacter : MonoBehaviour
         characterImage.color = Color.white;
 
         fadeInCoroutine = null;
-        Debug.LogFormat("{0} fade in animation complete.", gameObject.name);
-    }
-
-    public IEnumerator ShowCharacterAnimation(float timeToComplete)
-    {
-        yield return null;
-    }
-
-    public IEnumerator HideCharacterAnimation(float timeToComplete)
-    {
-        yield return null;
+        Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
     }
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("dim_character")]
-    public IEnumerator DimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -245,7 +228,7 @@ public class ConversationCharacter : MonoBehaviour
 
     public IEnumerator DimCharacter(float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Dimming over {1} seconds.", gameObject.name, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Dimming over {1} seconds.", gameObject.name, animationTime);
         isDimming = true;
         float timePassed = 0.0f;
 
@@ -275,13 +258,13 @@ public class ConversationCharacter : MonoBehaviour
         isDimming = false;
         isDimmed = true;
         dimmingCoroutine = null;
-        Debug.LogFormat("{0}: Dimming animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Character {0}: Dimming animation complete.", gameObject.name);
     }
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("undim_character")]
-    public IEnumerator UndimCharacterAsync(float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -307,7 +290,7 @@ public class ConversationCharacter : MonoBehaviour
 
     public IEnumerator UndimCharacter(float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Undimming over {1} seconds.", gameObject.name, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Undimming over {1} seconds.", gameObject.name, animationTime);
         isUndimming = true;
         float timePassed = 0.0f;
 
@@ -337,12 +320,12 @@ public class ConversationCharacter : MonoBehaviour
         isUndimming = false;
         isDimmed = false;
         undimmingCoroutine = null;
-        Debug.LogFormat("{0}: Undimming animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Character {0}: Undimming animation complete.", gameObject.name);
     }
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("move_character")]
-    public IEnumerator SlideCharacterAsync(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -351,7 +334,7 @@ public class ConversationCharacter : MonoBehaviour
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(SlideCharacter(stagePosition, animationTime));
+        movingCoroutine = StartCoroutine(MoveCharacter(stagePosition, animationTime));
 
         if(waitForAnimation)
         {
@@ -359,9 +342,9 @@ public class ConversationCharacter : MonoBehaviour
         }
     }
 
-    public IEnumerator SlideCharacter(GameObject stagePosition, float animationTime = 0.2f)
+    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
 
@@ -388,11 +371,11 @@ public class ConversationCharacter : MonoBehaviour
         this.rectTransform.position = stagePosition.transform.position;
 
         movingCoroutine = null;
-        Debug.LogFormat("{0}: Moving animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 
     [YarnCommand("move_character_to_coordinate")]
-    public IEnumerator MoveCharacterCoordinateAsync(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
@@ -410,7 +393,7 @@ public class ConversationCharacter : MonoBehaviour
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
     public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.2f)
     {
-        Debug.LogFormat("{0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
+        Debug.LogFormat("Cutscene Character {0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
         Vector3 newPosition = new Vector3(x, y);
@@ -438,6 +421,6 @@ public class ConversationCharacter : MonoBehaviour
         this.rectTransform.position = newPosition;
 
         movingCoroutine = null;
-        Debug.LogFormat("{0}: Moving animation complete.", gameObject.name);
+        Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 }

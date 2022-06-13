@@ -88,3 +88,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 80aeaed86abe3664799d0353fbc99fa7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  rectTransform: {fileID: 0}
+  characterImage: {fileID: 0}
+  isDimming: 0
+  isUndimming: 0
+  isDimmed: 0

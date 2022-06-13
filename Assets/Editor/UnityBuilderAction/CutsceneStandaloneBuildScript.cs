@@ -24,9 +24,6 @@ namespace UnityBuilderAction
             PlayerSettings.bundleVersion = options["buildVersion"];
             PlayerSettings.macOS.buildNumber = options["buildVersion"];
             //PlayerSettings.Android.bundleVersionCode = int.Parse(options["androidVersionCode"]);
-            string androidVersionCode = "";
-            options.TryGetValue("androidVersionCode", out androidVersionCode);
-            PlayerSettings.Android.bundleVersionCode = int.Parse(androidVersionCode);
 
             // Apply build target
             var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
@@ -136,27 +133,7 @@ namespace UnityBuilderAction
         private static void Build(BuildTarget buildTarget, string filePath)
         {
             //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
-            //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.path == "Scenes/Loading" || scene.path == "Scenes/Yarn Demo").Select(s => s.path).ToArray();
-            Console.WriteLine("Scenes in build settings:");
-            foreach(EditorBuildSettingsScene scene in EditorBuildSettings.scenes)
-            {
-                Console.WriteLine(scene.path);
-            }
-
-            string[] scenes = new string[2];
-            EditorBuildSettingsScene loadingScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Loading.unity").FirstOrDefault();
-            EditorBuildSettingsScene cutsceneScene = EditorBuildSettings.scenes.Where(scene => scene.path == "Assets/Scenes/Yarn Demo.unity").FirstOrDefault();
-
-            if(loadingScene != null && cutsceneScene != null)
-            {
-                scenes[0] = loadingScene.path;
-                scenes[1] = cutsceneScene.path;
-            }
-            else
-            {
-                Console.WriteLine("Loading and Cutscene scenes not found in the build list. Unable to build cutscene only client.");
-                EditorApplication.Exit(201);
-            }
+            string[] scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
 
             var buildPlayerOptions = new BuildPlayerOptions
             {
@@ -166,6 +143,8 @@ namespace UnityBuilderAction
                 locationPathName = filePath,
 //                options = UnityEditor.BuildOptions.Development
             };
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+            //buildPlayerOptions.options = BuildOptions.Development;
 
             BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
             ReportSummary(buildSummary);
@@ -210,6 +189,170 @@ namespace UnityBuilderAction
                     EditorApplication.Exit(103);
                     break;
             }
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Current Target")]
+        public static void BuildCutsceneLocalCurrentTarget()
+        {
+            BuildCutsceneLocal(EditorUserBuildSettings.activeBuildTarget);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Windows64")]
+        public static void BuildCutsceneLocalWindows64()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneWindows64);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Linux64")]
+        public static void BuildCutsceneLocalLinux64()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneLinux64);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - OSX")]
+        public static void BuildCutsceneLocalOSX()
+        {
+            BuildCutsceneLocal(BuildTarget.StandaloneOSX);
+        }
+
+        public static void BuildCutsceneLocal(BuildTarget buildTarget)
+        {
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            buildPlayerOptions.scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
+            buildPlayerOptions.target = buildTarget;
+            buildPlayerOptions.options = BuildOptions.None;
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+
+            switch(buildTarget)
+            {
+                case BuildTarget.StandaloneWindows64:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneWindows64/MagicConnect_CutsceneOnly.exe");
+                    break;
+                case BuildTarget.StandaloneLinux64:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneLinux64/MagicConnect_CutsceneOnly");
+                    break;
+                case BuildTarget.StandaloneOSX:
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/StandaloneOSX/MagicConnect_CutsceneOnly");
+                    break;
+                default:
+                    Debug.LogErrorFormat("Cutscene Only Build for build target '{0}' not yet supported. Using default locationPathName.");
+                    buildPlayerOptions.locationPathName = Path.Combine(Application.dataPath, "../", "Build/MagicConnect_CutsceneOnly");
+                    break;
+            }
+
+            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildSummary summary = report.summary;
+
+            if(summary.result == BuildResult.Succeeded)
+            {
+                Debug.LogFormat("Cutscene Only Build succeeded: {0} bytes", summary.totalSize);
+            }
+
+            if(summary.result == BuildResult.Failed)
+            {
+                Debug.LogFormat("Cutscene Only Build failed");
+            }
+        }
+
+        public static void BuildCutsceneRemote()
+        {
+            // Gather values from args
+            Dictionary<string, string> options = GetValidatedOptions();
+
+            // Apply build target
+            var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
+            /*
+            switch (buildTarget)
+            {
+                case BuildTarget.Android:
+                {
+                    EditorUserBuildSettings.buildAppBundle = options["customBuildPath"].EndsWith(".aab");
+                    if (options.TryGetValue("androidKeystoreName", out string keystoreName) &&
+                        !string.IsNullOrEmpty(keystoreName))
+                        PlayerSettings.Android.keystoreName = keystoreName;
+                    if (options.TryGetValue("androidKeystorePass", out string keystorePass) &&
+                        !string.IsNullOrEmpty(keystorePass))
+                        PlayerSettings.Android.keystorePass = keystorePass;
+                    if (options.TryGetValue("androidKeyaliasName", out string keyaliasName) &&
+                        !string.IsNullOrEmpty(keyaliasName))
+                        PlayerSettings.Android.keyaliasName = keyaliasName;
+                    if (options.TryGetValue("androidKeyaliasPass", out string keyaliasPass) &&
+                        !string.IsNullOrEmpty(keyaliasPass))
+                        PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                    break;
+                }
+                case BuildTarget.StandaloneOSX:
+                    PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.Mono2x);
+                    break;
+            }
+            */
+
+            // Custom build
+            //Build(buildTarget, options["customBuildPath"]);
+
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            buildPlayerOptions.scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
+            buildPlayerOptions.target = buildTarget;
+            buildPlayerOptions.locationPathName = options["customBuildPath"];
+            buildPlayerOptions.options = BuildOptions.Development;
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+
+            BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
+            ReportSummary(buildSummary);
+            ExitWithResult(buildSummary.result);
+        }
+
+        [MenuItem("MyTools/Build Cutscene Only - Remote Windows")]
+        public static void BuildCutsceneRemoteWindows64()
+        {
+            // Gather values from args
+            //Dictionary<string, string> options = GetValidatedOptions();
+
+            // Apply build target
+            //var buildTarget = (BuildTarget) Enum.Parse(typeof(BuildTarget), options["buildTarget"]);
+            /*
+            switch (buildTarget)
+            {
+                case BuildTarget.Android:
+                {
+                    EditorUserBuildSettings.buildAppBundle = options["customBuildPath"].EndsWith(".aab");
+                    if (options.TryGetValue("androidKeystoreName", out string keystoreName) &&
+                        !string.IsNullOrEmpty(keystoreName))
+                        PlayerSettings.Android.keystoreName = keystoreName;
+                    if (options.TryGetValue("androidKeystorePass", out string keystorePass) &&
+                        !string.IsNullOrEmpty(keystorePass))
+                        PlayerSettings.Android.keystorePass = keystorePass;
+                    if (options.TryGetValue("androidKeyaliasName", out string keyaliasName) &&
+                        !string.IsNullOrEmpty(keyaliasName))
+                        PlayerSettings.Android.keyaliasName = keyaliasName;
+                    if (options.TryGetValue("androidKeyaliasPass", out string keyaliasPass) &&
+                        !string.IsNullOrEmpty(keyaliasPass))
+                        PlayerSettings.Android.keyaliasPass = keyaliasPass;
+                    break;
+                }
+                case BuildTarget.StandaloneOSX:
+                    PlayerSettings.SetScriptingBackend(BuildTargetGroup.Standalone, ScriptingImplementation.Mono2x);
+                    break;
+            }
+            */
+
+            // Custom build
+            //Build(buildTarget, options["customBuildPath"]);
+
+            BuildPlayerOptions buildPlayerOptions = new BuildPlayerOptions();
+            buildPlayerOptions.scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
+            buildPlayerOptions.target = BuildTarget.StandaloneWindows64;
+            buildPlayerOptions.locationPathName = "Build/StandaloneWindows64/MagicConnect_CutsceneOnly.exe";
+            buildPlayerOptions.options = BuildOptions.Development;
+            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+
+            //BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
+            //ReportSummary(buildSummary);
+            //ExitWithResult(buildSummary.result);
+
+            BuildReport report = BuildPipeline.BuildPlayer(buildPlayerOptions);
+            BuildSummary summary = report.summary;
+            ReportSummary(summary);
         }
     }
 }
