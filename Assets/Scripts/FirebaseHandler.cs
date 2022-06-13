@@ -176,7 +176,7 @@ public class FirebaseHandler : MonoBehaviour
     }
 
     // A test function for registering user(s) to the Firebase system. Don't use in actual code.
-    public void TestRegisterUser(string email, string password)
+    public void RegisterUser(string email, string password)
     {
         auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>{
             if(task.IsCanceled)
@@ -197,7 +197,7 @@ public class FirebaseHandler : MonoBehaviour
         });
     }
 
-    public void TestSignInUser(string email, string password)
+    public void SignInUser(string email, string password)
     {
         auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
             if(task.IsCanceled)

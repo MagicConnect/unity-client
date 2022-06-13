@@ -43,7 +43,7 @@ public class LoginScreenController : MonoBehaviour
     {
         if(firebase.IsReadyForUse)
         {
-            firebase.TestRegisterUser(email.text, password.text);
+            firebase.RegisterUser(email.text, password.text);
         }
         else
         {
@@ -55,7 +55,7 @@ public class LoginScreenController : MonoBehaviour
     {
         if(firebase.IsReadyForUse)
         {
-            firebase.TestSignInUser(email.text, password.text);
+            firebase.SignInUser(email.text, password.text);
         }
         else
         {
