@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "517031047572",
+    "project_id": "magic-connect-ecf82",
+    "storage_bucket": "magic-connect-ecf82.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:517031047572:android:7494bafa3dc08846de9f81",
+        "android_client_info": {
+          "package_name": "com.magicconnect.test"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "517031047572-cfnc6dvpd5eeoj8v85m4gko3jl2n0gbc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9iUOmdDu4rB2pe7rTzjBZwjLvAxn3xyY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "517031047572-cfnc6dvpd5eeoj8v85m4gko3jl2n0gbc.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "517031047572-c16up1agfu5jkfudg8rjr9cvj7da0m0c.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.magicconnect.test"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
