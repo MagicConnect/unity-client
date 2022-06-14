@@ -1789,57 +1789,17 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 2
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &1064541108
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1064541110}
-  - component: {fileID: 1064541109}
-  m_Layer: 0
-  m_Name: Firebase Handler
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1064541109
+--- !u!114 &1064541109 stripped
 MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 9074545774650900980, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+  m_PrefabInstance: {fileID: 9074545775041927745}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064541108}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9a6663fd8ed295c4497474246c6e0da8, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  displayName: 
-  emailAddress: 
-  phoneNumber: 
-  userId: 
-  providerId: 
-  userToken: 
-  IsReadyForUse: 0
-  UseTestFirebaseProject: 1
---- !u!4 &1064541110
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1064541108}
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1134222549
 GameObject:
   m_ObjectHideFlags: 0
@@ -3172,3 +3132,60 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 5029d75c04cfcd84a87a852011167e53, type: 3}
+--- !u!1001 &9074545775041927745
+PrefabInstance:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications:
+    - target: {fileID: 9074545774650900981, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_Name
+      value: Firebase Handler
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_RootOrder
+      value: 3
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalPosition.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalRotation.w
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalRotation.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalRotation.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalRotation.z
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.x
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.y
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 9074545774650900983, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
+      propertyPath: m_LocalEulerAnglesHint.z
+      value: 0
+      objectReference: {fileID: 0}
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 100100000, guid: 2370ade900d4fdc47a5cb5c7f0266e0d, type: 3}
