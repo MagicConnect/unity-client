@@ -785,7 +785,9 @@ public class CutsceneManager : MonoBehaviour
     {
         switch(effectName)
         {
-            case "speedline": break;
+            case "speedline":
+                SpawnSpeedLineEffect(character, duration: duration);
+                break;
             default: break;
         }
     }
@@ -853,7 +855,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     //[YarnCommand("add_speedline_effect")]
-    public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "000000FF", float duration = -1.0f)
+    public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "000000FF", float duration = 0.0f, bool persistent = false)
     {
         // If no name is given or there isn't already an effect by the given name, instantiate a new effect.
         if(Instance.effects.ContainsKey(name))
@@ -895,10 +897,29 @@ public class CutsceneManager : MonoBehaviour
         }
         
         // Set the desired duration of the effect.
-        // TODO: Make a component class specifically for effects where this can be handled.
+        newEffect.GetComponent<CutsceneEffect>().duration = duration;
+
+        // If the effect persistence status.
+        newEffect.GetComponent<CutsceneEffect>().isPersistent = persistent;
 
         // Add the new effect to the dictionary so it can be found later.
         Instance.effects.Add(newEffect.name, newEffect);
+
+        // Subscribe to the effect's expiration event so it can be destroyed when the timer runs out.
+        newEffect.GetComponent<CutsceneEffect>().EffectExpired += OnEffectExpired;
+    }
+
+    public static void OnEffectExpired(GameObject effect)
+    {
+        // Remove the effect from the relevant data structures.
+        Instance.effects.Remove(effect.name);
+        Instance.cutsceneObjects.Remove(effect.name);
+
+        // Unsubscribe from the effect's expiration event.
+        effect.GetComponent<CutsceneEffect>().EffectExpired -= OnEffectExpired;
+
+        // Get rid of the effect.
+        Destroy(effect);
     }
 
     [YarnCommand("obj_add")]

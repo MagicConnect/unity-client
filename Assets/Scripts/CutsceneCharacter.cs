@@ -448,8 +448,8 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 
-    // For some reason using the actual name of the stage position isn't good enough, so this command will move the character to that position based on
-    // a given number. Yeah.
+    // The writers want to be able to use numbers as shorthand for a given stage position. This method takes the number and
+    // translates it into a preset stage position, then starts the move coroutine as normal.
     [YarnCommand("char_move")]
     public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool waitForAnimation = false)
     {
