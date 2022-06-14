@@ -33,6 +33,12 @@ public class CutsceneManager : MonoBehaviour
     // TODO: Possibly combine this with the character container. Do we really need to split characters and objects from each other?
     public GameObject objectContainer;
 
+    public GameObject backgroundEffectContainer;
+
+    public GameObject foregroundEffectContainer;
+
+    public GameObject screenEffectContainer;
+
     public GameObject backgroundsContainer;
 
     // This list will keep track of the characters spawned by the manager so it doesn't have to search for them later.
@@ -69,8 +75,8 @@ public class CutsceneManager : MonoBehaviour
     // How many effects have been created over the span of the cutscene. Useful for assigning unique names to effects.
     public int effectTotal = 0;
 
-    // To enable smooth transitions between two background images, we need a reference to a background we can switch to.
-    public static GameObject alternateBackground;
+    // We're back to having only one background in the scene. Better keep track of it.
+    public static GameObject defaultBackground;
 
     public static CutsceneManager Instance;
 
@@ -331,7 +337,7 @@ public class CutsceneManager : MonoBehaviour
 
     public void SpawnDefaultObjects()
     {
-        
+        defaultBackground = AddBackground("DefaultBackground");
     }
 
     public void StartCutscene()
@@ -369,8 +375,8 @@ public class CutsceneManager : MonoBehaviour
     // Note: Yarn Spinner doesn't support arrays as arguments, and you can't define the same command twice,
     // so I can't make this into a GameObject[] or use the same command name for each overloaded method.
     // As far as I know, it has to be this awful.
-    [YarnCommand("dim_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim_multi")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         List<CutsceneCharacter> charactersToDim = new List<CutsceneCharacter>();
 
@@ -479,33 +485,33 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("dim_two_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim_two")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(DimCharacters(c1, c2, null, null, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("dim_three_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim_three")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, null, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("dim_four_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim_four")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("dim_five_characters")]
-    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim_five")]
+    public static IEnumerator DimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(DimCharacters(c1, c2, c3, c4, c5, null, animationTime, waitForAnimation));
     }
 
     // Same for 'dim_characters' but in reverse.
-    [YarnCommand("undim_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim_multi")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, GameObject c6 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         List<CutsceneCharacter> charactersToUndim = new List<CutsceneCharacter>();
 
@@ -614,34 +620,34 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("undim_two_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim_two")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(UndimCharacters(c1, c2, null, null, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("undim_three_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim_three")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, null, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("undim_four_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim_four")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, null, null, animationTime, waitForAnimation));
     }
 
-    [YarnCommand("undim_five_characters")]
-    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim_five")]
+    public static IEnumerator UndimCharacters(GameObject c1 = null, GameObject c2 = null, GameObject c3 = null, GameObject c4 = null, GameObject c5 = null, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         yield return Instance.StartCoroutine(UndimCharacters(c1, c2, c3, c4, c5, null, animationTime, waitForAnimation));
     }
 
     // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
     // doesn't matter; the method handles that logic automatically.
-    [YarnCommand("switch_dimmed_character")]
-    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.2f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    [YarnCommand("char_dim_alternate")]
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
     {
         // Don't accept null references. If the writer puts in the wrong name or for some reason a character
         // wasn't loaded or something else happens to make this not work, we want to know about it.
@@ -709,7 +715,144 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("add_speedline_effect")]
+    // Method for changing the default background's image to the one specified.
+    [YarnCommand("bg")]
+    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
+
+        if(cutsceneBackground.imageChangeCoroutine != null)
+        {
+            cutsceneBackground.StopImageChangeAnimation();
+        }
+
+        cutsceneBackground.StartImageChangeAnimation(imageName, animationTime);
+
+        if (waitForAnimation)
+        {
+            yield return new WaitUntil(() => cutsceneBackground.imageChangeCoroutine == null);
+        }
+    }
+
+    // Method for changing the default background's color to the one specified.
+    [YarnCommand("bg_color_rgba")]
+    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
+
+        if(cutsceneBackground.colorChangeCoroutine != null)
+        {
+            cutsceneBackground.StopColorChangeAnimation();
+        }
+
+        Color newColor = new Color(r, g, b, a);
+        cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+
+        if (waitForAnimation)
+        {
+            yield return new WaitUntil(() => cutsceneBackground.colorChangeCoroutine == null);
+        }
+    }
+
+    [YarnCommand("bg_color")]
+    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
+
+        if(cutsceneBackground.colorChangeCoroutine != null)
+        {
+            cutsceneBackground.StopColorChangeAnimation();
+        }
+
+        Color newColor = new Color();
+        if(!ColorUtility.TryParseHtmlString(hexcode, out newColor))
+        {
+            Debug.LogWarningFormat("Cutscene Manager: bg_color -> '{0}' is not a valid color code.", hexcode);
+        }
+
+        cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+
+        if (waitForAnimation)
+        {
+            yield return new WaitUntil(() => cutsceneBackground.colorChangeCoroutine == null);
+        }
+    }
+
+    // Method which adds one of the preset character vfx to the scene. An optional tag argument allows the writer to identify any vfx
+    // using that tag later, in case they want to configure it in some way.
+    [YarnCommand("vfx_char")]
+    public static void AddCharacterVfx(string effectName, GameObject character, float duration, string tag = "default")
+    {
+        switch(effectName)
+        {
+            case "speedline": break;
+            default: break;
+        }
+    }
+
+    [YarnCommand("vfx_char_clear")]
+    public static void RemoveSpeedLineEffect(string name)
+    {
+        if(Instance.effects.ContainsKey(name))
+        {
+            GameObject temp = Instance.effects[name];
+            Instance.effects.Remove(name);
+            Destroy(temp);
+        }
+        else
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
+        }
+    }
+
+    // This method clears all active character vfx.
+    [YarnCommand("vfx_char_clear_all")]
+    public static void ClearAllCharacterVfx()
+    {
+
+    }
+
+    // Clears all active character vfx with the given tag.
+    [YarnCommand("vfx_char_clear_tagged")]
+    public static void ClearAllTaggedCharacterVfx(string tag)
+    {
+
+    }
+
+    // Method for configuring character-based speedline vfx. Might need to expand into more commands if more configuration
+    // options are added later.
+    [YarnCommand("vfx_char_cfg_speedline")]
+    public static void ConfigureCharacterSpeedlineVfx(string tag, float radius, string color)
+    {
+
+    }
+
+    // Method for adding vfx that apply to the whole screen. Optional tag for identifying effects later.
+    [YarnCommand("vfx_screen")]
+    public static void AddScreenVfx(string effectName, float duration, string tag = "default")
+    {
+        switch(effectName)
+        {
+            case "color_fade": break;
+            default: break;
+        }
+    }
+
+    // Method for adding vfx that apply to the background. Optional tag for identifying effects later.
+    [YarnCommand("vfx_bg")]
+    public static void AddBackgroundVfx(string effectName, float duration, string tag = "default")
+    {
+
+    }
+
+    // Method for adding vfx that apply to the foreground. Optional tag for identifying effects later.
+    [YarnCommand("vfx_fg")]
+    public static void AddForegroundVfx(string effectName, float duration, string tag = "default")
+    {
+
+    }
+
+    //[YarnCommand("add_speedline_effect")]
     public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "000000FF", float duration = -1.0f)
     {
         // If no name is given or there isn't already an effect by the given name, instantiate a new effect.
@@ -758,22 +901,7 @@ public class CutsceneManager : MonoBehaviour
         Instance.effects.Add(newEffect.name, newEffect);
     }
 
-    [YarnCommand("remove_effect")]
-    public static void RemoveSpeedLineEffect(string name)
-    {
-        if(Instance.effects.ContainsKey(name))
-        {
-            GameObject temp = Instance.effects[name];
-            Instance.effects.Remove(name);
-            Destroy(temp);
-        }
-        else
-        {
-            Debug.LogErrorFormat("Cutscene Manager: Cannot remove effect with name '{0}' because no effect by that name exists.", name);
-        }
-    }
-
-    [YarnCommand("add_object")]
+    [YarnCommand("obj_add")]
     public static void AddCutsceneObject(string objectName, string spriteName, GameObject position = null, bool visible = false)
     {
         // Check to make sure the object name isn't in the list of reserved names.
@@ -823,7 +951,7 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("remove_object")]
+    [YarnCommand("obj_clear")]
     public static void RemoveCutsceneObject(string objectName)
     {
         if(Instance.cutsceneObjects.ContainsKey(objectName))
@@ -834,7 +962,7 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("add_character")]
+    [YarnCommand("char_add_coord")]
     public static void AddCharacter(string objectName, string characterName, float x = 0.0f, float y = 0.0f, float z = 0.0f, bool visible = false)
     {
         // NOTE: For now there isn't a huge difference between a base cutscene object and a character. The split in creation
@@ -871,6 +999,8 @@ public class CutsceneManager : MonoBehaviour
         Image image = newObject.GetComponent<Image>();
         image.sprite = Instance.GetSprite(characterName);
 
+        newObject.GetComponent<CutsceneCharacter>().rectTransform.position = new Vector3(x, y, z);
+
         // If the object isn't meant to be seen after spawning, disable its rendering component.
         if(!visible)
         {
@@ -886,7 +1016,68 @@ public class CutsceneManager : MonoBehaviour
         Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
-    [YarnCommand("remove_character")]
+    [YarnCommand("char_add")]
+    public static void AddCharacter(string objectName, string characterName, GameObject position = null, bool visible = false)
+    {
+        // NOTE: For now there isn't a huge difference between a base cutscene object and a character. The split in creation
+        // methods needs to exist so that we'll be prepared for when more features are added in the future. The more content is built
+        // upon the old method of doing things, the nastier the mess we'll be in when the methods need to be changed.
+
+        // Check to make sure the object name isn't in the list of reserved names.
+        if(Instance.reservedNames.Contains(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because the given name {0} is reserved by the client.", objectName);
+            return;
+        }
+
+        // Check to make sure that a character by the given name doesn't already exist.
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
+            return;
+        }
+
+        // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
+        // then there's nothing to do.
+        if(!Instance.assetPathsByName.ContainsKey(characterName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", objectName);
+            return;
+        }
+
+        // Now that we know the name values are legit, spawn the object and start giving it data.
+        GameObject newObject = Instantiate(Instance.characterPrefab, Instance.characterContainer.transform);
+        newObject.name = objectName;
+
+        // Check if a sprite by the given name already exists in the pool and use it. If not, create a new one.
+        Image image = newObject.GetComponent<Image>();
+        image.sprite = Instance.GetSprite(characterName);
+
+        if(position)
+        {
+            newObject.GetComponent<CutsceneCharacter>().rectTransform.position = position.transform.position;
+        }
+        else
+        {
+            newObject.GetComponent<CutsceneCharacter>().rectTransform.position = Vector3.zero;
+        }
+
+        // If the object isn't meant to be seen after spawning, disable its rendering component.
+        if(!visible)
+        {
+            newObject.GetComponent<CutsceneCharacter>().HideObject();
+        }
+        else
+        {
+            newObject.GetComponent<CutsceneCharacter>().ShowObject();
+        }
+
+        // Add the new object to the list(s) so it can be tracked.
+        Instance.characters.Add(newObject);
+        Instance.cutsceneObjects.Add(objectName, newObject);
+    }
+
+    [YarnCommand("char_clear")]
     public static void RemoveCharacter(string objectName)
     {
         if(Instance.cutsceneObjects.ContainsKey(objectName))
@@ -898,21 +1089,21 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("add_background")]
-    public static void AddBackground(string objectName, string spriteName, bool visible = false)
+    //[YarnCommand("add_background")]
+    public static GameObject AddBackground(string objectName, string spriteName, bool visible = false)
     {
         // Check to make sure the object name isn't in the list of reserved names.
         if(Instance.reservedNames.Contains(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the given name {0} is reserved by the client.", objectName);
-            return;
+            return null;
         }
 
         // Check to make sure that a character by the given name doesn't already exist.
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because another object with the name '{0}' already exists.", objectName);
-            return;
+            return null;
         }
 
         // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
@@ -921,7 +1112,7 @@ public class CutsceneManager : MonoBehaviour
         if(!Instance.assetPathsByName.ContainsKey(spriteName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", spriteName);
-            return;
+            return null;
         }
 
         // Now that we know the name values are legit, spawn the object and start giving it data.
@@ -943,11 +1134,44 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Add the new object to the list so it can be tracked.
-        Instance.cutsceneObjects.Add(objectName, newObject);
-        Instance.cutsceneBackgrounds.Add(objectName, newObject);
+        // NOTE: As with the other AddBackground(), this will be commented out until it is necessary to track multiple backgrounds again.
+        //Instance.cutsceneObjects.Add(objectName, newObject);
+        //Instance.cutsceneBackgrounds.Add(objectName, newObject);
+
+        return newObject;
     }
 
-    [YarnCommand("remove_background")]
+    // Minimal background for the purpose of making a default background that gets configured by the yarn script.
+    public static GameObject AddBackground(string objectName)
+    {
+        // Check to make sure the object name isn't in the list of reserved names.
+        if(Instance.reservedNames.Contains(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because the given name {0} is reserved by the client.", objectName);
+            return null;
+        }
+
+        // Check to make sure that a character by the given name doesn't already exist.
+        if(Instance.cutsceneObjects.ContainsKey(objectName))
+        {
+            Debug.LogErrorFormat("Cutscene Manager: Background object cannot be created because another object with the name '{0}' already exists.", objectName);
+            return null;
+        }
+
+        // Now that we know the name values are legit, spawn the object and start giving it data.
+        GameObject newObject = Instantiate(Instance.backgroundPrefab, Instance.backgroundsContainer.transform);
+        newObject.name = objectName;
+
+        // Add the new object to the list so it can be tracked.
+        // NOTE: Commented out for now because we don't want to treat the background exactly the same way as other cutscene objects
+        // anymore. If we support multiple backgrounds again in the future, this can be uncommented.
+        //Instance.cutsceneObjects.Add(objectName, newObject);
+        //Instance.cutsceneBackgrounds.Add(objectName, newObject);
+
+        return newObject;
+    }
+
+    //[YarnCommand("remove_background")]
     public static void RemoveBackground(string objectName)
     {
         if(Instance.cutsceneObjects.ContainsKey(objectName) && Instance.cutsceneBackgrounds.ContainsKey(objectName))
@@ -987,4 +1211,60 @@ public class CutsceneManager : MonoBehaviour
             return newSprite;
         }
     }
+
+    // This method destroys all cutscene objects in the scene and removes them from the object dictionaries.
+    [YarnCommand("obj_clear_all")]
+    public void RemoveAllCutsceneObjects()
+    {
+        foreach(string cObject in cutsceneObjects.Keys)
+        {
+            GameObject temp = cutsceneObjects[cObject];
+            Destroy(temp);
+        }
+
+        cutsceneObjects.Clear();
+        cutsceneBackgrounds.Clear();
+        cutsceneCharacters.Clear();
+    }
+
+    // This method destroys all characters in the scene and removes them from the object dictionaries.
+    [YarnCommand("char_clear_all")]
+    public void RemoveAllCharacters()
+    {
+        foreach(string character in cutsceneCharacters.Keys)
+        {
+            GameObject temp = cutsceneCharacters[character];
+            cutsceneObjects.Remove(character);
+            Destroy(temp);
+        }
+
+        cutsceneCharacters.Clear();
+    }
+
+    [YarnCommand("wait_anim")]
+    public IEnumerator WaitForAllAnimations()
+    {
+        yield return new WaitUntil(() => {
+            // TODO: Make an IsAnimating override for cutscene backgrounds so you don't need this big if check.
+            CutsceneBackground background = defaultBackground.GetComponent<CutsceneBackground>();
+            if (background.colorChangeCoroutine != null || background.imageChangeCoroutine != null)
+            {
+                return false;
+            }
+
+            foreach(GameObject cObject in cutsceneObjects.Values)
+            {
+                var cutsceneObject = cObject.GetComponent<CutsceneObject>();
+
+                if(cutsceneObject.IsAnimating())
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        });
+    }
 }
+
+

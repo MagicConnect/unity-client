@@ -51,13 +51,13 @@ public class CutsceneCharacter : CutsceneObject
     // queued coroutines are stopped and set to null. If a boolean flag is set during the coroutine to indicate
     // the game object's state, reset the flag. So on and so forth.
 
-    [YarnCommand("hide_character")]
+    //[YarnCommand("hide_character")]
     public override void HideObject()
     {
         characterImage.enabled = false;
     }
 
-    [YarnCommand("show_character")]
+    //[YarnCommand("show_character")]
     public override void ShowObject()
     {
         characterImage.enabled = true;
@@ -71,8 +71,8 @@ public class CutsceneCharacter : CutsceneObject
 
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
-    [YarnCommand("fade_out_character")]
-    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    [YarnCommand("char_hide")]
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -97,7 +97,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator FadeOutCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeOutCharacter(float animationTime = 0.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -121,7 +121,11 @@ public class CutsceneCharacter : CutsceneObject
             characterImage.color = Color.Lerp(oldColor, newColor, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
@@ -138,8 +142,8 @@ public class CutsceneCharacter : CutsceneObject
     // Command to fade a character in until they're visible. Optional rgb value arguments determine what the starting color of the
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
-    [YarnCommand("fade_in_character")]
-    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    [YarnCommand("char_show")]
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -163,7 +167,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator FadeInCharacter(float animationTime = 0.2f, float r = 255.0f, float g = 255.0f, float b = 255.0f)
+    public IEnumerator FadeInCharacter(float animationTime = 0.0f, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
@@ -189,7 +193,11 @@ public class CutsceneCharacter : CutsceneObject
             characterImage.color = Color.Lerp(oldColor, Color.white, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
@@ -201,8 +209,8 @@ public class CutsceneCharacter : CutsceneObject
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
-    [YarnCommand("dim_character")]
-    public IEnumerator DimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_dim")]
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -226,7 +234,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator DimCharacter(float animationTime = 0.2f)
+    public IEnumerator DimCharacter(float animationTime = 0.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Dimming over {1} seconds.", gameObject.name, animationTime);
         isDimming = true;
@@ -249,7 +257,11 @@ public class CutsceneCharacter : CutsceneObject
             characterImage.color = Color.Lerp(Color.white, Color.gray, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
@@ -263,8 +275,8 @@ public class CutsceneCharacter : CutsceneObject
 
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
-    [YarnCommand("undim_character")]
-    public IEnumerator UndimCharacter_Handler(float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_undim")]
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -288,7 +300,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator UndimCharacter(float animationTime = 0.2f)
+    public IEnumerator UndimCharacter(float animationTime = 0.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Undimming over {1} seconds.", gameObject.name, animationTime);
         isUndimming = true;
@@ -311,7 +323,11 @@ public class CutsceneCharacter : CutsceneObject
             characterImage.color = Color.Lerp(Color.gray, Color.white, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
@@ -324,8 +340,8 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
-    [YarnCommand("move_character")]
-    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_move_obj_time")]
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -342,7 +358,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.2f)
+    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
@@ -364,7 +380,11 @@ public class CutsceneCharacter : CutsceneObject
             this.rectTransform.position = Vector3.Lerp(originalPosition, stagePosition.transform.position, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
         
         // Make sure that the game object is at the desired final position after the animation completes, just in case the timing isn't exact.
@@ -374,8 +394,8 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 
-    [YarnCommand("move_character_to_coordinate")]
-    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
+    [YarnCommand("char_move_coord_time")]
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
@@ -391,7 +411,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
-    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.2f)
+    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.0f)
     {
         Debug.LogFormat("Cutscene Character {0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;
@@ -414,7 +434,11 @@ public class CutsceneCharacter : CutsceneObject
             this.rectTransform.position = Vector3.Lerp(originalPosition, newPosition, progress);
 
             timePassed += Time.deltaTime;
-            yield return null;
+
+            if(timePassed < animationTime)
+            {
+                yield return null;
+            }
         }
 
         // Make sure that the game object is at the desired final position after the animation completes, just in case the timing isn't exact.
@@ -422,5 +446,113 @@ public class CutsceneCharacter : CutsceneObject
 
         movingCoroutine = null;
         Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
+    }
+
+    // For some reason using the actual name of the stage position isn't good enough, so this command will move the character to that position based on
+    // a given number. Yeah.
+    [YarnCommand("char_move")]
+    public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool waitForAnimation = false)
+    {
+        if(movingCoroutine != null)
+        {
+            StopCoroutine(movingCoroutine);
+        }
+
+        GameObject stagePosition = null;
+
+        switch(position)
+        {
+            case 0:
+                stagePosition = GameObject.Find("FarLeft");
+                break;
+            case 1: 
+                stagePosition = GameObject.Find("Left");
+                break;
+            case 2: 
+                stagePosition = GameObject.Find("Center");
+                break;
+            case 3:
+                stagePosition = GameObject.Find("Right");
+                break;
+            case 4:
+                stagePosition = GameObject.Find("FarRight");
+                break;
+            case 5:
+                stagePosition = GameObject.Find("OffscreenLeft");
+                break;
+            case 6:
+                stagePosition = GameObject.Find("OffscreenRight");
+                break;
+            default: 
+                Debug.LogErrorFormat(this, "There is no stage position corresponding to the number '{0}'.", position);
+                yield break;
+        }
+
+        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(stagePosition, speed));
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => movingCoroutine == null);
+        }
+    }
+
+    // I see no reason not to include a more flexible version of the above command, at least until they reserve this command name for something else.
+    [YarnCommand("char_move_obj")]
+    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool waitForAnimation = false)
+    {
+        if(movingCoroutine != null)
+        {
+            StopCoroutine(movingCoroutine);
+        }
+
+        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(position, speed));
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => movingCoroutine == null);
+        }
+    }
+
+    // The actual movement coroutine which uses a flat rate for movement.
+    public IEnumerator MoveCharacterPositionBySpeed(GameObject position, float speed)
+    {
+        Debug.LogFormat(this, "{0} moving to {1}.", gameObject.name, position.name);
+
+        RectTransform positionTransform = position.GetComponent<RectTransform>();
+
+        float distance = Vector3.Distance(positionTransform.position, rectTransform.position);
+        float timeToMove = distance / speed;
+        float timePassed = 0.0f;
+
+        while(timePassed <= timeToMove)
+        {
+            float progress;
+            
+            if(timeToMove <= 0.0f)
+            {
+                progress = 1.0f;
+            }
+            else
+            {
+                progress = timePassed / timeToMove;
+            }
+
+            this.rectTransform.position = Vector3.Lerp(rectTransform.position, positionTransform.position, progress);
+
+            timePassed += Time.deltaTime;
+
+            // If the timepassed value equals or exceeds the time to move, don't bother advancing to the next frame.
+            if(timePassed < timeToMove)
+            {
+                yield return null;
+            }
+        }
+
+        // Set the object's position to the target position, in case we overshoot due to framerate nonsense.
+        rectTransform.position = positionTransform.position;
+
+        movingCoroutine = null;
+
+        Debug.LogFormat(this, "{0} finished moving to {1}.", gameObject.name, position.name);
     }
 }

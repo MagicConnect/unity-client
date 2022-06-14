@@ -33,13 +33,13 @@ public class CutsceneObject : MonoBehaviour
         
     }
 
-    [YarnCommand("set_object_scale")]
+    //[YarnCommand("obj_scale")]
     public void SetObjectScale(float x, float y, float z)
     {
         rectTransform.localScale = new Vector3(x, y, z);
     }
 
-    [YarnCommand("animate_object_scale")]
+    [YarnCommand("obj_scale")]
     public IEnumerator AnimateObjectScale_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
     {
         // If there's already a scaling animation running, cancel it.
@@ -90,13 +90,13 @@ public class CutsceneObject : MonoBehaviour
         Debug.LogFormat("Cutscene Object {0}: Scaling animation complete.", gameObject.name);
     }
 
-    [YarnCommand("set_object_rotation")]
+    //[YarnCommand("set_object_rotation")]
     public void SetObjectRotation(float x, float y, float z)
     {
         rectTransform.Rotate(x, y, z);
     }
 
-    [YarnCommand("animate_object_rotation")]
+    [YarnCommand("obj_rotation")]
     public IEnumerator AnimateObjectRotation_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
     {
         // If there's already a rotation animation running, cancel it.
@@ -148,7 +148,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     // Starts a rotation "effect" that plays until told to stop. The x,y,z values are the rate of rotation in degrees per second.
-    [YarnCommand("start_continuous_rotation")]
+    //[YarnCommand("start_continuous_rotation")]
     public void StartContinuousObjectRotation(float x, float y, float z)
     {
         // If there's already a rotation animation running, cancel it.
@@ -172,7 +172,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     // Stops any rotation animations playing on the object, including the continous rotation.
-    [YarnCommand("stop_object_rotation")]
+    //[YarnCommand("stop_object_rotation")]
     public void StopObjectRotation()
     {
         if(rotationCoroutine != null)
@@ -185,13 +185,13 @@ public class CutsceneObject : MonoBehaviour
     // TODO: Show and hide object currently work for sprite-based cutscene objects. It probably won't work for other objects with
     // different rendering components, like particle effects. Either adapt these for multiple cutscene object types, or move the functionality
     // to the descendant components.
-    [YarnCommand("hide_object")]
+    //[YarnCommand("hide_object")]
     public virtual void HideObject()
     {
         objectImage.enabled = false;
     }
 
-    [YarnCommand("show_object")]
+    //[YarnCommand("show_object")]
     public virtual void ShowObject()
     {
         objectImage.enabled = true;
@@ -199,7 +199,7 @@ public class CutsceneObject : MonoBehaviour
 
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
-    [YarnCommand("fade_out_object")]
+    [YarnCommand("obj_hide")]
     public IEnumerator FadeOutObject_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         // If there's already a fade out animation running, cancel it.
@@ -266,7 +266,7 @@ public class CutsceneObject : MonoBehaviour
     // Command to fade a character in until they're visible. Optional rgb value arguments determine what the starting color of the
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
-    [YarnCommand("fade_in_object")]
+    [YarnCommand("obj_show")]
     public IEnumerator FadeInObject_Handler(float animationTime = 0.2f, bool waitForAnimation = false, float r = 255.0f, float g = 255.0f, float b = 255.0f)
     {
         if(fadeInCoroutine != null)
@@ -328,7 +328,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
-    [YarnCommand("move_object")]
+    [YarnCommand("obj_move")]
     public IEnumerator MoveObject_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
@@ -378,7 +378,7 @@ public class CutsceneObject : MonoBehaviour
         Debug.LogFormat("Cutscene Object {0}: Moving animation complete.", gameObject.name);
     }
 
-    [YarnCommand("move_object_to_coordinate")]
+    [YarnCommand("obj_move_coord")]
     public IEnumerator MoveObjectCoordinate_Handler(float x, float y, float animationTime = 0.2f, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
@@ -426,5 +426,36 @@ public class CutsceneObject : MonoBehaviour
 
         movingCoroutine = null;
         Debug.LogFormat("Cutscene Object {0}: Moving animation complete.", gameObject.name);
+    }
+
+    // Convenience method to check if the cutscene object is currently performing any animations.
+    public virtual bool IsAnimating()
+    {
+        if(fadeInCoroutine != null)
+        {
+            return true;
+        }
+
+        if(fadeOutCoroutine != null)
+        {
+            return true;
+        }
+
+        if(movingCoroutine != null)
+        {
+            return true;
+        }
+
+        if(scalingCoroutine != null)
+        {
+            return true;
+        }
+
+        if(rotationCoroutine != null)
+        {
+            return true;
+        }
+
+        return false;
     }
 }

@@ -83,7 +83,7 @@ public class CutsceneBackground : CutsceneObject
     }
 
     // Change the background image to a loaded sprite of the given name.
-    [YarnCommand("set_background_image")]
+    //[YarnCommand("set_background_image")]
     public void SetImage(string name)
     {
         // Get the sprite from the pool (cutscene manager).
@@ -101,7 +101,7 @@ public class CutsceneBackground : CutsceneObject
         }
     }
 
-    [YarnCommand("change_background_image")]
+    //[YarnCommand("change_background_image")]
     public IEnumerator AnimateImageChange_Handler(string name, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         if(imageChangeCoroutine != null)
@@ -197,7 +197,7 @@ public class CutsceneBackground : CutsceneObject
     }
 
     // Change the background image's color to the one given.
-    [YarnCommand("set_background_color")]
+    //[YarnCommand("set_background_color")]
     public void SetColor(float r, float g, float b, float a = 1.0f)
     {
         // TODO: If the color is changed while an image or color change animation is occurring it could cause problems.
@@ -213,7 +213,7 @@ public class CutsceneBackground : CutsceneObject
         }
     }
 
-    [YarnCommand("set_background_alpha")]
+    //[YarnCommand("set_background_alpha")]
     public void SetAlpha(float a)
     {
         trueColor.a = a;
@@ -225,7 +225,7 @@ public class CutsceneBackground : CutsceneObject
         }
     }
 
-    [YarnCommand("change_background_alpha")]
+    //[YarnCommand("change_background_alpha")]
     public IEnumerator ChangeAlpha_Handler(float a, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         if(colorChangeCoroutine != null)
@@ -241,7 +241,7 @@ public class CutsceneBackground : CutsceneObject
         }
     }
 
-    [YarnCommand("change_background_color")]
+    //[YarnCommand("change_background_color")]
     public IEnumerator ChangeColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         if(colorChangeCoroutine != null)
@@ -317,7 +317,7 @@ public class CutsceneBackground : CutsceneObject
         alternateImage.enabled = false;
     }
 
-    [YarnCommand("show_background")]
+    //[YarnCommand("show_background")]
     public override void HideObject()
     {
         defaultImage.enabled = false;
@@ -330,7 +330,7 @@ public class CutsceneBackground : CutsceneObject
         alternateImage.enabled = true;
     }
 
-    [YarnCommand("hide_background")]
+    //[YarnCommand("hide_background")]
     public override void ShowObject()
     {
         defaultImage.enabled = true;
