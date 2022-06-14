@@ -1291,6 +1291,7 @@ public class CutsceneManager : MonoBehaviour
         }
 
         Instance.cutsceneCharacters.Clear();
+        Instance.characters.Clear();
     }
 
     [YarnCommand("wait_anim")]
