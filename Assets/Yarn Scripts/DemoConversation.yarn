@@ -41,11 +41,11 @@ Beryl: Alright, now I'm gonna move around.
 Beryl: First to the far left...
 <<char_move BerylVegha 0 1000 smoothLerp>>
 Beryl: Then the far right...
-<<char_move BerylVegha 4 1000>>
+<<char_move BerylVegha 4 1000 smoothLerp>>
 Beryl: To the left now!
-<<char_move BerylVegha 1 1000>>
+<<char_move BerylVegha 1 1000 smoothLerp>>
 Beryl: How about the right?
-<<char_move BerylVegha 3 1000>>
+<<char_move BerylVegha 3 1000 smoothLerp>>
 Beryl: Finally, to the center of the stage! I'm gonna do it real slow this time so you can watch me as I go.
 <<char_move_obj_time BerylVegha Center 3 smoothLerp>>
 <<wait_anim>>

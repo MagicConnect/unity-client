@@ -1238,23 +1238,23 @@ public class CutsceneManager : MonoBehaviour
     public Sprite GetSprite(string spriteName)
     {
         // If the sprite already exists in the pool, return it.
-        if(sprites.ContainsKey(name))
+        if(Instance.sprites.ContainsKey(spriteName))
         {
-            return sprites[name];
+            return Instance.sprites[spriteName];
         }
         else
         {
             // The sprite doesn't exist yet so it needs to be created, if possible.
 
             // Make sure the sprite name corresponds to a texture asset that exists in the cache, and that it is allowed to be used for cutscene objects.
-            if(!assetPathsByName.ContainsKey(spriteName))
+            if(!Instance.assetPathsByName.ContainsKey(spriteName))
             {
                 Debug.LogErrorFormat("Cutscene Manager: Sprite named '{0}' does not exist or is not allowed to be used as a cutscene object.", spriteName);
                 return null;
             }
 
             // Create the new sprite, add it to the pool, and pass it on to whoever asked for it.
-            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByPath(assetPathsByName[spriteName]);
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByPath(Instance.assetPathsByName[spriteName]);
             Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
 
             Instance.sprites.Add(spriteName, newSprite);
