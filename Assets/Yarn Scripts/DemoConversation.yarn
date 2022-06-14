@@ -6,7 +6,7 @@ Press Tab to open the debug window and load some scripts, or press the Continue 
 title: DemoConversation
 tags:
 ---
-<<bg "LanaBedroom">>
+<<bg_load "LanaBedroom">>
 <<bg_color_rgba 0.0 0.0 0.0>>
 <<char_add "BerylVegha" "BerylVegha" Center>>
 <<char_add "LanaElenore" "LanaElenore" OffscreenRight>>

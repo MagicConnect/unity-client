@@ -716,7 +716,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Immediately sets the background to the image given. Useful for setting the background image at the start of the cutscene.
-    [YarnCommand("bg")]
+    [YarnCommand("bg_load")]
     public static void SetBackgroundImage(string imageName)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
