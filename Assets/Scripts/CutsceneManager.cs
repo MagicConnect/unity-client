@@ -1061,6 +1061,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Add the new object to the list(s) so it can be tracked.
         Instance.characters.Add(newObject);
+        Instance.cutsceneCharacters.Add(objectName, newObject);
         Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
@@ -1122,6 +1123,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Add the new object to the list(s) so it can be tracked.
         Instance.characters.Add(newObject);
+        Instance.cutsceneCharacters.Add(objectName, newObject);
         Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
@@ -1133,6 +1135,7 @@ public class CutsceneManager : MonoBehaviour
             GameObject temp = Instance.cutsceneObjects[objectName];
             Instance.cutsceneObjects.Remove(objectName);
             Instance.characters.Remove(temp);
+            Instance.cutsceneCharacters.Remove(objectName);
             Destroy(temp);
         }
     }
@@ -1273,6 +1276,7 @@ public class CutsceneManager : MonoBehaviour
         Instance.cutsceneObjects.Clear();
         Instance.cutsceneBackgrounds.Clear();
         Instance.cutsceneCharacters.Clear();
+        Instance.characters.Clear();
     }
 
     // This method destroys all characters in the scene and removes them from the object dictionaries.
