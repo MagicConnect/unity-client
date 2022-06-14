@@ -57,7 +57,7 @@ Beryl: How about a little change of view? I'm a bit tired of this stuffy old roo
 <<char_hide BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<bg_color_rgba 0.0 0.0 0.0 1.0 1.0>>
 You and Beryl go for a walk down the hall...
-<<bg "Barracks" 1.0>>
+<<bg_switch "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.
 <<bg_color_rgba 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<char_show BerylVegha 0.2 false 0.0 0.0 0.0>>
@@ -131,5 +131,5 @@ Beryl disappears.
 Lana: Uh...Well I guess I'll be going too. Bye.
 <<char_hide LanaElenore 0.2 false 0.0 0.0 0.0>>
 Lana quickly leaves.
-<<bg_color_rgba 0.0 0.0 0.0 1.0 1.0 waitForAnimation>>
+<<bg_blackout 1.0>>
 ===

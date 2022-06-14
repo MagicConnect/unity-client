@@ -715,8 +715,22 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    // Method for changing the default background's image to the one specified.
+    // Immediately sets the background to the image given. Useful for setting the background image at the start of the cutscene.
     [YarnCommand("bg")]
+    public static void SetBackgroundImage(string imageName)
+    {
+        CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
+        
+        if(cutsceneBackground.imageChangeCoroutine != null)
+        {
+            cutsceneBackground.StopImageChangeAnimation();
+        }
+
+        cutsceneBackground.SetImage(imageName);
+    }
+
+    // Method for changing the default background's image to the one specified (animated).
+    [YarnCommand("bg_switch")]
     public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
