@@ -9,11 +9,11 @@ tags:
 <<bg "LanaBedroom">>
 <<bg_color_rgba 0.0 0.0 0.0>>
 <<char_add "BerylVegha" "BerylVegha" Center>>
-<<char_add "LanaElenore" "LanaElenore" Center>>
+<<char_add "LanaElenore" "LanaElenore" OffscreenRight>>
 <<char_move_obj_time BerylVegha Center>>
-<<char_move_obj_time LanaElenore Center>>
+<<char_move_obj_time LanaElenore OffscreenRight>>
 <<bg_color_rgba 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
-<<char_show BerylVegha>>
+<<char_show BerylVegha 0.2>>
 Beryl: Hey! My name's Beryl!
 Beryl: If I'm appearing on your screen right now, that means everything is working!
 Beryl: Real quick I want to try a memory game. Guess any number you want, as long as it's between 1 and 5.
@@ -39,24 +39,28 @@ Beryl: Can you see me? No? That means it worked!
 <<char_show BerylVegha 0.2 false 0.0 0.0 0.0>>
 Beryl: Alright, now I'm gonna move around.
 Beryl: First to the far left...
-<<char_move_obj_time BerylVegha FarLeft 0.2>>
+<<char_move BerylVegha 0 1000 smoothLerp>>
 Beryl: Then the far right...
-<<char_move_obj_time BerylVegha FarRight 0.2>>
+<<char_move BerylVegha 4 1000>>
 Beryl: To the left now!
-<<char_move_obj_time BerylVegha Left 0.2>>
+<<char_move BerylVegha 1 1000>>
 Beryl: How about the right?
-<<char_move_obj_time BerylVegha Right 0.2>>
-Beryl: Finally, to the center of the stage!
-<<char_move_obj_time BerylVegha Center 0.2>>
+<<char_move BerylVegha 3 1000>>
+Beryl: Finally, to the center of the stage! I'm gonna do it real slow this time so you can watch me as I go.
+<<char_move_obj_time BerylVegha Center 3 smoothLerp>>
+<<wait_anim>>
 Beryl: That's just the way I like it.
+Beryl: Real quick let's try out a cool effect. It's called "speed lines". Ready? Here I go!
+<<vfx_char "speedline" BerylVegha 10.0>>
+Beryl: Wow, look at those things!
 Beryl: How about a little change of view? I'm a bit tired of this stuffy old room.
 <<char_hide BerylVegha 0.2 false 0.0 0.0 0.0>>
 <<bg_color_rgba 0.0 0.0 0.0 1.0 1.0>>
 You and Beryl go for a walk down the hall...
 <<bg "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.
+<<bg_color_rgba 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<char_show BerylVegha 0.2 false 0.0 0.0 0.0>>
-<<bg_color_rgba 1.0 1.0 1.0 1.0 1.0>>
 Beryl: A barracks? Hmm, not the most fun place to be but it'll do for now.
 Beryl: Alright, how about something a little different? I'm going to try calling one of my friends, and we're going to try having a conversation. Does that sound good?
 -> Sure

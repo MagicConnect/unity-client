@@ -726,7 +726,15 @@ public class CutsceneManager : MonoBehaviour
             cutsceneBackground.StopImageChangeAnimation();
         }
 
-        cutsceneBackground.StartImageChangeAnimation(imageName, animationTime);
+        if(animationTime <= 0.0f)
+        {
+            cutsceneBackground.SetImage(imageName);
+            yield break;
+        }
+        else
+        {
+            cutsceneBackground.StartImageChangeAnimation(imageName, animationTime);
+        }
 
         if (waitForAnimation)
         {
@@ -746,7 +754,17 @@ public class CutsceneManager : MonoBehaviour
         }
 
         Color newColor = new Color(r, g, b, a);
-        cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+
+        // If the animation is supposed to be instant, don't bother creating a coroutine. Just set the color and move on.
+        if(animationTime <= 0.0f)
+        {
+            cutsceneBackground.SetColor(r, g, b, a);
+            yield break;
+        }
+        else
+        {
+            cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+        }
 
         if (waitForAnimation)
         {
@@ -770,7 +788,15 @@ public class CutsceneManager : MonoBehaviour
             Debug.LogWarningFormat("Cutscene Manager: bg_color -> '{0}' is not a valid color code.", hexcode);
         }
 
-        cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+        if(animationTime <= 0.0f)
+        {
+            cutsceneBackground.SetColor(newColor.r, newColor.g, newColor.b, newColor.a);
+            yield break;
+        }
+        else
+        {
+            cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+        }
 
         if (waitForAnimation)
         {
@@ -855,7 +881,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     //[YarnCommand("add_speedline_effect")]
-    public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "000000FF", float duration = 0.0f, bool persistent = false)
+    public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "#000000FF", float duration = 0.0f, bool persistent = false)
     {
         // If no name is given or there isn't already an effect by the given name, instantiate a new effect.
         if(Instance.effects.ContainsKey(name))
@@ -904,6 +930,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Add the new effect to the dictionary so it can be found later.
         Instance.effects.Add(newEffect.name, newEffect);
+        Instance.cutsceneObjects.Add(newEffect.name, newEffect);
 
         // Subscribe to the effect's expiration event so it can be destroyed when the timer runs out.
         newEffect.GetComponent<CutsceneEffect>().EffectExpired += OnEffectExpired;
@@ -1235,50 +1262,52 @@ public class CutsceneManager : MonoBehaviour
 
     // This method destroys all cutscene objects in the scene and removes them from the object dictionaries.
     [YarnCommand("obj_clear_all")]
-    public void RemoveAllCutsceneObjects()
+    public static void RemoveAllCutsceneObjects()
     {
-        foreach(string cObject in cutsceneObjects.Keys)
+        foreach(string cObject in Instance.cutsceneObjects.Keys)
         {
-            GameObject temp = cutsceneObjects[cObject];
+            GameObject temp = Instance.cutsceneObjects[cObject];
             Destroy(temp);
         }
 
-        cutsceneObjects.Clear();
-        cutsceneBackgrounds.Clear();
-        cutsceneCharacters.Clear();
+        Instance.cutsceneObjects.Clear();
+        Instance.cutsceneBackgrounds.Clear();
+        Instance.cutsceneCharacters.Clear();
     }
 
     // This method destroys all characters in the scene and removes them from the object dictionaries.
     [YarnCommand("char_clear_all")]
-    public void RemoveAllCharacters()
+    public static void RemoveAllCharacters()
     {
-        foreach(string character in cutsceneCharacters.Keys)
+        foreach(string character in Instance.cutsceneCharacters.Keys)
         {
-            GameObject temp = cutsceneCharacters[character];
-            cutsceneObjects.Remove(character);
+            GameObject temp = Instance.cutsceneCharacters[character];
+            Instance.cutsceneObjects.Remove(character);
             Destroy(temp);
         }
 
-        cutsceneCharacters.Clear();
+        Instance.cutsceneCharacters.Clear();
     }
 
     [YarnCommand("wait_anim")]
-    public IEnumerator WaitForAllAnimations()
+    public static IEnumerator WaitForAllAnimations()
     {
         yield return new WaitUntil(() => {
             // TODO: Make an IsAnimating override for cutscene backgrounds so you don't need this big if check.
             CutsceneBackground background = defaultBackground.GetComponent<CutsceneBackground>();
             if (background.colorChangeCoroutine != null || background.imageChangeCoroutine != null)
             {
+                Debug.LogFormat("Cutscene Manager -> wait_anim: Background is still animating.");
                 return false;
             }
 
-            foreach(GameObject cObject in cutsceneObjects.Values)
+            foreach(GameObject cObject in Instance.cutsceneObjects.Values)
             {
                 var cutsceneObject = cObject.GetComponent<CutsceneObject>();
 
                 if(cutsceneObject.IsAnimating())
                 {
+                    Debug.LogFormat("Cutscene Manager -> wait_anim: '{0}' is still animating.", cObject.name);
                     return false;
                 }
             }

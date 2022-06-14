@@ -89,7 +89,15 @@ public class CutsceneCharacter : CutsceneObject
             fadeInCoroutine = null;
         }
 
-        fadeOutCoroutine = StartCoroutine(FadeOutCharacter(animationTime, r, g, b));
+        if(animationTime <= 0.0f)
+        {
+            HideObject();
+            yield break;
+        }
+        else
+        {
+            fadeOutCoroutine = StartCoroutine(FadeOutCharacter(animationTime, r, g, b));
+        }
         
         if(waitForAnimation)
         {
@@ -159,7 +167,15 @@ public class CutsceneCharacter : CutsceneObject
             fadeOutCoroutine = null;
         }
 
-        fadeInCoroutine = StartCoroutine(FadeInCharacter(animationTime, r, g, b));
+        if(animationTime <= 0.0f)
+        {
+            ShowObject();
+            yield break;
+        }
+        else
+        {
+            fadeInCoroutine = StartCoroutine(FadeInCharacter(animationTime, r, g, b));
+        }
         
         if(waitForAnimation)
         {
@@ -226,6 +242,8 @@ public class CutsceneCharacter : CutsceneObject
             isUndimming = false;
         }
 
+        // TODO: Make a method which instantly sets the character color to gray, so no coroutine is
+        // created when the animation time is 0.
         dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
 
         if(waitForAnimation)
@@ -292,6 +310,8 @@ public class CutsceneCharacter : CutsceneObject
             isDimming = false;
         }
 
+        // TODO: Make a method which instantly sets the character's color back to the default so no coroutine is
+        // started when the animation time is 0.
         undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
 
         if(waitForAnimation)
@@ -341,7 +361,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("char_move_obj_time")]
-    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
@@ -350,7 +370,15 @@ public class CutsceneCharacter : CutsceneObject
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacter(stagePosition, animationTime));
+        if(animationTime <= 0.0f)
+        {
+            MoveCharacter(stagePosition);
+            yield break;
+        }
+        else
+        {
+            movingCoroutine = StartCoroutine(MoveCharacter(stagePosition, animationTime, smoothLerp));
+        }
 
         if(waitForAnimation)
         {
@@ -358,11 +386,12 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.0f)
+    public IEnumerator MoveCharacter(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false)
     {
         Debug.LogFormat("Cutscene Character {0}: Moving to {1} over {2} seconds.", gameObject.name, stagePosition.name, animationTime);
         float timePassed = 0.0f;
         Vector3 originalPosition = this.rectTransform.position;
+        Vector3 destination = stagePosition.transform.position;
 
         while(timePassed <= animationTime)
         {
@@ -377,7 +406,15 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            this.rectTransform.position = Vector3.Lerp(originalPosition, stagePosition.transform.position, progress);
+            if(smoothLerp)
+            {
+                float t = progress * progress * (3f - 2f * progress);
+                this.rectTransform.position = Vector3.Lerp(originalPosition, destination, t);
+            }
+            else
+            {
+                this.rectTransform.position = Vector3.Lerp(originalPosition, destination, progress);
+            }
 
             timePassed += Time.deltaTime;
 
@@ -395,14 +432,14 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     [YarnCommand("char_move_coord_time")]
-    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime));
+        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
 
         if(waitForAnimation)
         {
@@ -411,7 +448,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // Like MoveCharacter()/move_character but for specific coordinates instead of a preset screen position.
-    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.0f)
+    public IEnumerator MoveCharacterToCoordinate(float x, float y, float animationTime = 0.0f, bool smoothLerp = false)
     {
         Debug.LogFormat("Cutscene Character {0}: Moving to ({1},{2}) over {3} seconds.", gameObject.name, x, y, animationTime);
         float timePassed = 0.0f;
@@ -431,7 +468,15 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            this.rectTransform.position = Vector3.Lerp(originalPosition, newPosition, progress);
+            if(smoothLerp)
+            {
+                float t = progress * progress * (3f - 2f * progress);
+                this.rectTransform.position = Vector3.Lerp(originalPosition, newPosition, t);
+            }
+            else
+            {
+                this.rectTransform.position = Vector3.Lerp(originalPosition, newPosition, progress);
+            }
 
             timePassed += Time.deltaTime;
 
@@ -451,7 +496,7 @@ public class CutsceneCharacter : CutsceneObject
     // The writers want to be able to use numbers as shorthand for a given stage position. This method takes the number and
     // translates it into a preset stage position, then starts the move coroutine as normal.
     [YarnCommand("char_move")]
-    public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
@@ -488,7 +533,7 @@ public class CutsceneCharacter : CutsceneObject
                 yield break;
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(stagePosition, speed));
+        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(stagePosition, speed, smoothLerp));
 
         if(waitForAnimation)
         {
@@ -498,14 +543,14 @@ public class CutsceneCharacter : CutsceneObject
 
     // I see no reason not to include a more flexible version of the above command, at least until they reserve this command name for something else.
     [YarnCommand("char_move_obj")]
-    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(position, speed));
+        movingCoroutine = StartCoroutine(MoveCharacterPositionBySpeed(position, speed, smoothLerp));
 
         if(waitForAnimation)
         {
@@ -514,11 +559,16 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // The actual movement coroutine which uses a flat rate for movement.
-    public IEnumerator MoveCharacterPositionBySpeed(GameObject position, float speed)
+    public IEnumerator MoveCharacterPositionBySpeed(GameObject position, float speed, bool smoothLerp = false)
     {
         Debug.LogFormat(this, "{0} moving to {1}.", gameObject.name, position.name);
 
         RectTransform positionTransform = position.GetComponent<RectTransform>();
+
+        // We need to store the original positions of both the origin and the destination because the transforms
+        // of either object can and will change over the duration of the animation.
+        Vector3 originalPosition = rectTransform.position;
+        Vector3 destination = positionTransform.position;
 
         float distance = Vector3.Distance(positionTransform.position, rectTransform.position);
         float timeToMove = distance / speed;
@@ -537,7 +587,15 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / timeToMove;
             }
 
-            this.rectTransform.position = Vector3.Lerp(rectTransform.position, positionTransform.position, progress);
+            if(smoothLerp)
+            {
+                float t = progress * progress * (3f - 2f * progress);
+                this.rectTransform.position = Vector3.Lerp(originalPosition, destination, t);
+            }
+            else
+            {
+                this.rectTransform.position = Vector3.Lerp(originalPosition, destination, progress);
+            }
 
             timePassed += Time.deltaTime;
 
