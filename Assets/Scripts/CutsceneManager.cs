@@ -804,6 +804,35 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
+    // Convenience method for fading the background to black.
+    [YarnCommand("bg_blackout")]
+    public static IEnumerator BackgroundFadeToBlack_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
+    {
+        CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
+
+        if(cutsceneBackground.colorChangeCoroutine != null)
+        {
+            cutsceneBackground.StopColorChangeAnimation();
+        }
+
+        Color newColor = Color.black;
+
+        if(animationTime <= 0.0f)
+        {
+            cutsceneBackground.SetColor(newColor.r, newColor.g, newColor.b, newColor.a);
+            yield break;
+        }
+        else
+        {
+            cutsceneBackground.StartColorChangeAnimation(newColor, animationTime);
+        }
+
+        if (waitForAnimation)
+        {
+            yield return new WaitUntil(() => cutsceneBackground.colorChangeCoroutine == null);
+        }
+    }
+
     // Method which adds one of the preset character vfx to the scene. An optional tag argument allows the writer to identify any vfx
     // using that tag later, in case they want to configure it in some way.
     [YarnCommand("vfx_char")]
