@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using BestHTTP;
 
@@ -26,6 +27,12 @@ public class LoginScreenController : MonoBehaviour
     public TMP_Text userIdText;
 
     public TMP_Text userTokenText;
+
+    public GameObject signInPanel;
+
+    public GameObject registrationPanel;
+
+    public GameObject connectionPanel;
 
     // Start is called before the first frame update
     void Start()
@@ -127,6 +134,29 @@ public class LoginScreenController : MonoBehaviour
                 break;
         }// end switch block
     }
+
+    // When the 'Connect' button is pressed in the UI, this method starts the process of connecting to the server and loading into the home screen.
+    public void OnConnectButtonClicked()
+    {
+        StartCoroutine(LoadMainScreenSceneAsync());
+    }
+
+    // This coroutine loads the Home Screen scene in the background once started.
+    private IEnumerator LoadMainScreenSceneAsync()
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Home Screen");
+
+        while(!asyncLoad.isDone)
+        {
+            yield return null;
+        }
+    }
+
+    public void OnPlayerLoggedIn()
+    {}
+
+    public void OnUserRegistered()
+    {}
 
     // Method for updating any UI elements relating to user information (usernames, account id's, etc.).
     public void UpdateUserInfoDisplay()
