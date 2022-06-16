@@ -105,8 +105,6 @@ public class MainMenuUIController : MonoBehaviour
         // Parse the JSON response into usable data.
         var responseJsonObject = JObject.Parse(data);
 
-        Debug.LogFormat("Main Screen Character: {0}", responseJsonObject["account"]["personalization"]["mainScreenBackground"].Value<string>());
-
         // The structure of the JSON response could change over time, so wrap attempts to retrieve a value
         // in try/catch blocks to make sure each exception is caught and reported to be fixed later.
 
