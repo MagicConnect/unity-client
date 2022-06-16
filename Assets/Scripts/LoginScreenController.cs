@@ -46,6 +46,16 @@ public class LoginScreenController : MonoBehaviour
         UpdateUserInfoDisplay();
     }
 
+    // TODO: Replace this with a more event based implementation. Sign-in/registration/server connection should
+    // appear based on how the firebase and UI state changes. No coroutine should be necessary for this.
+    public IEnumerator WindowDisplayCoroutine()
+    {
+        // Wait until firebase is ready to be used.
+        yield return new WaitUntil(() => firebase.IsReadyForUse);
+
+        
+    }
+
     public void OnRegisterUserButtonClicked()
     {
         if(firebase.IsReadyForUse)

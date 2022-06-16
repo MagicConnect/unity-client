@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using UnityEngine.Networking;
 
 using Firebase;
 using Firebase.Extensions;
