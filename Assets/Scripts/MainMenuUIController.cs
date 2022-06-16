@@ -180,4 +180,28 @@ public class MainMenuUIController : MonoBehaviour
             orangeCrystalsText.text = 0.ToString();
         }
     }
+
+    public void OnPlayButtonClicked()
+    {}
+
+    public void OnHomeButtonClicked()
+    {}
+
+    public void OnHeroesButtonClicked()
+    {}
+
+    public void OnItemsButtonClicked()
+    {}
+
+    public void OnShopButtonClicked()
+    {}
+
+    public void OnSummonButtonClicked()
+    {}
+
+    public void OnMailButtonClicked()
+    {}
+
+    public void OnOptionsButtonClicked()
+    {}
 }
