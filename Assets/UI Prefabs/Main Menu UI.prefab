@@ -349,6 +349,12 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   firebase: {fileID: 0}
+  blueCrystalsText: {fileID: 8668443537249569386}
+  orangeCrystalsText: {fileID: 8668443536503489567}
+  goldText: {fileID: 8668443536885076533}
+  usernameText: {fileID: 8668443537428658181}
+  levelText: {fileID: 8668443538113790755}
+  experienceBar: {fileID: 8668443536938490467}
 --- !u!1 &6765644409699687687
 GameObject:
   m_ObjectHideFlags: 0

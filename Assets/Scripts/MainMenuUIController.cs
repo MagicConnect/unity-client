@@ -2,6 +2,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 using BestHTTP;
 using TMPro;
 
@@ -23,6 +24,15 @@ public class MainMenuUIController : MonoBehaviour
     public TMP_Text orangeCrystalsText;
 
     public TMP_Text goldText;
+
+    // The player's display name.
+    public TMP_Text usernameText;
+
+    // The player's current level.
+    public TMP_Text levelText;
+
+    // The player's current experienced represented as a progress bar.
+    public Slider experienceBar;
 
     // Start is called before the first frame update
     void Start()
@@ -99,6 +109,45 @@ public class MainMenuUIController : MonoBehaviour
 
         // The structure of the JSON response could change over time, so wrap attempts to retrieve a value
         // in try/catch blocks to make sure each exception is caught and reported to be fixed later.
+
+        // Get and set the player's display name.
+        // (this doesn't need to be done each time but we get the displayname already with each response so whatever)
+        try
+        {
+            usernameText.text = responseJsonObject["account"]["name"].Value<string>();
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'name' value -> {0}", e);
+            usernameText.text = "???";
+        }
+
+        // Get and set the player's current level.
+        try
+        {
+            levelText.text = string.Format("Lvl. {0}", responseJsonObject["account"]["experience"]["level"].Value<string>());
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'level' value -> {0}", e);
+            levelText.text = string.Format("Lvl. {0}", 1.ToString());
+        }
+
+        // Get the player's current experience and update the experience bar to represent it.
+        int currentExperience = 0;
+        int maxExperience = 0;
+        try
+        {
+            currentExperience = responseJsonObject["account"]["experience"]["currentXP"].Value<int>();
+            maxExperience = responseJsonObject["account"]["experience"]["maxXP"].Value<int>();
+
+            experienceBar.value = (float)currentExperience / (float)maxExperience;
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'currentXP' and 'maxXP' values -> {0}", e);
+            experienceBar.value = 0.0f;
+        }
 
         // Get and set the gold currency value.
         try
