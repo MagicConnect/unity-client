@@ -37,23 +37,37 @@ public class LoginScreenController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        
+        SubscribeToFirebaseEvents();
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateUserInfoDisplay();
+        //UpdateUserInfoDisplay();
     }
 
-    // TODO: Replace this with a more event based implementation. Sign-in/registration/server connection should
-    // appear based on how the firebase and UI state changes. No coroutine should be necessary for this.
-    public IEnumerator WindowDisplayCoroutine()
+    public void SubscribeToFirebaseEvents()
     {
-        // Wait until firebase is ready to be used.
-        yield return new WaitUntil(() => firebase.IsReadyForUse);
+        firebase.UserSignedIn += OnFirebaseUserSignedIn;
+        firebase.UserSignedOut += OnFirebaseUserSignedOut;
+    }
 
-        
+    public void UnsubscribeFromFirebaseEvents()
+    {
+        firebase.UserSignedIn -= OnFirebaseUserSignedIn;
+        firebase.UserSignedOut -= OnFirebaseUserSignedOut;
+    }
+
+    public void OnFirebaseUserSignedIn()
+    {
+        connectionPanel.SetActive(true);
+        signInPanel.SetActive(false);
+    }
+
+    public void OnFirebaseUserSignedOut()
+    {
+        signInPanel.SetActive(true);
+        connectionPanel.SetActive(false);
     }
 
     public void OnRegisterUserButtonClicked()

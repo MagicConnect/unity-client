@@ -44,11 +44,11 @@ public class FirebaseHandler : MonoBehaviour
 
     public event Action<string> UserTokenReceived;
 
-    public event Action<string> UserSignedIn;
+    public event Action UserSignedIn;
 
-    public event Action<string> UserSignedOut;
+    public event Action UserSignedOut;
 
-    public event Action<string> NewUserRegistered;
+    public event Action NewUserRegistered;
 
     // Awake is called upon creation of the gameobject.
     void Awake()
@@ -168,7 +168,7 @@ public class FirebaseHandler : MonoBehaviour
 
                 if(UserSignedOut != null)
                 {
-                    UserSignedOut.Invoke("");
+                    UserSignedOut.Invoke();
                 }
             }
 
@@ -190,7 +190,7 @@ public class FirebaseHandler : MonoBehaviour
 
                 if(UserSignedIn != null)
                 {
-                    UserSignedIn.Invoke("");
+                    UserSignedIn.Invoke();
                 }
                 
                 GetToken();
@@ -220,7 +220,7 @@ public class FirebaseHandler : MonoBehaviour
 
             if(NewUserRegistered != null)
             {
-                NewUserRegistered.Invoke("");
+                NewUserRegistered.Invoke();
             }
         });
     }
