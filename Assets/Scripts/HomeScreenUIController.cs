@@ -105,17 +105,53 @@ public class HomeScreenUIController : MonoBehaviour
             if(mainScreenCharacter != "")
             {
                 // If a character was specified, load and display that character's sprite and their name.
-            }
-            else
-            {
                 // If no character was specified then just display a default character for demo purposes.
                 // Later we can change it to a debug image for testing.
+                WebAssetCache.LoadedImageAsset imageAsset = WebAssetCache.Instance.GetLoadedImageAssetByName(mainScreenCharacter);
+
+                if (imageAsset != null)
+                {
+                    Sprite newSprite = Sprite.Create(imageAsset.texture, new Rect(0.0f, 0.0f, imageAsset.texture.width, imageAsset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+                    characterImage.sprite = newSprite;
+                }
             }
         }
         catch (Exception e)
         {
             Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'mainScreenCharacter' value -> {0}", e);
         }
+
+        string mainScreenBackground = "";
+        try
+        {
+            mainScreenBackground = responseJsonObject["account"]["personalization"]["mainScreenBackground"].Value<string>();
+
+            if(mainScreenBackground != "default")
+            {
+                WebAssetCache.LoadedImageAsset imageAsset = WebAssetCache.Instance.GetLoadedImageAssetByName(mainScreenBackground);
+
+                if (imageAsset != null)
+                {
+                    Sprite newSprite = Sprite.Create(imageAsset.texture, new Rect(0.0f, 0.0f, imageAsset.texture.width, imageAsset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+                    characterImage.sprite = newSprite;
+                }
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'mainScreenBackground' value -> {0}", e);
+        }
+
+        string title = "";
+        try
+        {
+            title = responseJsonObject["account"]["personalization"]["title"].Value<string>();
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'mainScreenBackground' value -> {0}", e);
+        }
+        characterName.text = title;
     }
 
     public void OnOverviewButtonClicked()

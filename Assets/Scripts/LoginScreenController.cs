@@ -34,6 +34,8 @@ public class LoginScreenController : MonoBehaviour
 
     public GameObject accountInfoPanel;
 
+    public Image backgroundImage;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,6 +44,7 @@ public class LoginScreenController : MonoBehaviour
         SubscribeToFirebaseEvents();
 
         StartCoroutine(FirebaseCoordinationCoroutine());
+        StartCoroutine(BackgroundAnimator());
     }
 
     // Update is called once per frame
@@ -66,6 +69,20 @@ public class LoginScreenController : MonoBehaviour
             signInPanel.SetActive(true);
             connectionPanel.SetActive(false);
             accountInfoPanel.SetActive(false);
+        }
+    }
+
+    // This coroutine coordinates setting the background image of the login screen.
+    public IEnumerator BackgroundAnimator()
+    {
+        yield return new WaitUntil(() => WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse);
+
+        WebAssetCache.LoadedImageAsset imageAsset = WebAssetCache.Instance.GetLoadedImageAssetByName("TempleBase");
+
+        if(imageAsset != null)
+        {
+            Sprite newSprite = Sprite.Create(imageAsset.texture, new Rect(0.0f, 0.0f, imageAsset.texture.width, imageAsset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+            backgroundImage.sprite = newSprite;
         }
     }
 
