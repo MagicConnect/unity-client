@@ -3,47 +3,122 @@ using System.Collections.Generic;
 using System;
 using UnityEngine;
 using UnityEngine.UI;
+using UnityEngine.SceneManagement;
 using TMPro;
 using BestHTTP;
 
 public class LoginScreenController : MonoBehaviour
 {
-    // TODO: Will most likely need to split these input fields between registration and sign-in,
-    // so that different UI's and scripting can be implemented for the different processes.
-    // User's email for registration/sign-in.
-    public TMP_InputField email;
+    // User's email for sign-in.
+    public TMP_InputField signInEmail;
     
-    // User's password for registration/sign-in.
-    public TMP_InputField password;
+    // User's password for sign-in.
+    public TMP_InputField signInPassword;
+
+    // User's email for registration.
+    public TMP_InputField registrationEmail;
+
+    // User's password for registration.
+    public TMP_InputField registrationPassword;
 
     // Reference to our firebase handler, which handles interfacing with the firebase SDK.
     public FirebaseHandler firebase;
 
     public TMP_Text displayNameText;
 
-    public TMP_Text emailText;
+    public GameObject signInPanel;
 
-    public TMP_Text userIdText;
+    public GameObject registrationPanel;
 
-    public TMP_Text userTokenText;
+    public GameObject connectionPanel;
+
+    public GameObject accountInfoPanel;
+
+    public Image backgroundImage;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        firebase = FirebaseHandler.Instance;
+
+        SubscribeToFirebaseEvents();
+
+        StartCoroutine(FirebaseCoordinationCoroutine());
+        StartCoroutine(BackgroundAnimator());
     }
 
     // Update is called once per frame
     void Update()
     {
-        UpdateUserInfoDisplay();
+        
+    }
+
+    void Destroy()
+    {
+        UnsubscribeFromFirebaseEvents();
+    }
+
+    // This coroutine waits until Firebase is initialized, then checks if a preexisting sign in is carried over.
+    // If not, the sign in interface is displayed. Otherwise it does nothing, because the sign in event listener can handle it.
+    public IEnumerator FirebaseCoordinationCoroutine()
+    {
+        yield return new WaitUntil(() => firebase.IsReadyForUse);
+
+        if(!firebase.previousSignInFound && !firebase.isUserSignedIn)
+        {
+            signInPanel.SetActive(true);
+            connectionPanel.SetActive(false);
+            accountInfoPanel.SetActive(false);
+        }
+    }
+
+    // This coroutine coordinates setting the background image of the login screen.
+    public IEnumerator BackgroundAnimator()
+    {
+        yield return new WaitUntil(() => WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse);
+
+        WebAssetCache.LoadedImageAsset imageAsset = WebAssetCache.Instance.GetLoadedImageAssetByName("TempleBase");
+
+        if(imageAsset != null)
+        {
+            Sprite newSprite = Sprite.Create(imageAsset.texture, new Rect(0.0f, 0.0f, imageAsset.texture.width, imageAsset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+            backgroundImage.sprite = newSprite;
+        }
+    }
+
+    public void SubscribeToFirebaseEvents()
+    {
+        firebase.UserSignedIn += OnFirebaseUserSignedIn;
+        firebase.UserSignedOut += OnFirebaseUserSignedOut;
+    }
+
+    public void UnsubscribeFromFirebaseEvents()
+    {
+        firebase.UserSignedIn -= OnFirebaseUserSignedIn;
+        firebase.UserSignedOut -= OnFirebaseUserSignedOut;
+    }
+
+    public void OnFirebaseUserSignedIn()
+    {
+        connectionPanel.SetActive(true);
+        accountInfoPanel.SetActive(true);
+        signInPanel.SetActive(false);
+
+        displayNameText.text = string.Format("Logged in as {0}", firebase.displayName);
+    }
+
+    public void OnFirebaseUserSignedOut()
+    {
+        signInPanel.SetActive(true);
+        connectionPanel.SetActive(false);
+        accountInfoPanel.SetActive(false);
     }
 
     public void OnRegisterUserButtonClicked()
     {
         if(firebase.IsReadyForUse)
         {
-            firebase.RegisterUser(email.text, password.text);
+            firebase.RegisterUser(registrationEmail.text, registrationPassword.text);
         }
         else
         {
@@ -51,16 +126,28 @@ public class LoginScreenController : MonoBehaviour
         }
     }
 
+    public void OnCancelRegistrationButtonClicked()
+    {
+        registrationPanel.SetActive(false);
+        signInPanel.SetActive(true);
+    }
+
     public void OnSignInButtonClicked()
     {
         if(firebase.IsReadyForUse)
         {
-            firebase.SignInUser(email.text, password.text);
+            firebase.SignInUser(signInEmail.text, signInPassword.text);
         }
         else
         {
             Debug.LogError("OnSignInButtonClicked(): Firebase Authentication is not ready to be used. No sign in attempt will be made.");
         }
+    }
+
+    public void OnNewAccountButtonClicked()
+    {
+        signInPanel.SetActive(false);
+        registrationPanel.SetActive(true);
     }
 
     public void OnSignOutButtonClicked()
@@ -75,65 +162,20 @@ public class LoginScreenController : MonoBehaviour
         }
     }
 
-    public void OnTestApiCallButtonClicked()
+    // When the 'Connect' button is pressed in the UI, this method starts the process of connecting to the server and loading into the home screen.
+    public void OnConnectButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me"), OnApiRequestFinished);
-
-        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
-
-        request.Send();
+        StartCoroutine(LoadMainScreenSceneAsync());
     }
 
-    public void OnApiRequestFinished(HTTPRequest request, HTTPResponse response)
+    // This coroutine loads the Home Screen scene in the background once started.
+    private IEnumerator LoadMainScreenSceneAsync()
     {
-        switch(request.State)
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync("Home Screen");
+
+        while(!asyncLoad.isDone)
         {
-            // The request finished without any problem.
-            case HTTPRequestStates.Finished:
-                if(response.IsSuccess)
-                {
-                    // Dump all headers and their values into the console.
-                    Debug.LogFormat(this, "API Response Headers/Values:");
-                    foreach(string header in response.Headers.Keys)
-                    {
-                        Debug.LogFormat(this, "Header: {0} Value(s): {1}", header, response.Headers[header]);
-                    }
-
-                    Debug.LogFormat(this, "Response Data: {0}", response.DataAsText);
-                    Debug.LogFormat(this, "Status Code: {0} Message: {1}", response.StatusCode, response.Message);
-                    Debug.LogFormat(this, "Major Version: {0} Minor Version: {1}", response.VersionMajor, response.VersionMinor);
-                    Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
-                }
-                else
-                {
-                    Debug.LogWarningFormat("Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", response.StatusCode, response.Message, response.DataAsText);
-                }
-                break;
-            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
-            case HTTPRequestStates.Error:
-                Debug.LogError("Request finished with an error: " + (request.Exception != null ? (request.Exception.Message + "\n" + request.Exception.StackTrace) : "No Exception"));
-                break;
-            // The request aborted, initiated by the user.
-            case HTTPRequestStates.Aborted:
-                Debug.LogWarning("Request aborted.");
-                break;
-            // Connecting to the server timed out.
-            case HTTPRequestStates.ConnectionTimedOut:
-                Debug.LogError("Connection timed out.");
-                break;
-            // The request didn't finish in the given time.
-            case HTTPRequestStates.TimedOut:
-                Debug.LogError("Processing the request timed out.");
-                break;
-        }// end switch block
-    }
-
-    // Method for updating any UI elements relating to user information (usernames, account id's, etc.).
-    public void UpdateUserInfoDisplay()
-    {
-        displayNameText.text = string.Format("Display Name: {0}", firebase.displayName);
-        emailText.text = string.Format("Email Address: {0}", firebase.emailAddress);
-        userIdText.text = string.Format("User ID: {0}", firebase.userId);
-        userTokenText.text = string.Format("User Token: {0}", firebase.userToken);
+            yield return null;
+        }
     }
 }

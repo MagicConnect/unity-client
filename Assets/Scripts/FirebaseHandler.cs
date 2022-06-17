@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using UnityEngine;
+using UnityEngine.Networking;
 
 using Firebase;
 using Firebase.Extensions;
@@ -30,12 +31,34 @@ public class FirebaseHandler : MonoBehaviour
     public UserMetadata userMetadata;
     public Uri photoUrl;
 
+    // The user's authentication token used for making API calls to the game server.
     public string userToken = "";
 
     // Flag which indicates that Firebase is ready to be used by the client.
     public bool IsReadyForUse = false;
 
+    // Used while testing to make sure we connect to the right Firebase project.
+    // TODO: Replace with some custom precompiler definition(s) and ifdef blocks.
     public bool UseTestFirebaseProject = true;
+
+    // Will be true if the user is currently signed in to the Firebase server.
+    public bool isUserSignedIn = false;
+
+    // Will be true if a user session was carried over from the last time the app was opened.
+    public bool previousSignInFound = false;
+
+    // Events which tell listeners about changes in the Firebase state.
+    public event Action FirebaseInitialized;
+
+    public event Action<string> UserTokenReceived;
+
+    public event Action UserSignedIn;
+
+    public event Action UserSignedOut;
+
+    public event Action NewUserRegistered;
+
+    public event Action NoPreviousSignInFound;
 
     // Awake is called upon creation of the gameobject.
     void Awake()
@@ -84,7 +107,7 @@ public class FirebaseHandler : MonoBehaviour
         
     }
 
-    void InitializeFirebase()
+    public void InitializeFirebase()
     {
         Debug.Log("Firebase Handler: Initializing Firebase...");
 
@@ -124,27 +147,52 @@ public class FirebaseHandler : MonoBehaviour
             auth = prodAuth;
         }
 
+        if(auth.CurrentUser == null)
+        {
+            Debug.LogFormat(this, "Firebase Handler: No preexisting user session found. User will have to sign in manually.");
+            previousSignInFound = false;
+        }
+        else
+        {
+            Debug.LogFormat(this, "Firebase Handler: Preexisting user session found. User will be signed in automatically.");
+            previousSignInFound = true;
+        }
+
         //app = Firebase.FirebaseApp.DefaultInstance;
         //auth = Firebase.Auth.FirebaseAuth.DefaultInstance;
 
+        // Set a flag to indicate whether Firebase is ready to use by the client.
+        Debug.Log("Firebase Handler: Firebase initialization successful. Firebase is ready to be used by the client.");
+        this.IsReadyForUse = true;
+
+        if(FirebaseInitialized != null)
+        {
+            FirebaseInitialized.Invoke();
+        }
+
         auth.StateChanged += AuthStateChanged;
         AuthStateChanged(this, null);
-
-        // Set a flag to indicate whether Firebase is ready to use by the client.
-        Debug.Log("Firebase Handler: Firebase initialization succcessful. Firebase is ready to be used by the client.");
-        this.IsReadyForUse = true;
     }
 
     // Event handler for when state changes for the signed in user. Includes sign-in and sign-out events. It is also the best place to get
     // information about the signed in user (according to the Firebase tutorial).
-    void AuthStateChanged(object sender, System.EventArgs eventArgs)
+    public void AuthStateChanged(object sender, System.EventArgs eventArgs)
     {
+        Debug.LogFormat(this, "Firebase Handler: Auth State Changed -> Sender: {0} EventArgs: {1}", sender, eventArgs.ToString());
+        
         if(auth.CurrentUser != user)
         {
             bool signedIn = user != auth.CurrentUser && auth.CurrentUser != null;
             if(!signedIn && user != null)
             {
                 Debug.LogFormat("Signed out {0}", user.UserId);
+
+                isUserSignedIn = false;
+
+                if(UserSignedOut != null)
+                {
+                    UserSignedOut.Invoke();
+                }
             }
 
             user = auth.CurrentUser;
@@ -160,25 +208,27 @@ public class FirebaseHandler : MonoBehaviour
                 phoneNumber = user.PhoneNumber;
                 providerId = user.ProviderId;
                 userMetadata = user.Metadata;
+
+                isUserSignedIn = true;
+
+                if(UserSignedIn != null)
+                {
+                    UserSignedIn.Invoke();
+                }
                 
                 GetToken();
             }
-            else
-            {
-                displayName = "";
-                emailAddress = "";
-                userId = "";
-                phoneNumber = "";
-                providerId = "";
-                userMetadata = null;
-            }
         }
+
+        // For some reason firebase is silently crashing, hanging, or just outright stopping execution. There are no exceptions being
+        // thrown or outputs in the log. It just stops.
+        Debug.LogFormat(this, "Firebase Handler: Exiting AuthStateChanged method. CurrentUser: {0}", auth.CurrentUser);
     }
 
-    // A test function for registering user(s) to the Firebase system. Don't use in actual code.
+    // Method for registering a user with a basic email and password pair.
     public void RegisterUser(string email, string password)
     {
-        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWith(task =>{
+        auth.CreateUserWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task =>{
             if(task.IsCanceled)
             {
                 Debug.LogError("TestRegisterUser(): CreateUserWithEmailAndPasswordAsync was canceled.");
@@ -194,12 +244,20 @@ public class FirebaseHandler : MonoBehaviour
             // Firebase user has been created.
             Firebase.Auth.FirebaseUser newUser = task.Result;
             Debug.LogFormat("TestRegisterUser(): Firebase user created successfully: {0} ({1})", newUser.DisplayName, newUser.UserId);
+
+            if(NewUserRegistered != null)
+            {
+                NewUserRegistered.Invoke();
+            }
         });
     }
 
+    // Signs a user into firebase using a given email and password.
     public void SignInUser(string email, string password)
     {
-        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWith(task => {
+        Debug.LogFormat(this, "Firebase Handler: Attempting to sign into Firebase using email ({0}) and password ({1}).", email, password);
+
+        auth.SignInWithEmailAndPasswordAsync(email, password).ContinueWithOnMainThread(task => {
             if(task.IsCanceled)
             {
                 Debug.LogError("TestSignInUser(): SignInWithEmailAndPasswordAsync was canceled.");
@@ -217,31 +275,39 @@ public class FirebaseHandler : MonoBehaviour
         });
     }
 
+    // Signs a user out of firebase.
     public void SignOutUser()
     {
+        Debug.LogFormat(this, "Firebase Handler: Attempting to sign out the current user.");
+
         auth.SignOut();
     }
 
-    public void TestDeleteUser()
-    {}
-
+    // Launches a task which gets a user token generated by firebase.
     public void GetToken()
     {
-        user.TokenAsync(true).ContinueWith(task => {
+        Debug.LogFormat(this, "Firebase Handler: Requesting user token.");
+
+        user.TokenAsync(true).ContinueWithOnMainThread(task => {
             if(task.IsCanceled)
             {
-                Debug.LogError("GetToken(): TokenAsync was canceled.");
+                Debug.LogErrorFormat(this, "Firebase Handler: GetToken(): TokenAsync was canceled.");
                 return;
             }
             
             if(task.IsFaulted)
             {
-                Debug.LogErrorFormat(this, "TokenAsync encountered an error: {0}", task.Exception);
+                Debug.LogErrorFormat(this, "Firebase Handler: TokenAsync encountered an error: {0}", task.Exception);
                 return;
             }
 
             userToken = task.Result;
-            Debug.LogFormat(this, "User token retrieved: {0}", userToken);
+            Debug.LogFormat(this, "Firebase Handler: User token retrieved: {0}", userToken);
+
+            if(UserTokenReceived != null)
+            {
+                UserTokenReceived.Invoke(userToken);
+            }
         });
     }
 }
