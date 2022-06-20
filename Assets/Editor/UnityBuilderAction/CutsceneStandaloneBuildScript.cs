@@ -51,7 +51,7 @@ namespace UnityBuilderAction
                     break;
             }
 
-            bool developmentMode = options.TryGetValue("Development", out string _);
+            bool developmentMode = options.TryGetValue("Development", out string _) || options.TryGetValue("development", out string _);
 
             // Custom build
             Build(buildTarget, options["customBuildPath"], developmentMode);

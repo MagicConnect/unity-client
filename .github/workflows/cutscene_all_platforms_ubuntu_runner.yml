@@ -61,7 +61,7 @@ jobs:
       #  with:
       #    githubToken: ${{ secrets.GITHUB_TOKEN }}
 
-      # Build
+      # Build (Debug)
       - name: Build project
         if: github.event.inputs.debugMode == 'true'
         uses: game-ci/unity-builder@v2
@@ -76,7 +76,25 @@ jobs:
           allowDirtyBuild: true
           buildName: MagicConnect
           versioning: Semantic
-          customParameters: "${{ github.event.inputs.debugMode && '-Development -AllowDebugging' }}"
+          customParameters: -Development -AllowDebugging
+          unityVersion: 2020.3.17f1
+          buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
+
+      # Build (Non-Debug)
+      - name: Build project
+        if: github.event.inputs.debugMode == 'false'
+        uses: game-ci/unity-builder@v2
+        env:
+          #UNITY_LICENSE: ${{ secrets.UNITY_LICENSE }}
+          UNITY_SERIAL: ${{ secrets.UNITY_SERIAL }}
+          UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
+          UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
+          DEBUG: ${{ github.event.inputs.debugMode }}
+        with:
+          targetPlatform: ${{ matrix.targetPlatform }}
+          allowDirtyBuild: true
+          buildName: MagicConnect
+          versioning: Semantic
           unityVersion: 2020.3.17f1
           buildMethod: UnityBuilderAction.CutsceneStandaloneBuildScript.Build
 
