@@ -200,7 +200,7 @@ public class CutsceneManager : MonoBehaviour
         if(HasArg("-help"))
         {
             // Build the output text into a single string to avoid having a massive stacktrace attached to each line of output.
-            /*string logOutput = "";
+            string logOutput = "";
             logOutput += "Cutscene Manager: Valid command line arguments and their parameters are:\n";
             logOutput += "\tauto_advance -> on, off\n";
             logOutput += "\thold_time -> floating point number >= 0.0f\n";
@@ -209,9 +209,9 @@ public class CutsceneManager : MonoBehaviour
             logOutput += "\ttext_speed_preset -> very_slow, slow, medium, fast, very_fast\n";
             logOutput += "\tcutscene_script -> path of Yarn Spinner script to be run by the cutscene\n";
             logOutput += "\tcutscene_directory -> path of the directory containing Yarn Spinner scripts to be run by the cutscene\n";
-            Debug.LogFormat(logOutput);
-            */
+            Debug.LogWarningFormat(logOutput);
 
+            /*
             Console.WriteLine("Cutscene Manager: Valid command line arguments and their parameters are:");
             Console.WriteLine("auto_advance -> on, off");
             Console.WriteLine("hold_time -> floating point number >= 0.0");
@@ -220,7 +220,8 @@ public class CutsceneManager : MonoBehaviour
             Console.WriteLine("text_speed_preset -> very_slow, slow, medium, fast, very_fast");
             Console.WriteLine("cutscene_script -> path of Yarn Spinner script to be run by the cutscene");
             Console.WriteLine("cutscene_directory -> path of the directory containing Yarn Spinner scripts to be run by the cutscene (all scripts in directory will be loaded)");
-            Application.Quit();
+            */
+            //Application.Quit();
         }
 
         // Get the default auto-advance setting.
@@ -1340,12 +1341,13 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("wait_anim")]
     public static IEnumerator WaitForAllAnimations()
     {
+        Debug.LogFormat("Cutscene Manager -> wait_anim: Waiting for all background and character animations to complete.");
         yield return new WaitUntil(() => {
             // TODO: Make an IsAnimating override for cutscene backgrounds so you don't need this big if check.
             CutsceneBackground background = defaultBackground.GetComponent<CutsceneBackground>();
             if (background.colorChangeCoroutine != null || background.imageChangeCoroutine != null)
             {
-                Debug.LogFormat("Cutscene Manager -> wait_anim: Background is still animating.");
+                //Debug.LogFormat("Cutscene Manager -> wait_anim: Background is still animating.");
                 return false;
             }
 
@@ -1355,13 +1357,14 @@ public class CutsceneManager : MonoBehaviour
 
                 if(cutsceneObject.IsAnimating())
                 {
-                    Debug.LogFormat("Cutscene Manager -> wait_anim: '{0}' is still animating.", cObject.name);
+                    //Debug.LogFormat("Cutscene Manager -> wait_anim: '{0}' is still animating.", cObject.name);
                     return false;
                 }
             }
 
             return true;
         });
+        Debug.LogFormat("Cutscene Manager -> wait_anim: All background and character animations are complete. Continuing Yarn Script.");
     }
 }
 
