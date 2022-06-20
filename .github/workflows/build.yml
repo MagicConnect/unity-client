@@ -1,9 +1,9 @@
 name: Build project
 
 on: 
-  push:
-    tags:
-      - '*'
+  #push:
+  #  tags:
+  #    - '*'
       
   workflow_dispatch:
     inputs:
@@ -13,8 +13,8 @@ on:
         required: false
         default: false
   
-  pull_request: 
-    types: [opened]
+  #pull_request: 
+  #  types: [opened]
 
 jobs:
   buildForAllSupportedPlatforms:

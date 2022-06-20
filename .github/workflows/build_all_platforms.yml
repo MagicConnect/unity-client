@@ -10,8 +10,8 @@ on:
         required: false
         default: false
   
-  pull_request: 
-    types: [opened]
+  #pull_request: 
+  #  types: [opened]
 
 jobs:
   buildForWindowsBasedPlatforms:
