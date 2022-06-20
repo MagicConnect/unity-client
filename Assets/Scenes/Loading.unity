@@ -2468,7 +2468,8 @@ MonoBehaviour:
   autoStartTime: 1
   cutsceneScene: Cutscene
   loginScene: Login
-  loadCutscene: 0
+  loadCutscene: 1
+  ingameDebugConsolePrefab: {fileID: 132536, guid: 67117722a812a2e46ab8cb8eafbf5f5e, type: 3}
 --- !u!1 &1531979604
 GameObject:
   m_ObjectHideFlags: 0
