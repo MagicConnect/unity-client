@@ -51,8 +51,10 @@ namespace UnityBuilderAction
                     break;
             }
 
+            bool developmentMode = options.TryGetValue("Development", out string _);
+
             // Custom build
-            Build(buildTarget, options["customBuildPath"]);
+            Build(buildTarget, options["customBuildPath"], developmentMode);
         }
 
         private static Dictionary<string, string> GetValidatedOptions()
@@ -130,7 +132,7 @@ namespace UnityBuilderAction
             }
         }
 
-        private static void Build(BuildTarget buildTarget, string filePath)
+        private static void Build(BuildTarget buildTarget, string filePath, bool developmentMode)
         {
             //string[] scenes = EditorBuildSettings.scenes.Where(scene => scene.enabled).Select(s => s.path).ToArray();
             string[] scenes = new string[]{"Assets/Scenes/Loading.unity", "Assets/Scenes/Cutscene.unity"};
@@ -143,7 +145,19 @@ namespace UnityBuilderAction
                 locationPathName = filePath,
 //                options = UnityEditor.BuildOptions.Development
             };
-            buildPlayerOptions.extraScriptingDefines = new string[]{"CUTSCENE_ONLY_BUILD"};
+
+            // Build the list of custom scripting definitions before passing them into the build player options.
+            List<string> scriptingDefines = new List<string>();
+            scriptingDefines.Add("CUTSCENE_ONLY_BUILD");
+
+            // We can't use development mode in the custom build for some reason, but we can set a definition to enable
+            // the ingame debug console.
+            if(developmentMode)
+            {
+                scriptingDefines.Add("USE_CUSTOM_INGAME_DEBUG_CONSOLE");
+            }
+
+            buildPlayerOptions.extraScriptingDefines = scriptingDefines.ToArray();
             //buildPlayerOptions.options = BuildOptions.Development;
 
             BuildSummary buildSummary = BuildPipeline.BuildPlayer(buildPlayerOptions).summary;
