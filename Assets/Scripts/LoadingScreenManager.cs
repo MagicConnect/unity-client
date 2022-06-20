@@ -59,10 +59,26 @@ public class LoadingScreenManager : MonoBehaviour
     // Testing cutscene only builds in the editor isn't fun, so this should help.
     public bool loadCutscene = false;
 
+    // The prefab of the ingame debug console plugin to be instantiated.
+    public GameObject ingameDebugConsolePrefab;
+
     // Start is called before the first frame update
     void Start()
     {
         SubscribeToCacheEvents();
+
+#if USE_CUSTOM_INGAME_DEBUG_CONSOLE || DEVELOPMENT_BUILD
+        // If the above precompiler definition is included, add in the ingame debug console prefab so
+        // developers without access to the Unity Editor can see debug.log output ingame, without having to open the logfile.
+        GameObject ingameDebugConsole = Instantiate(ingameDebugConsolePrefab);
+
+        // Disable the event system gameobject within this prefab. Unity doesn't like there being 2 or more event systems,
+        // and the other event systems we have placed in scenes are going to be more important in the majority of situations.
+        ingameDebugConsole.transform.Find("Event System").gameObject.SetActive(false);
+
+        // Make sure the console isn't destroyed on scene transitions.
+        DontDestroyOnLoad(ingameDebugConsole);
+#endif
     }
 
     // Update is called once per frame
