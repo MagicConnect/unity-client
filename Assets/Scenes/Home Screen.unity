@@ -130,6 +130,10 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 0}
     m_Modifications:
+    - target: {fileID: 835935154834425716, guid: 0288e0884813496489edf9b793955444, type: 3}
+      propertyPath: homeScreenInstance
+      value: 
+      objectReference: {fileID: 517051244}
     - target: {fileID: 8668443536631790913, guid: 0288e0884813496489edf9b793955444, type: 3}
       propertyPath: m_Name
       value: Main Menu UI
@@ -568,6 +572,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2c99fe9b1e3da6b479a021ea2ea4d79e, type: 3}
+--- !u!1 &517051244 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 3225733284173833779, guid: 2c99fe9b1e3da6b479a021ea2ea4d79e, type: 3}
+  m_PrefabInstance: {fileID: 517051243}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1191745579
 GameObject:
   m_ObjectHideFlags: 0

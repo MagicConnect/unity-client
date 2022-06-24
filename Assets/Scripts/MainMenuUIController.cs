@@ -11,11 +11,6 @@ using Newtonsoft.Json.Linq;
 
 public class MainMenuUIController : MonoBehaviour
 {
-    // TODO: Refactor into its own script file, or delete because you can just parse into a generic object.
-    // Data class which the /me json response is parsed into.
-    public class Account
-    {}
-
     public FirebaseHandler firebase;
 
     // Rename these once you figure out what each currency is.
@@ -34,6 +29,30 @@ public class MainMenuUIController : MonoBehaviour
     // The player's current experienced represented as a progress bar.
     public Slider experienceBar;
 
+    // When the user's gm level is greater than or equal to 5, this button appears and allows switching to the gm interface screen.
+    public Button gmScreenButton;
+
+    // The prefabs of all interfaces that will be displayed below the main menu at runtime.
+    #region UI prefabs
+    // The GM screen UI prefab that will be instantiated when the GM screen button is pressed.
+    public GameObject gmScreenPrefab;
+    #endregion
+
+    // The loaded instances of each interface prefab created and displayed at runtime.
+    #region UI instances
+    // The instance of the GM screen interface that has been created at runtime.
+    public GameObject gmScreenInstance;
+
+    // The instance of the home screen, which should have been created as a default scene element.
+    public GameObject homeScreenInstance;
+    #endregion
+
+    // When an interface object is created or made active, it is placed in this object's heirarchy so it can be visible on screen.
+    public GameObject screenDisplayContainer;
+
+    // The currently active UI screen displayed underneath the main menu.
+    public GameObject currentScreen;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -45,6 +64,8 @@ public class MainMenuUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
 
         request.Send();
+
+        currentScreen = homeScreenInstance;
     }
 
     // Update is called once per frame
@@ -179,6 +200,22 @@ public class MainMenuUIController : MonoBehaviour
             Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'World Shard' value -> {0}", e);
             orangeCrystalsText.text = 0.ToString();
         }
+
+        // Get the user's gm level and show the gm screen button if it is at or above the required level (5, currently).
+        int gmLevel = 0;
+        try
+        {
+            gmLevel = responseJsonObject["account"]["gmLevel"].Value<int>();
+
+            if(gmLevel >= 5)
+            {
+                gmScreenButton.gameObject.SetActive(true);
+            }
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'gmLevel' value -> {0}", e);
+        }
     }
 
     public void OnPlayButtonClicked()
@@ -198,6 +235,28 @@ public class MainMenuUIController : MonoBehaviour
 
     public void OnSummonButtonClicked()
     {}
+
+    // When the GM screen button is clicked, the GM screen UI is displayed in the center of the screen.
+    public void OnGMScreenButtonClicked()
+    {
+        // If the gm screen ui object is null, then we need to instantiate a copy of the gm screen ui prefab.
+        if(!gmScreenInstance)
+        {
+            gmScreenInstance = Instantiate(gmScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid gm screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            gmScreenInstance.SetActive(true);
+            gmScreenInstance.transform.SetAsLastSibling();
+        }
+
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the gm screen ui the currently active ui screen.
+        currentScreen = gmScreenInstance;
+    }
 
     public void OnMailButtonClicked()
     {}
