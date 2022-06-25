@@ -56,6 +56,8 @@ public class LoadingScreenManager : MonoBehaviour
 
     Coroutine yarnSceneLoader;
 
+    Coroutine loadingCoroutine;
+
     // Testing cutscene only builds in the editor isn't fun, so this should help.
     public bool loadCutscene = false;
 
@@ -84,29 +86,13 @@ public class LoadingScreenManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // If it's time to autoload and the cache is idle and unready, launch the startup process.
-        if(Time.realtimeSinceStartup >= autoStartTime && WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.Unready)
+        // If enough time has passed for the loading process to begin, launch the loading coroutine to handle it.
+        if(Time.realtimeSinceStartup >= autoStartTime && loadingCoroutine == null)
         {
-            WebAssetCache.Instance.Startup();
+            loadingCoroutine = StartCoroutine(LoadingCoroutine());
         }
 
-        // If the cache is done loading, do any cleanup or preparation necessary and load the next scene.
-        if(WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse && yarnSceneLoader == null)
-        {
-#if CUTSCENE_ONLY_BUILD            
-            yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
-#else
-            if(!loadCutscene)
-            {
-                yarnSceneLoader = StartCoroutine(LoadLoginSceneAsync());
-            }
-            else
-            {
-                yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
-            }
-#endif            
-        }
-
+        // Update the loading visuals.
         timeToRefresh += Time.deltaTime;
 
         if(timeToRefresh >= messageRefreshRate)
@@ -123,6 +109,34 @@ public class LoadingScreenManager : MonoBehaviour
         }
 
         UpdateProgressGraphic();
+    }
+
+    // Steps through the loading process so the update method isn't doing unnecessary checks each frame.
+    public IEnumerator LoadingCoroutine()
+    {
+        // Load the web assets.
+        WebAssetCache.Instance.Startup();
+
+        yield return new WaitUntil(() => WebAssetCache.Instance.status == WebAssetCache.WebCacheStatus.ReadyToUse);
+        
+        // Load the game data.
+        GameDataCache.Instance.Startup();
+
+        yield return new WaitUntil(() => GameDataCache.Instance.isReady);
+
+        // Load whichever scene is next.
+#if CUTSCENE_ONLY_BUILD
+        yarnSceneLoader = StartCoroutine(LoadCutsceneAsync());
+#else
+        if(!loadCutscene)
+        {
+            yarnSceneLoader = StartCoroutine(LoadLoginSceneAsync());
+        }
+        else
+        {
+            yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
+        }
+#endif
     }
 
     // Called when the object is destroyed and when the scene changes.
