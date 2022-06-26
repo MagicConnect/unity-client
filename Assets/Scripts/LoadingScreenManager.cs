@@ -164,6 +164,9 @@ public class LoadingScreenManager : MonoBehaviour
         WebAssetCache.OnAssetAddedToDeleteQueue += FileQueuedForDeletion;
         WebAssetCache.OnDeletingFileStarted += DeletingFile;
         WebAssetCache.OnDeletingFileComplete += FileDeleted;
+
+        GameDataCache.OnGameDataCacheStartupBegin += GameDataCacheStartupBegin;
+        GameDataCache.OnGameDataCacheStartupEnd += OnGameDataCacheStartupEnd;
     }
 
     private void UnsubscribeFromCacheEvents()
@@ -185,6 +188,19 @@ public class LoadingScreenManager : MonoBehaviour
         WebAssetCache.OnAssetAddedToDeleteQueue -= FileQueuedForDeletion;
         WebAssetCache.OnDeletingFileStarted -= DeletingFile;
         WebAssetCache.OnDeletingFileComplete -= FileDeleted;
+
+        GameDataCache.OnGameDataCacheStartupBegin -= GameDataCacheStartupBegin;
+        GameDataCache.OnGameDataCacheStartupEnd -= OnGameDataCacheStartupEnd;
+    }
+
+    private void GameDataCacheStartupBegin()
+    {
+        statusMessage = "Loading game data...";
+    }
+
+    private void OnGameDataCacheStartupEnd()
+    {
+        statusMessage = "Game data loaded.";
     }
 
     private void FileQueuedForDownload(string name, string path, string hash)
@@ -266,7 +282,7 @@ public class LoadingScreenManager : MonoBehaviour
 
         // Calculate the overall progress of the loading process, then display it.
         // Get the total number of file related operations the cache needs to do before being ready.
-        int totalTasks = numFilesToDownload + numFilesToCache + numFilesToDelete + numFilesToLoad;
+        int totalTasks = numFilesToDownload + numFilesToCache + numFilesToDelete + numFilesToLoad + 1;
 
         // Calculate how much of the work each individual task actually takes up and use it to find the current progress.
         // Example: 50 files to download, 50 files to cache -> downloads are 50% of the total progress. If 25 files have been
@@ -295,7 +311,13 @@ public class LoadingScreenManager : MonoBehaviour
             loadProgress = ((float)numFilesToLoad / (float)totalTasks) * ((float)totalFilesLoaded / (float)numFilesToLoad);
         }
 
-        float totalProgress = downloadProgress + cacheProgress + deleteProgress + loadProgress;
+        float gamedataProgress = 0.0f;
+        if(GameDataCache.Instance.isReady)
+        {
+            gamedataProgress = 1.0f / (float)totalTasks;
+        }
+
+        float totalProgress = downloadProgress + cacheProgress + deleteProgress + loadProgress + gamedataProgress;
 
         progressBar.value = totalProgress;
         progressPercentage.text = string.Format("{0}%", totalProgress * 100.0f);
@@ -320,18 +342,6 @@ public class LoadingScreenManager : MonoBehaviour
         while(!asyncLoad.isDone)
         {
             yield return null;
-        }
-    }
-
-    // TODO: Delete this once there's a practical example of referencing assets loaded in the cache. This is here just to prove it works.
-    public void TestDisplayImage()
-    {
-        Texture2D displayTexture = WebAssetCache.Instance.GetTexture2D("assets/art/accessories/Magic_Emblem.webp");
-
-        if(displayTexture != null)
-        {
-            Sprite sprite = Sprite.Create(displayTexture, new Rect(0.0f, 0.0f, displayTexture.width, displayTexture.height), new Vector2(0.0f, 0.0f), 100.0f);
-            image.GetComponent<Image>().sprite = sprite;
         }
     }
 }
