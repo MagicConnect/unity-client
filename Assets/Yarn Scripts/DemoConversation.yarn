@@ -55,7 +55,7 @@ Beryl: Real quick let's try out a cool effect. It's called "speed lines". Ready?
 Beryl: Wow, look at those things!
 Beryl: How about a little change of view? I'm a bit tired of this stuffy old room.
 <<char_hide BerylVegha 0.2 false 0.0 0.0 0.0>>
-<<bg_color_rgba 0.0 0.0 0.0 1.0 1.0>>
+<<bg_blackout 1.0>>
 You and Beryl go for a walk down the hall...
 <<bg_switch "Barracks" 1.0>>
 ...and enter a large room full of weapons and armor.

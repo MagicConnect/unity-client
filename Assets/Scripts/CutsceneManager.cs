@@ -1372,6 +1372,16 @@ public class CutsceneManager : MonoBehaviour
         });
         Debug.LogFormat("Cutscene Manager -> wait_anim: All background and character animations are complete. Continuing Yarn Script.");
     }
+
+    // This method clears all cutscene objects and leaves a default, empty scene.
+    public static void ResetScene()
+    {
+        // Remove all writer-created cutscene objects and characters.
+        RemoveAllCutsceneObjects();
+
+        // Reset the background to the default color, image, etc.
+        defaultBackground.GetComponent<CutsceneBackground>().ResetBackground();
+    }
 }
 
 
