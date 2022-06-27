@@ -360,7 +360,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
-    [YarnCommand("char_move_obj_time")]
+    [YarnCommand("char_move_time")]
     public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
     {
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
@@ -495,7 +495,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // The writers want to be able to use numbers as shorthand for a given stage position. This method takes the number and
     // translates it into a preset stage position, then starts the move coroutine as normal.
-    [YarnCommand("char_move")]
+    //[YarnCommand("char_move")]
     public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
@@ -542,7 +542,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     // I see no reason not to include a more flexible version of the above command, at least until they reserve this command name for something else.
-    [YarnCommand("char_move_obj")]
+    [YarnCommand("char_move")]
     public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
