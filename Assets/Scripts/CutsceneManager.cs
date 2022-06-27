@@ -97,7 +97,13 @@ public class CutsceneManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // If the tilde key is pressed, toggle the ingame console menu. The '`' (backquote) key shows/hides the log window, and that's handled by the
+        // ingame console itself.
+        if(Input.GetKeyDown(KeyCode.Backslash))
+        {
+            GameObject ingameConsole = IngameDebugConsole.DebugLogManager.Instance.gameObject;
+            ingameConsole.SetActive(!ingameConsole.activeInHierarchy);
+        }
     }
 
     // This coroutine ensures that the entire scene has been loaded in and initialized before starting the cutscene. Object pools,

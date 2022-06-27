@@ -64,23 +64,50 @@ public class LoadingScreenManager : MonoBehaviour
     // The prefab of the ingame debug console plugin to be instantiated.
     public GameObject ingameDebugConsolePrefab;
 
+    public IngameDebugConsole.DebugLogManager ingameDebugConsole;
+
     // Start is called before the first frame update
     void Start()
     {
         SubscribeToCacheEvents();
 
-#if USE_CUSTOM_INGAME_DEBUG_CONSOLE || DEVELOPMENT_BUILD
-        // If the above precompiler definition is included, add in the ingame debug console prefab so
-        // developers without access to the Unity Editor can see debug.log output ingame, without having to open the logfile.
-        GameObject ingameDebugConsole = Instantiate(ingameDebugConsolePrefab);
+        // Get the Ingame Debug Console instance and configure it for our needs.
+        ingameDebugConsole = IngameDebugConsole.DebugLogManager.Instance;
 
-        // Disable the event system gameobject within this prefab. Unity doesn't like there being 2 or more event systems,
+        // Disable the event system gameobject within this instance. Unity doesn't like there being 2 or more event systems,
         // and the other event systems we have placed in scenes are going to be more important in the majority of situations.
         ingameDebugConsole.transform.Find("EventSystem").gameObject.SetActive(false);
 
         // Make sure the console isn't destroyed on scene transitions.
         DontDestroyOnLoad(ingameDebugConsole);
+
+#if USE_CUSTOM_INGAME_DEBUG_CONSOLE || DEVELOPMENT_BUILD
+        // If the above precompiler definition is included, make sure the ingame console is active but keep it hidden by default.
+        ingameDebugConsole.gameObject.SetActive(true);
+        ingameDebugConsole.HideLogWindow();
+#else
+        // If this is a standalone non-development build, just get rid of the console.
+        ingameDebugConsole.gameObject.SetActive(false);
 #endif
+
+        // Check the command line arguments to see if the ingame debug console should be used.
+        if(HasArg("-console"))
+        {
+            string useIngameConsole = GetArg("-console");
+            if (useIngameConsole == "on")
+            {
+                ingameDebugConsole.gameObject.SetActive(true);
+                ingameDebugConsole.HideLogWindow();
+            }
+            else if (useIngameConsole == "off")
+            {
+                ingameDebugConsole.gameObject.SetActive(false);
+            }
+            else
+            {
+                Debug.LogErrorFormat("LoadingScreenManager: Unrecognized value '{0}' for command line argument '-console'. Accepted values are: 'on', 'off'", useIngameConsole);
+            }
+        }
     }
 
     // Update is called once per frame
@@ -109,6 +136,38 @@ public class LoadingScreenManager : MonoBehaviour
         }
 
         UpdateProgressGraphic();
+    }
+
+    // Helper method for getting a desired command line argument.
+    public string GetArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+
+        for(int i = 0; i < args.Length; i += 1)
+        {
+            if(args[i] == name && args.Length > i + 1)
+            {
+                return args[i + 1];
+            }
+        }
+
+        return null;
+    }
+
+    // Helper method for getting the existence of a command line argument, for when arguments can have no values.
+    public bool HasArg(string name)
+    {
+        var args = System.Environment.GetCommandLineArgs();
+
+        for(int i = 0; i < args.Length; i += 1)
+        {
+            if(args[i] == name)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     // Steps through the loading process so the update method isn't doing unnecessary checks each frame.
