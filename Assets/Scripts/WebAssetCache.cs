@@ -335,8 +335,15 @@ public class WebAssetCache : MonoBehaviour
     // This function acts as a public launching point for the startup coroutine.
     public void Startup()
     {
-        status = WebCacheStatus.Initializing;
-        startupCoroutine = StartCoroutine(StartupRoutine());
+        if(startupCoroutine == null)
+        {
+            status = WebCacheStatus.Initializing;
+            startupCoroutine = StartCoroutine(StartupRoutine());
+        }
+        else
+        {
+            Debug.LogErrorFormat("WebAssetCache: Attempted to launch startup routine when startup routine was already in progress.");
+        }
     }
 
     // This coroutine automates the startup sequence for the cache so the cache functionality can be made more modular and independent.
