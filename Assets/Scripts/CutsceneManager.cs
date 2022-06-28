@@ -8,6 +8,7 @@ using Yarn.Unity;
 
 public class CutsceneManager : MonoBehaviour
 {
+    #region Cutscene Object Prefabs
     // The prefab of the character object to be cloned.
     public GameObject characterPrefab;
 
@@ -19,6 +20,10 @@ public class CutsceneManager : MonoBehaviour
 
     // The prefab of the background object to be spawned.
     public GameObject backgroundPrefab;
+
+    // The blackout effect prefab.
+    public GameObject vfxBlackoutPrefab;
+    #endregion
 
     // The CutsceneUIController component of this game object which we use to interact with the UI.
     public CutsceneUIController uiController;
@@ -928,6 +933,87 @@ public class CutsceneManager : MonoBehaviour
     public static void AddForegroundVfx(string effectName, float duration, string tag = "default")
     {
 
+    }
+
+    // Adds a blackout effect on the background layer.
+    [YarnCommand("vfx_bg_blackout")]
+    public static void AddBackgroundBlackoutVfx(float animationTime, string name = "vfx_bg_blackout")
+    {
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.backgroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+    }
+
+    // Adds the reverse of the blackout effect on the background layer.
+    [YarnCommand("vfx_bg_blackin")]
+    public static void AddBackgroundBlackinVfx(float animationTime)
+    {}
+
+    // Adds a blackout effect on the foreground layer.
+    [YarnCommand("vfx_fg_blackout")]
+    public static void AddForegroundBlackoutVfx(float animationTime, string name = "vfx_fg_blackout")
+    {
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.foregroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+    }
+
+    // Reverse of the blackout effect on the foreground layer.
+    [YarnCommand("vfx_fg_blackin")]
+    public static void AddForegroundBlackinVfx(float animationTime)
+    {}
+
+    // Adds a blackout effect on the screen layer.
+    [YarnCommand("vfx_scr_blackout")]
+    public static void AddScreenBlackoutVfx(float animationTime, string name = "vfx_scr_blackout")
+    {
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.screenEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+    }
+
+    // Reverse blackout effect on the screen layer.
+    [YarnCommand("vfx_scr_blackin")]
+    public static void AddScreenBlackinVfx(float animationTime)
+    {}
+
+    // Clears all effects on the background layer.
+    [YarnCommand("vfx_bg_clear_all")]
+    public static void ClearAllBackgroundVfx()
+    {
+        foreach(Transform effect in Instance.backgroundEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all effects on the foreground layer.
+    [YarnCommand("vfx_fg_clear_all")]
+    public static void ClearAllForegroundVfx()
+    {
+        foreach(Transform effect in Instance.foregroundEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all effects on the screen layer.
+    [YarnCommand("vfx_scr_clear_all")]
+    public static void ClearAllScreenVfx()
+    {
+        foreach(Transform effect in Instance.screenEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
     }
 
     //[YarnCommand("add_speedline_effect")]
