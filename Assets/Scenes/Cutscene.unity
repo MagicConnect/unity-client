@@ -7048,6 +7048,7 @@ MonoBehaviour:
   cutsceneObjectPrefab: {fileID: 5055239544088313867, guid: 9ef02640bd32e4347aa241e10f4d7be2, type: 3}
   backgroundPrefab: {fileID: 2359967555750253787, guid: 1af7d6611d41ef74785eae0e0972139c, type: 3}
   vfxBlackoutPrefab: {fileID: 8128275030708484319, guid: 9dabbe4405e6c1a488d511d29b6bb1f4, type: 3}
+  vfxFadeinPrefab: {fileID: 1838185904595414051, guid: d8cc4b32104e8fe43b702d715ea93078, type: 3}
   uiController: {fileID: 918595218}
   dialogueSystem: {fileID: 2197908258504925676}
   characterContainer: {fileID: 1213206127}
@@ -19432,7 +19433,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 491909139968798357, guid: d9dea3e07aff7bd4c89f3d06a0b4f1ef, type: 3}
       propertyPath: m_RootOrder
-      value: 19
+      value: 20
       objectReference: {fileID: 0}
     - target: {fileID: 491909139968798357, guid: d9dea3e07aff7bd4c89f3d06a0b4f1ef, type: 3}
       propertyPath: m_AnchorMax.x

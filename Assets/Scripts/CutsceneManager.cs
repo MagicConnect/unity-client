@@ -23,6 +23,9 @@ public class CutsceneManager : MonoBehaviour
 
     // The blackout effect prefab.
     public GameObject vfxBlackoutPrefab;
+
+    // The fadein effect prefab.
+    public GameObject vfxFadeinPrefab;
     #endregion
 
     // The CutsceneUIController component of this game object which we use to interact with the UI.
@@ -948,9 +951,16 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Adds the reverse of the blackout effect on the background layer.
-    [YarnCommand("vfx_bg_blackin")]
-    public static void AddBackgroundBlackinVfx(float animationTime)
-    {}
+    [YarnCommand("vfx_bg_fadein")]
+    public static void AddBackgroundFadeinVfx(float animationTime, string name = "vfx_bg_fadein")
+    {
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.backgroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
 
     // Adds a blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_blackout")]
@@ -965,9 +975,16 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Reverse of the blackout effect on the foreground layer.
-    [YarnCommand("vfx_fg_blackin")]
-    public static void AddForegroundBlackinVfx(float animationTime)
-    {}
+    [YarnCommand("vfx_fg_fadein")]
+    public static void AddForegroundFadeinVfx(float animationTime, string name = "vfx_fg_fadein")
+    {
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.foregroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
 
     // Adds a blackout effect on the screen layer.
     [YarnCommand("vfx_scr_blackout")]
@@ -982,9 +999,16 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Reverse blackout effect on the screen layer.
-    [YarnCommand("vfx_scr_blackin")]
-    public static void AddScreenBlackinVfx(float animationTime)
-    {}
+    [YarnCommand("vfx_scr_fadein")]
+    public static void AddScreenFadeinVfx(float animationTime, string name = "vfx_scr_fadein")
+    {
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.screenEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
 
     // Clears all effects on the background layer.
     [YarnCommand("vfx_bg_clear_all")]
@@ -1467,6 +1491,11 @@ public class CutsceneManager : MonoBehaviour
 
         // Reset the background to the default color, image, etc.
         defaultBackground.GetComponent<CutsceneBackground>().ResetBackground();
+
+        // Remove all effects on all layers.
+        ClearAllBackgroundVfx();
+        ClearAllForegroundVfx();
+        ClearAllScreenVfx();
     }
 }
 
