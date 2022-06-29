@@ -13,18 +13,115 @@ public class GMScreenUIController : MonoBehaviour
 
     // These are the input field ui objects where the 'contentId' is set by the user. After caching gamedata is implemented
     // these should be replaced by drop downs, which would be far easier to use.
-    public TMP_InputField accessoryId;
+    //public TMP_InputField accessoryId;
 
-    public TMP_InputField characterId;
+    //public TMP_InputField characterId;
 
-    public TMP_InputField shopId;
+    //public TMP_InputField shopId;
 
-    public TMP_InputField weaponId;
+    //public TMP_InputField weaponId;
+
+    // These are the dropdown ui objects where the 'contentId' is set by the user.
+    public TMP_Dropdown accessoryIdDropdown;
+
+    public TMP_Dropdown characterIdDropdown;
+
+    public TMP_Dropdown shopIdDropdown;
+
+    public TMP_Dropdown weaponIdDropdown;
 
     // Start is called before the first frame update
     void Start()
     {
-        
+        // Get the accessory information from the gamedatacache.
+        try
+        {
+            var accessories = GameDataCache.Instance.parsedGameData["accessories"];
+
+            // If there's a better way to convert a JToken into a list, do it. Otherwise this is all I got.
+            List<string> accessoryIds = new List<string>();
+            foreach (var accessory in accessories)
+            {
+                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
+
+                accessoryIds.Add(string.Format("{0}: {1}", accessory["name"].ToString(), accessory["id"].ToString()));
+            }
+
+            // Populate the dropdown ui with all the available accessories that can be added.
+            accessoryIdDropdown.ClearOptions();
+            accessoryIdDropdown.AddOptions(accessoryIds);
+        }
+        catch(Exception e)
+        {
+            Debug.LogErrorFormat("GmScreenUIController: Problem occurred while getting accessory information from gamedatacache -> {0}", e);
+        }
+
+        // Get the character information from the gamedatacache.
+        try
+        {
+            var characters = GameDataCache.Instance.parsedGameData["characters"];
+
+            // If there's a better way to convert a JToken into a list, do it. Otherwise this is all I got.
+            List<string> characterIds = new List<string>();
+            foreach (var character in characters)
+            {
+                characterIds.Add(string.Format("{0}: {1}", character["name"].ToString(), character["id"].ToString()));
+            }
+
+            // Populate the dropdown ui with all the available characters that can be added.
+            characterIdDropdown.ClearOptions();
+            characterIdDropdown.AddOptions(characterIds);
+        }
+        catch(Exception e)
+        {
+            Debug.LogErrorFormat("GmScreenUIController: Problem occurred while getting character information from gamedatacache -> {0}", e);
+        }
+
+        // Get the shop information from the gamedatacache.
+        try
+        {
+            var shops = GameDataCache.Instance.parsedGameData["shops"];
+
+            // If there's a better way to convert a JToken into a list, do it. Otherwise this is all I got.
+            List<string> shopIds = new List<string>();
+            foreach (var shop in shops)
+            {
+                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
+
+                shopIds.Add(string.Format("{0}: {1}", shop["name"].ToString(), shop["id"].ToString()));
+            }
+
+            // Populate the dropdown ui with all the available shops that can be added.
+            shopIdDropdown.ClearOptions();
+            shopIdDropdown.AddOptions(shopIds);
+        }
+        catch(Exception e)
+        {
+            Debug.LogErrorFormat("GmScreenUIController: Problem occurred while getting shop information from gamedatacache -> {0}", e);
+        }
+
+        // Get the weapon information from the gamedatacache.
+        try
+        {
+            var weapons = GameDataCache.Instance.parsedGameData["weapons"];
+
+            // If there's a better way to convert a JToken into a list, do it. Otherwise this is all I got.
+            List<string> weaponIds = new List<string>();
+            foreach (var weapon in weapons)
+            {
+                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
+
+                weaponIds.Add(string.Format("{0}: {1}", weapon["name"].ToString(), weapon["id"].ToString()));
+            }
+
+            // Populate the dropdown ui with all the available weapons that can be added.
+            weaponIdDropdown.ClearOptions();
+            weaponIdDropdown.AddOptions(weaponIds);
+        }
+        catch(Exception e)
+        {
+            Debug.LogErrorFormat("GmScreenUIController: Problem occurred while getting shop information from gamedatacache -> {0}", e);
+        }
     }
 
     // Update is called once per frame
@@ -83,7 +180,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", accessoryId.text);
+        request.AddField("contentId", accessoryIdDropdown.itemText.text);
 
         request.Send();
     }
@@ -93,7 +190,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", characterId.text);
+        request.AddField("contentId", characterIdDropdown.itemText.text);
 
         request.Send();
     }
@@ -103,7 +200,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", shopId.text);
+        request.AddField("contentId", shopIdDropdown.itemText.text);
 
         request.Send();
     }
@@ -113,7 +210,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", weaponId.text);
+        request.AddField("contentId", weaponIdDropdown.itemText.text);
 
         request.Send();
     }
