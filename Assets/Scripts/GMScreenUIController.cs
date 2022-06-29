@@ -30,6 +30,16 @@ public class GMScreenUIController : MonoBehaviour
 
     public TMP_Dropdown weaponIdDropdown;
 
+    // When the name of an accessory, shop, etc. is chosen in the dropdown list, these dictionaries
+    // can be used to translate that into a content id that would be sent to the server as part of the api.
+    public Dictionary<string, string> accessoryContentIds = new Dictionary<string, string>();
+
+    public Dictionary<string, string> shopContentIds = new Dictionary<string, string>();
+
+    public Dictionary<string, string> characterContentIds = new Dictionary<string, string>();
+
+    public Dictionary<string, string> weaponContentIds = new Dictionary<string, string>();
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,9 +52,9 @@ public class GMScreenUIController : MonoBehaviour
             List<string> accessoryIds = new List<string>();
             foreach (var accessory in accessories)
             {
-                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
-
-                accessoryIds.Add(string.Format("{0}: {1}", accessory["name"].ToString(), accessory["id"].ToString()));
+                //accessoryIds.Add(string.Format("{0}: {1}", accessory["name"].ToString(), accessory["id"].ToString()));
+                accessoryIds.Add(accessory["name"].ToString());
+                accessoryContentIds.Add(accessory["name"].ToString(), accessory["id"].ToString());
             }
 
             // Populate the dropdown ui with all the available accessories that can be added.
@@ -65,7 +75,9 @@ public class GMScreenUIController : MonoBehaviour
             List<string> characterIds = new List<string>();
             foreach (var character in characters)
             {
-                characterIds.Add(string.Format("{0}: {1}", character["name"].ToString(), character["id"].ToString()));
+                //characterIds.Add(string.Format("{0}: {1}", character["name"].ToString(), character["id"].ToString()));
+                characterIds.Add(character["name"].ToString());
+                characterContentIds.Add(character["name"].ToString(), character["id"].ToString());
             }
 
             // Populate the dropdown ui with all the available characters that can be added.
@@ -86,9 +98,9 @@ public class GMScreenUIController : MonoBehaviour
             List<string> shopIds = new List<string>();
             foreach (var shop in shops)
             {
-                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
-
-                shopIds.Add(string.Format("{0}: {1}", shop["name"].ToString(), shop["id"].ToString()));
+                //shopIds.Add(string.Format("{0}: {1}", shop["name"].ToString(), shop["id"].ToString()));
+                shopIds.Add(shop["name"].ToString());
+                shopContentIds.Add(shop["name"].ToString(), shop["id"].ToString());
             }
 
             // Populate the dropdown ui with all the available shops that can be added.
@@ -109,9 +121,9 @@ public class GMScreenUIController : MonoBehaviour
             List<string> weaponIds = new List<string>();
             foreach (var weapon in weapons)
             {
-                //Debug.LogFormat("Accessory -> name: {0} id: {1}", accessory["name"], accessory["id"]);
-
-                weaponIds.Add(string.Format("{0}: {1}", weapon["name"].ToString(), weapon["id"].ToString()));
+                //weaponIds.Add(string.Format("{0}: {1}", weapon["name"].ToString(), weapon["id"].ToString()));
+                weaponIds.Add(weapon["name"].ToString());
+                weaponContentIds.Add(weapon["name"].ToString(), weapon["id"].ToString());
             }
 
             // Populate the dropdown ui with all the available weapons that can be added.
@@ -180,7 +192,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", accessoryIdDropdown.itemText.text);
+        request.AddField("contentId", accessoryContentIds[accessoryIdDropdown.itemText.text]);
 
         request.Send();
     }
@@ -190,7 +202,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", characterIdDropdown.itemText.text);
+        request.AddField("contentId", characterContentIds[characterIdDropdown.itemText.text]);
 
         request.Send();
     }
@@ -200,7 +212,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", shopIdDropdown.itemText.text);
+        request.AddField("contentId", shopContentIds[shopIdDropdown.itemText.text]);
 
         request.Send();
     }
@@ -210,7 +222,7 @@ public class GMScreenUIController : MonoBehaviour
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", weaponIdDropdown.itemText.text);
+        request.AddField("contentId", weaponContentIds[weaponIdDropdown.itemText.text]);
 
         request.Send();
     }
