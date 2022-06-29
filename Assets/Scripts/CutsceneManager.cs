@@ -954,7 +954,7 @@ public class CutsceneManager : MonoBehaviour
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
 
         // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
-        if(animationTime == 0.0f)
+        if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
         }
@@ -992,7 +992,7 @@ public class CutsceneManager : MonoBehaviour
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
 
         // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
-        if(animationTime == 0.0f)
+        if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
         }
@@ -1030,7 +1030,7 @@ public class CutsceneManager : MonoBehaviour
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
 
         // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
-        if(animationTime == 0.0f)
+        if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
         }
