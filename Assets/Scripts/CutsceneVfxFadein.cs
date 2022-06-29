@@ -21,6 +21,13 @@ public class CutsceneVfxFadein : CutsceneEffect
 
     void Awake()
     {
+        if(!image)
+        {
+            image = this.GetComponent<Image>();
+        }
+
+        image.color = Color.black;
+
         // The animation should start from the moment of creation.
         this.isAnimating = true;
 
@@ -30,10 +37,7 @@ public class CutsceneVfxFadein : CutsceneEffect
     // Start is called before the first frame update
     void Start()
     {
-        if(!image)
-        {
-            image = this.GetComponent<Image>();
-        }
+        
     }
 
     // Update is called once per frame
