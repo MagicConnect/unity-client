@@ -951,7 +951,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Give it default parameters.
         effect.name = name;
-        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
     }
 
     // Adds the reverse of the blackout effect on the background layer.
@@ -983,7 +983,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Give it default parameters.
         effect.name = name;
-        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
     }
 
     // Reverse of the blackout effect on the foreground layer.
@@ -1015,7 +1015,7 @@ public class CutsceneManager : MonoBehaviour
 
         // Give it default parameters.
         effect.name = name;
-        effect.GetComponent<CutsceneBlackoutVFX>().animationTime = animationTime;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
     }
 
     // Reverse blackout effect on the screen layer.
@@ -1036,8 +1036,8 @@ public class CutsceneManager : MonoBehaviour
 
     public static void ClearAllBackgroundBlackoutVfx()
     {
-        CutsceneBlackoutVFX[] effects = Instance.backgroundEffectContainer.GetComponentsInChildren<CutsceneBlackoutVFX>();
-        foreach(CutsceneBlackoutVFX effect in effects)
+        CutsceneVfxBlackout[] effects = Instance.backgroundEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
         {
             Destroy(effect.gameObject);
         }
@@ -1045,8 +1045,8 @@ public class CutsceneManager : MonoBehaviour
 
     public static void ClearAllForegroundBlackoutVfx()
     {
-        CutsceneBlackoutVFX[] effects = Instance.foregroundEffectContainer.GetComponentsInChildren<CutsceneBlackoutVFX>();
-        foreach(CutsceneBlackoutVFX effect in effects)
+        CutsceneVfxBlackout[] effects = Instance.foregroundEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
         {
             Destroy(effect.gameObject);
         }
@@ -1054,8 +1054,8 @@ public class CutsceneManager : MonoBehaviour
 
     public static void ClearAllScreenBlackoutVfx()
     {
-        CutsceneBlackoutVFX[] effects = Instance.screenEffectContainer.GetComponentsInChildren<CutsceneBlackoutVFX>();
-        foreach(CutsceneBlackoutVFX effect in effects)
+        CutsceneVfxBlackout[] effects = Instance.screenEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
         {
             Destroy(effect.gameObject);
         }

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
-public class CutsceneBlackoutVFX : CutsceneEffect
+public class CutsceneVfxBlackout : CutsceneEffect
 {
     private new float timePassed = 0.0f;
 
