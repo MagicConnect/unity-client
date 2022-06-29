@@ -227,6 +227,7 @@ public class DialogueDebugWindow : MonoBehaviour
             // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
             dialogueRunner.GetComponent<DialogueRunner>().Stop();
             HideOptionsList();
+            CutsceneManager.ResetScene();
             dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(yarnScriptContents);
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
             RefreshNodeDropdown();

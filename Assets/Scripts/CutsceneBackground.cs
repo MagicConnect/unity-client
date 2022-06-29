@@ -17,6 +17,9 @@ public class CutsceneBackground : CutsceneObject
 
     public Image alternateImage;
 
+    // The original sprite that the background was created with.
+    public Sprite defaultSprite;
+
     // Because of overlapping animations, it'll be useful to know what the actual desired color of the image is,
     // rather than the one it is currently animated to.
     public Color trueColor;
@@ -43,6 +46,7 @@ public class CutsceneBackground : CutsceneObject
 
         defaultImage.preserveAspect = true;
         alternateImage.preserveAspect = true;
+        defaultSprite = defaultImage.sprite;
 
         /*
         // The cache should be loaded before the game ever gets here but it doesn't hurt to check.
@@ -80,6 +84,12 @@ public class CutsceneBackground : CutsceneObject
     void Update()
     {
         
+    }
+
+    public void ResetBackground()
+    {
+        defaultImage.sprite = defaultSprite;
+        SetColor(Color.white.r, Color.white.g, Color.white.b);
     }
 
     // Change the background image to a loaded sprite of the given name.

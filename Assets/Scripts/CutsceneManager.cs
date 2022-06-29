@@ -8,6 +8,7 @@ using Yarn.Unity;
 
 public class CutsceneManager : MonoBehaviour
 {
+    #region Cutscene Object Prefabs
     // The prefab of the character object to be cloned.
     public GameObject characterPrefab;
 
@@ -19,6 +20,13 @@ public class CutsceneManager : MonoBehaviour
 
     // The prefab of the background object to be spawned.
     public GameObject backgroundPrefab;
+
+    // The blackout effect prefab.
+    public GameObject vfxBlackoutPrefab;
+
+    // The fadein effect prefab.
+    public GameObject vfxFadeinPrefab;
+    #endregion
 
     // The CutsceneUIController component of this game object which we use to interact with the UI.
     public CutsceneUIController uiController;
@@ -930,6 +938,186 @@ public class CutsceneManager : MonoBehaviour
 
     }
 
+    // Adds a blackout effect on the background layer.
+    [YarnCommand("vfx_bg_blackout")]
+    public static void AddBackgroundBlackoutVfx(float animationTime, string name = "vfx_bg_blackout")
+    {
+        // Clear any active fadein/blackout effects.
+        ClearAllBackgroundFadeinVfx();
+        ClearAllBackgroundBlackoutVfx();
+
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.backgroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+    }
+
+    // Adds the reverse of the blackout effect on the background layer.
+    [YarnCommand("vfx_bg_fadein")]
+    public static void AddBackgroundFadeinVfx(float animationTime, string name = "vfx_bg_fadein")
+    {
+        // Clear all background blackout effects.
+        ClearAllBackgroundBlackoutVfx();
+        ClearAllBackgroundFadeinVfx();
+
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.backgroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
+
+    // Adds a blackout effect on the foreground layer.
+    [YarnCommand("vfx_fg_blackout")]
+    public static void AddForegroundBlackoutVfx(float animationTime, string name = "vfx_fg_blackout")
+    {
+        // Clear any active fadein effects.
+        ClearAllForegroundFadeinVfx();
+        ClearAllForegroundBlackoutVfx();
+
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.foregroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+    }
+
+    // Reverse of the blackout effect on the foreground layer.
+    [YarnCommand("vfx_fg_fadein")]
+    public static void AddForegroundFadeinVfx(float animationTime, string name = "vfx_fg_fadein")
+    {
+        // Clear all foreground blackout effects.
+        ClearAllForegroundBlackoutVfx();
+        ClearAllForegroundFadeinVfx();
+
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.foregroundEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
+
+    // Adds a blackout effect on the screen layer.
+    [YarnCommand("vfx_scr_blackout")]
+    public static void AddScreenBlackoutVfx(float animationTime, string name = "vfx_scr_blackout")
+    {
+        // Clear any active fadein effects.
+        ClearAllScreenFadeinVfx();
+        ClearAllScreenBlackoutVfx();
+
+        // Create the blackout effect object.
+        GameObject effect = Instantiate(Instance.vfxBlackoutPrefab, Instance.screenEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+    }
+
+    // Reverse blackout effect on the screen layer.
+    [YarnCommand("vfx_scr_fadein")]
+    public static void AddScreenFadeinVfx(float animationTime, string name = "vfx_scr_fadein")
+    {
+        // Clear all screen blackout effects.
+        ClearAllScreenBlackoutVfx();
+        ClearAllScreenFadeinVfx();
+
+        // Create the fadein effect object.
+        GameObject effect = Instantiate(Instance.vfxFadeinPrefab, Instance.screenEffectContainer.transform);
+
+        // Give it default parameters.
+        effect.name = name;
+        effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+    }
+
+    public static void ClearAllBackgroundBlackoutVfx()
+    {
+        CutsceneVfxBlackout[] effects = Instance.backgroundEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public static void ClearAllForegroundBlackoutVfx()
+    {
+        CutsceneVfxBlackout[] effects = Instance.foregroundEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public static void ClearAllScreenBlackoutVfx()
+    {
+        CutsceneVfxBlackout[] effects = Instance.screenEffectContainer.GetComponentsInChildren<CutsceneVfxBlackout>();
+        foreach(CutsceneVfxBlackout effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public static void ClearAllBackgroundFadeinVfx()
+    {
+        CutsceneVfxFadein[] effects = Instance.backgroundEffectContainer.GetComponentsInChildren<CutsceneVfxFadein>();
+        foreach(CutsceneVfxFadein effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public static void ClearAllForegroundFadeinVfx()
+    {
+        CutsceneVfxFadein[] effects = Instance.foregroundEffectContainer.GetComponentsInChildren<CutsceneVfxFadein>();
+        foreach(CutsceneVfxFadein effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public static void ClearAllScreenFadeinVfx()
+    {
+        CutsceneVfxFadein[] effects = Instance.screenEffectContainer.GetComponentsInChildren<CutsceneVfxFadein>();
+        foreach(CutsceneVfxFadein effect in effects)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all effects on the background layer.
+    [YarnCommand("vfx_bg_clear_all")]
+    public static void ClearAllBackgroundVfx()
+    {
+        foreach(Transform effect in Instance.backgroundEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all effects on the foreground layer.
+    [YarnCommand("vfx_fg_clear_all")]
+    public static void ClearAllForegroundVfx()
+    {
+        foreach(Transform effect in Instance.foregroundEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all effects on the screen layer.
+    [YarnCommand("vfx_scr_clear_all")]
+    public static void ClearAllScreenVfx()
+    {
+        foreach(Transform effect in Instance.screenEffectContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
     //[YarnCommand("add_speedline_effect")]
     public static void SpawnSpeedLineEffect(GameObject position, string name = "", float radius = 100.0f, string color = "#000000FF", float duration = 0.0f, bool persistent = false)
     {
@@ -1371,6 +1559,21 @@ public class CutsceneManager : MonoBehaviour
             return true;
         });
         Debug.LogFormat("Cutscene Manager -> wait_anim: All background and character animations are complete. Continuing Yarn Script.");
+    }
+
+    // This method clears all cutscene objects and leaves a default, empty scene.
+    public static void ResetScene()
+    {
+        // Remove all writer-created cutscene objects and characters.
+        RemoveAllCutsceneObjects();
+
+        // Reset the background to the default color, image, etc.
+        defaultBackground.GetComponent<CutsceneBackground>().ResetBackground();
+
+        // Remove all effects on all layers.
+        ClearAllBackgroundVfx();
+        ClearAllForegroundVfx();
+        ClearAllScreenVfx();
     }
 }
 
