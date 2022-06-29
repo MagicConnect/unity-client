@@ -952,6 +952,12 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+
+        // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
+        if(animationTime == 0.0f)
+        {
+            effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+        }
     }
 
     // Adds the reverse of the blackout effect on the background layer.
@@ -984,6 +990,12 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+
+        // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
+        if(animationTime == 0.0f)
+        {
+            effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+        }
     }
 
     // Reverse of the blackout effect on the foreground layer.
@@ -1016,6 +1028,12 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxBlackout>().animationTime = animationTime;
+
+        // If the animation is supposed to happen immediately, forcefully complete it so the update happens on the same frame.
+        if(animationTime == 0.0f)
+        {
+            effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+        }
     }
 
     // Reverse blackout effect on the screen layer.
