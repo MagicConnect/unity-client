@@ -29,6 +29,10 @@ public class CutsceneBlackoutVFX : CutsceneEffect
             Color startColor = new Color(Color.black.r, Color.black.g, Color.black.b, 0.0f);
             image.color = Color.Lerp(startColor, Color.black, progress);
         }
+        else
+        {
+            image.color = Color.black;
+        }
 
         timePassed += Time.deltaTime;
     }
