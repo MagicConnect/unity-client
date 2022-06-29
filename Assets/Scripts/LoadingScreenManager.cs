@@ -185,7 +185,7 @@ public class LoadingScreenManager : MonoBehaviour
 
         // Load whichever scene is next.
 #if CUTSCENE_ONLY_BUILD
-        yarnSceneLoader = StartCoroutine(LoadCutsceneAsync());
+        yarnSceneLoader = StartCoroutine(LoadCutsceneSceneAsync());
 #else
         if(!loadCutscene)
         {
