@@ -116,6 +116,14 @@ public class DialogueDebugWindow : MonoBehaviour
         options.blocksRaycasts = false;
     }
 
+    public void HideDialogueWindow()
+    {
+        CanvasGroup options = dialogueRunner.GetComponent<DialogueRunner>().GetComponentInChildren<CustomLineView>().gameObject.GetComponent<CanvasGroup>();
+        options.alpha = 0;
+        options.interactable = false;
+        options.blocksRaycasts = false;
+    }
+
     public void ToggleDebugWindow()
     {
         displayPanel.SetActive(!displayPanel.activeInHierarchy);
@@ -227,6 +235,7 @@ public class DialogueDebugWindow : MonoBehaviour
             // Pass the contents of yarn script(s) to the Dialogue Runner's dynamic loader so it can handle compilation.
             dialogueRunner.GetComponent<DialogueRunner>().Stop();
             HideOptionsList();
+            HideDialogueWindow();
             CutsceneManager.ResetScene();
             dialogueRunner.GetComponent<DynamicYarnLoader>().LoadScript(yarnScriptContents);
             dialogueRunner.GetComponent<DialogueRunner>().StartDialogue("Start");
