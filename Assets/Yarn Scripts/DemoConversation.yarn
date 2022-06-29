@@ -10,8 +10,8 @@ tags:
 <<bg_color_rgba 0.0 0.0 0.0>>
 <<char_add "BerylVegha" "BerylVegha" Center>>
 <<char_add "LanaElenore" "LanaElenore" OffscreenRight>>
-<<char_move_obj_time BerylVegha Center>>
-<<char_move_obj_time LanaElenore OffscreenRight>>
+<<char_move_time BerylVegha Center>>
+<<char_move_time LanaElenore OffscreenRight>>
 <<bg_color_rgba 1.0 1.0 1.0 1.0 1.0 waitForAnimation>>
 <<char_show BerylVegha 0.2>>
 Beryl: Hey! My name's Beryl!
@@ -47,7 +47,7 @@ Beryl: To the left now!
 Beryl: How about the right?
 <<char_move BerylVegha 3 1000 smoothLerp>>
 Beryl: Finally, to the center of the stage! I'm gonna do it real slow this time so you can watch me as I go.
-<<char_move_obj_time BerylVegha Center 3 smoothLerp>>
+<<char_move_time BerylVegha Center 3 smoothLerp>>
 <<wait_anim>>
 Beryl: That's just the way I like it.
 Beryl: Real quick let's try out a cool effect. It's called "speed lines". Ready? Here I go!
@@ -74,9 +74,9 @@ Beryl: Alright, how about something a little different? I'm going to try calling
 title: FriendlyConversation
 ---
 Beryl: Alright, are you ready? Lanaaaaaa! Hey Lana, come here for a second, I want to talk to you about something.
-<<char_move_obj_time BerylVegha Left 0.2>>
+<<char_move_time BerylVegha Left 0.2>>
 <<char_show LanaElenore 0.2 false 0.0 0.0 0.0>>
-<<char_move_obj_time LanaElenore Right 0.2>>
+<<char_move_time LanaElenore Right 0.2>>
 Lana comes into the room.
 <<char_dim_alternate BerylVegha LanaElenore 0.2 false false undimSecondCharacter>>
 Lana: Sup.
