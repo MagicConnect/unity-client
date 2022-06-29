@@ -18,6 +18,8 @@ public class CutsceneVfxBlackout : CutsceneEffect
             image = this.GetComponent<Image>();
         }
 
+        image.color = new Color(Color.black.r, Color.black.g, Color.black.b, 0.0f);
+
         // The animation should start from the moment of creation.
         this.isAnimating = true;
 
