@@ -19,6 +19,14 @@ public class CutsceneVfxFadein : CutsceneEffect
 
     public Image image;
 
+    void Awake()
+    {
+        // The animation should start from the moment of creation.
+        this.isAnimating = true;
+
+        Debug.LogFormat(this, "{0}: Starting fadein effect animation.", gameObject.name);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -42,8 +50,13 @@ public class CutsceneVfxFadein : CutsceneEffect
         // Once the animation is complete, set the final result and mark the object for destruction.
         if(timePassed > animationTime && !markedForDestruction)
         {
+            this.isAnimating = false;
+
             image.color = endColor;
             Destroy(gameObject, autoDeleteTime);
+            markedForDestruction = true;
+
+            Debug.LogFormat(this, "{0}: Fadein animation complete.", gameObject.name);
         }
 
         timePassed += Time.deltaTime;

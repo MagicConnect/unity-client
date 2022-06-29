@@ -15,6 +15,10 @@ public class CutsceneObject : MonoBehaviour
     public Coroutine scalingCoroutine;
     public Coroutine rotationCoroutine;
 
+    // This flag can be used for checking if an object is animating (like for the wait_anim command).
+    // Each cutscene object implementation should be responsible for setting this.
+    public bool isAnimating = false;
+
     void Awake()
     {
 

@@ -11,6 +11,14 @@ public class CutsceneVfxBlackout : CutsceneEffect
 
     public Image image;
 
+    void Awake()
+    {
+        // The animation should start from the moment of creation.
+        this.isAnimating = true;
+
+        Debug.LogFormat(this, "{0}: Starting blackout effect animation.", gameObject.name);
+    }
+
     // Start is called before the first frame update
     void Start()
     {
@@ -29,9 +37,14 @@ public class CutsceneVfxBlackout : CutsceneEffect
             Color startColor = new Color(Color.black.r, Color.black.g, Color.black.b, 0.0f);
             image.color = Color.Lerp(startColor, Color.black, progress);
         }
-        else
+
+        if(timePassed > animationTime && this.isAnimating)
         {
             image.color = Color.black;
+
+            this.isAnimating = false;
+
+            Debug.LogFormat(this, "{0}: Blackout effect animation complete.", gameObject.name);
         }
 
         timePassed += Time.deltaTime;

@@ -1556,6 +1556,30 @@ public class CutsceneManager : MonoBehaviour
                 }
             }
 
+            foreach(Transform effect in Instance.backgroundEffectContainer.transform)
+            {
+                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                {
+                    return false;
+                }
+            }
+
+            foreach(Transform effect in Instance.foregroundEffectContainer.transform)
+            {
+                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                {
+                    return false;
+                }
+            }
+
+            foreach(Transform effect in Instance.screenEffectContainer.transform)
+            {
+                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                {
+                    return false;
+                }
+            }
+
             return true;
         });
         Debug.LogFormat("Cutscene Manager -> wait_anim: All background and character animations are complete. Continuing Yarn Script.");
