@@ -87,6 +87,10 @@ public class MainMenuUIController : MonoBehaviour
     // The currently active UI screen displayed underneath the main menu.
     public GameObject currentScreen;
 
+    // The expandable dropdown list that is shown when the 'hamburger' button is pressed. Contains buttons that haven't been designed
+    // for yet, or functions that aren't important enough for their own place in the ui.
+    public GameObject hamburgerMenu;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -409,8 +413,21 @@ public class MainMenuUIController : MonoBehaviour
         currentScreen = mailScreenInstance;
     }
 
+    // When the 'hamburger' button icon is pressed, expand a dropdown list of other menu buttons.
+    public void OnHamburgerMenuButtonClicked()
+    {
+        if(hamburgerMenu.activeInHierarchy)
+        {
+            HideHamburgerMenu();
+        }
+        else
+        {
+            ShowHamburgerMenu();
+        }
+    }
+
     // Load the settings screen.
-    public void OnOptionsButtonClicked()
+    public void OnSettingsButtonClicked()
     {
         // If the settings screen ui object is null, instantiate a copy of the prefab.
         if(!settingsScreenInstance)
@@ -424,10 +441,34 @@ public class MainMenuUIController : MonoBehaviour
             settingsScreenInstance.transform.SetAsLastSibling();
         }
 
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
+        // If the selected screen was changed, update scene information.
+        if(currentScreen != settingsScreenInstance)
+        {
+            // Disable the previously active ui screen.
+            currentScreen.SetActive(false);
 
-        // Make the settings screen ui the currently active ui screen.
-        currentScreen = settingsScreenInstance;
+            // Make the settings screen ui the currently active ui screen.
+            currentScreen = settingsScreenInstance;
+        }
+
+        // Hide the dropdown menu.
+        HideHamburgerMenu();
+    }
+
+    public void SwitchSelectedScreen()
+    {}
+
+    // Displays the dropdown list that should appear when pressing the 'hamburger' menu button.
+    // Note: Animations, if necessary, should be handled here until the menu object gets its own script.
+    public void ShowHamburgerMenu()
+    {
+        hamburgerMenu.SetActive(true);
+    }
+
+    // Hides the above dropdown list.
+    // Note: Animations, if necessary, should be handled here.
+    public void HideHamburgerMenu()
+    {
+        hamburgerMenu.SetActive(false);
     }
 }
