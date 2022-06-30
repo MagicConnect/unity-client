@@ -502,6 +502,32 @@ public class MainMenuUIController : MonoBehaviour
         }
     }
 
+    // Load the friend list interface.
+    public void OnFriendsButtonClicked()
+    {
+        // If the friends list ui object is null, instantiate a copy of the prefab.
+        if(!friendListInstance)
+        {
+            friendListInstance = Instantiate(friendListPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the friend list.
+        SwitchToSelectedScreen(friendListInstance);
+    }
+
+    // Load the achievement list interface.
+    public void OnAchievementsButtonClicked()
+    {
+        // If the achievement list ui is null, instantiate a copy of the prefab.
+        if(!achievementListInstance)
+        {
+            achievementListInstance = Instantiate(achievementListPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the achievement list.
+        SwitchToSelectedScreen(achievementListInstance);
+    }
+
     // Load the settings screen.
     public void OnSettingsButtonClicked()
     {
