@@ -261,25 +261,6 @@ public class MainMenuUIController : MonoBehaviour
 
     public void OnHomeButtonClicked()
     {
-        /*
-        // If the home screen ui object is null (it shouldn't be), instantiate a copy of the home screen ui prefab.
-        if(!homeScreenInstance)
-        {
-            homeScreenInstance = Instantiate(homeScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid home screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            homeScreenInstance.SetActive(true);
-            homeScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the home screen ui the currently active ui screen.
-        currentScreen = homeScreenInstance;*/
-
         // If the home screen ui object is null (it shouldn't be), instantiate a copy of the home screen ui prefab.
         if(!homeScreenInstance)
         {
@@ -293,26 +274,6 @@ public class MainMenuUIController : MonoBehaviour
     // I assume the 'Heroes' button is for characters, so load the character list screen.
     public void OnHeroesButtonClicked()
     {
-        /*
-        // If the character list ui object is null, instantiate a copy of the prefab.
-        if(!characterListInstance)
-        {
-            characterListInstance = Instantiate(characterListPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid character list ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            characterListInstance.SetActive(true);
-            characterListInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the character list ui the currently active ui screen.
-        currentScreen = characterListInstance;
-        */
-
         // If the character list ui object is null, instantiate a copy of the prefab.
         if(!characterListInstance)
         {
@@ -326,26 +287,6 @@ public class MainMenuUIController : MonoBehaviour
     // I assume 'Items' refers to the inventory, so load the inventory screen.
     public void OnItemsButtonClicked()
     {
-        /*
-        // If the inventory screen ui object is null, instantiate a copy of the prefab.
-        if(!inventoryScreenInstance)
-        {
-            inventoryScreenInstance = Instantiate(inventoryScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid inventory screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            inventoryScreenInstance.SetActive(true);
-            inventoryScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the inventory screen ui the currently active ui screen.
-        currentScreen = inventoryScreenInstance;
-        */
-
         // If the inventory screen ui object is null, instantiate a copy of the prefab.
         if(!inventoryScreenInstance)
         {
@@ -360,26 +301,6 @@ public class MainMenuUIController : MonoBehaviour
     // Note: The issues imply there's a shop list and a shop buy screen. Just use the one we have and split them later.
     public void OnShopButtonClicked()
     {
-        /*
-        // If the shop screen ui object is null, instantiate a copy of the prefab.
-        if(!shopScreenInstance)
-        {
-            shopScreenInstance = Instantiate(shopScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid shop screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            shopScreenInstance.SetActive(true);
-            shopScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the shop screen ui the currently active ui screen.
-        currentScreen = shopScreenInstance;
-        */
-
         // If the shop screen ui object is null, instantiate a copy of the prefab.
         if(!shopScreenInstance)
         {
@@ -393,26 +314,6 @@ public class MainMenuUIController : MonoBehaviour
     // Load the summon screen.
     public void OnSummonButtonClicked()
     {
-        /*
-        // If the summon screen ui object is null, instantiate a copy of the prefab.
-        if(!summonScreenInstance)
-        {
-            summonScreenInstance = Instantiate(summonScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid summon screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            summonScreenInstance.SetActive(true);
-            summonScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the summon screen ui the currently active ui screen.
-        currentScreen = summonScreenInstance;
-        */
-
         // If the summon screen ui object is null, instantiate a copy of the prefab.
         if(!summonScreenInstance)
         {
@@ -426,26 +327,6 @@ public class MainMenuUIController : MonoBehaviour
     // When the GM screen button is clicked, the GM screen UI is displayed in the center of the screen.
     public void OnGMScreenButtonClicked()
     {
-        /*
-        // If the gm screen ui object is null, then we need to instantiate a copy of the gm screen ui prefab.
-        if(!gmScreenInstance)
-        {
-            gmScreenInstance = Instantiate(gmScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid gm screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            gmScreenInstance.SetActive(true);
-            gmScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the gm screen ui the currently active ui screen.
-        currentScreen = gmScreenInstance;
-        */
-
         // If the gm screen ui object is null, then we need to instantiate a copy of the gm screen ui prefab.
         if(!gmScreenInstance)
         {
@@ -459,26 +340,6 @@ public class MainMenuUIController : MonoBehaviour
     // Load the account mail interface.
     public void OnMailButtonClicked()
     {
-        /*
-        // If the mail screen ui object is null, instantiate a copy of the prefab.
-        if(!mailScreenInstance)
-        {
-            mailScreenInstance = Instantiate(mailScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid mail screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            mailScreenInstance.SetActive(true);
-            mailScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the mail screen ui the currently active ui screen.
-        currentScreen = mailScreenInstance;
-        */
-
         // If the mail screen ui object is null, instantiate a copy of the prefab.
         if(!mailScreenInstance)
         {
@@ -531,33 +392,6 @@ public class MainMenuUIController : MonoBehaviour
     // Load the settings screen.
     public void OnSettingsButtonClicked()
     {
-        /*
-        // If the settings screen ui object is null, instantiate a copy of the prefab.
-        if(!settingsScreenInstance)
-        {
-            settingsScreenInstance = Instantiate(settingsScreenPrefab, screenDisplayContainer.transform);
-        }
-        // If we have a valid settings screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            settingsScreenInstance.SetActive(true);
-            settingsScreenInstance.transform.SetAsLastSibling();
-        }
-
-        // If the selected screen was changed, update scene information.
-        if(currentScreen != settingsScreenInstance)
-        {
-            // Disable the previously active ui screen.
-            currentScreen.SetActive(false);
-
-            // Make the settings screen ui the currently active ui screen.
-            currentScreen = settingsScreenInstance;
-        }
-
-        // Hide the dropdown menu.
-        HideHamburgerMenu();
-        */
-
         // If the settings screen ui object is null, instantiate a copy of the prefab.
         if(!settingsScreenInstance)
         {
