@@ -36,6 +36,24 @@ public class MainMenuUIController : MonoBehaviour
     #region UI prefabs
     // The GM screen UI prefab that will be instantiated when the GM screen button is pressed.
     public GameObject gmScreenPrefab;
+
+    public GameObject homeScreenPrefab;
+
+    public GameObject characterListPrefab;
+
+    public GameObject summonScreenPrefab;
+
+    public GameObject inventoryScreenPrefab;
+
+    public GameObject shopScreenPrefab;
+
+    public GameObject mailScreenPrefab;
+
+    public GameObject settingsScreenPrefab;
+
+    public GameObject achievementListPrefab;
+
+    public GameObject friendListPrefab;
     #endregion
 
     // The loaded instances of each interface prefab created and displayed at runtime.
@@ -45,6 +63,22 @@ public class MainMenuUIController : MonoBehaviour
 
     // The instance of the home screen, which should have been created as a default scene element.
     public GameObject homeScreenInstance;
+
+    public GameObject characterListInstance;
+
+    public GameObject summonScreenInstance;
+
+    public GameObject inventoryScreenInstance;
+
+    public GameObject shopScreenInstance;
+
+    public GameObject mailScreenInstance;
+
+    public GameObject settingsScreenInstance;
+
+    public GameObject achievementListInstance;
+
+    public GameObject friendListInstance;
     #endregion
 
     // When an interface object is created or made active, it is placed in this object's heirarchy so it can be visible on screen.
@@ -222,19 +256,114 @@ public class MainMenuUIController : MonoBehaviour
     {}
 
     public void OnHomeButtonClicked()
-    {}
+    {
+        // If the home screen ui object is null (it shouldn't be), instantiate a copy of the home screen ui prefab.
+        if(!homeScreenInstance)
+        {
+            homeScreenInstance = Instantiate(homeScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid home screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            homeScreenInstance.SetActive(true);
+            homeScreenInstance.transform.SetAsLastSibling();
+        }
 
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the home screen ui the currently active ui screen.
+        currentScreen = homeScreenInstance;
+    }
+
+    // I assume the 'Heroes' button is for characters, so load the character list screen.
     public void OnHeroesButtonClicked()
-    {}
+    {
+        // If the character list ui object is null, instantiate a copy of the prefab.
+        if(!characterListInstance)
+        {
+            characterListInstance = Instantiate(characterListPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid character list ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            characterListInstance.SetActive(true);
+            characterListInstance.transform.SetAsLastSibling();
+        }
 
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the character list ui the currently active ui screen.
+        currentScreen = characterListInstance;
+    }
+
+    // I assume 'Items' refers to the inventory, so load the inventory screen.
     public void OnItemsButtonClicked()
-    {}
+    {
+        // If the inventory screen ui object is null, instantiate a copy of the prefab.
+        if(!inventoryScreenInstance)
+        {
+            inventoryScreenInstance = Instantiate(inventoryScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid inventory screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            inventoryScreenInstance.SetActive(true);
+            inventoryScreenInstance.transform.SetAsLastSibling();
+        }
 
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the inventory screen ui the currently active ui screen.
+        currentScreen = inventoryScreenInstance;
+    }
+
+    // Load the shop screen.
+    // Note: The issues imply there's a shop list and a shop buy screen. Just use the one we have and split them later.
     public void OnShopButtonClicked()
-    {}
+    {
+        // If the shop screen ui object is null, instantiate a copy of the prefab.
+        if(!shopScreenInstance)
+        {
+            shopScreenInstance = Instantiate(shopScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid shop screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            shopScreenInstance.SetActive(true);
+            shopScreenInstance.transform.SetAsLastSibling();
+        }
 
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the shop screen ui the currently active ui screen.
+        currentScreen = shopScreenInstance;
+    }
+
+    // Load the summon screen.
     public void OnSummonButtonClicked()
-    {}
+    {
+        // If the summon screen ui object is null, instantiate a copy of the prefab.
+        if(!summonScreenInstance)
+        {
+            summonScreenInstance = Instantiate(summonScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid summon screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            summonScreenInstance.SetActive(true);
+            summonScreenInstance.transform.SetAsLastSibling();
+        }
+
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the summon screen ui the currently active ui screen.
+        currentScreen = summonScreenInstance;
+    }
 
     // When the GM screen button is clicked, the GM screen UI is displayed in the center of the screen.
     public void OnGMScreenButtonClicked()
@@ -258,9 +387,47 @@ public class MainMenuUIController : MonoBehaviour
         currentScreen = gmScreenInstance;
     }
 
+    // Load the account mail interface.
     public void OnMailButtonClicked()
-    {}
+    {
+        // If the mail screen ui object is null, instantiate a copy of the prefab.
+        if(!mailScreenInstance)
+        {
+            mailScreenInstance = Instantiate(mailScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid mail screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            mailScreenInstance.SetActive(true);
+            mailScreenInstance.transform.SetAsLastSibling();
+        }
 
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the mail screen ui the currently active ui screen.
+        currentScreen = mailScreenInstance;
+    }
+
+    // Load the settings screen.
     public void OnOptionsButtonClicked()
-    {}
+    {
+        // If the settings screen ui object is null, instantiate a copy of the prefab.
+        if(!settingsScreenInstance)
+        {
+            settingsScreenInstance = Instantiate(settingsScreenPrefab, screenDisplayContainer.transform);
+        }
+        // If we have a valid settings screen ui object, make it active and make sure it is at the front of the ui canvas.
+        else
+        {
+            settingsScreenInstance.SetActive(true);
+            settingsScreenInstance.transform.SetAsLastSibling();
+        }
+
+        // Disable the previously active ui screen.
+        currentScreen.SetActive(false);
+
+        // Make the settings screen ui the currently active ui screen.
+        currentScreen = settingsScreenInstance;
+    }
 }
