@@ -36,6 +36,24 @@ public class MainMenuUIController : MonoBehaviour
     #region UI prefabs
     // The GM screen UI prefab that will be instantiated when the GM screen button is pressed.
     public GameObject gmScreenPrefab;
+
+    public GameObject homeScreenPrefab;
+
+    public GameObject characterListPrefab;
+
+    public GameObject summonScreenPrefab;
+
+    public GameObject inventoryScreenPrefab;
+
+    public GameObject shopScreenPrefab;
+
+    public GameObject mailScreenPrefab;
+
+    public GameObject settingsScreenPrefab;
+
+    public GameObject achievementListPrefab;
+
+    public GameObject friendListPrefab;
     #endregion
 
     // The loaded instances of each interface prefab created and displayed at runtime.
@@ -45,6 +63,22 @@ public class MainMenuUIController : MonoBehaviour
 
     // The instance of the home screen, which should have been created as a default scene element.
     public GameObject homeScreenInstance;
+
+    public GameObject characterListInstance;
+
+    public GameObject summonScreenInstance;
+
+    public GameObject inventoryScreenInstance;
+
+    public GameObject shopScreenInstance;
+
+    public GameObject mailScreenInstance;
+
+    public GameObject settingsScreenInstance;
+
+    public GameObject achievementListInstance;
+
+    public GameObject friendListInstance;
     #endregion
 
     // When an interface object is created or made active, it is placed in this object's heirarchy so it can be visible on screen.
@@ -52,6 +86,10 @@ public class MainMenuUIController : MonoBehaviour
 
     // The currently active UI screen displayed underneath the main menu.
     public GameObject currentScreen;
+
+    // The expandable dropdown list that is shown when the 'hamburger' button is pressed. Contains buttons that haven't been designed
+    // for yet, or functions that aren't important enough for their own place in the ui.
+    public GameObject hamburgerMenu;
 
     // Start is called before the first frame update
     void Start()
@@ -222,19 +260,69 @@ public class MainMenuUIController : MonoBehaviour
     {}
 
     public void OnHomeButtonClicked()
-    {}
+    {
+        // If the home screen ui object is null (it shouldn't be), instantiate a copy of the home screen ui prefab.
+        if(!homeScreenInstance)
+        {
+            homeScreenInstance = Instantiate(homeScreenPrefab, screenDisplayContainer.transform);
+        }
 
+        // Switch to the home screen.
+        SwitchToSelectedScreen(homeScreenInstance);
+    }
+
+    // I assume the 'Heroes' button is for characters, so load the character list screen.
     public void OnHeroesButtonClicked()
-    {}
+    {
+        // If the character list ui object is null, instantiate a copy of the prefab.
+        if(!characterListInstance)
+        {
+            characterListInstance = Instantiate(characterListPrefab, screenDisplayContainer.transform);
+        }
 
+        // Switch to the character list screen.
+        SwitchToSelectedScreen(characterListInstance);
+    }
+
+    // I assume 'Items' refers to the inventory, so load the inventory screen.
     public void OnItemsButtonClicked()
-    {}
+    {
+        // If the inventory screen ui object is null, instantiate a copy of the prefab.
+        if(!inventoryScreenInstance)
+        {
+            inventoryScreenInstance = Instantiate(inventoryScreenPrefab, screenDisplayContainer.transform);
+        }
 
+        // Switch to the inventory screen.
+        SwitchToSelectedScreen(inventoryScreenInstance);
+    }
+
+    // Load the shop screen.
+    // Note: The issues imply there's a shop list and a shop buy screen. Just use the one we have and split them later.
     public void OnShopButtonClicked()
-    {}
+    {
+        // If the shop screen ui object is null, instantiate a copy of the prefab.
+        if(!shopScreenInstance)
+        {
+            shopScreenInstance = Instantiate(shopScreenPrefab, screenDisplayContainer.transform);
+        }
 
+        // Switch to the shop screen.
+        SwitchToSelectedScreen(shopScreenInstance);
+    }
+
+    // Load the summon screen.
     public void OnSummonButtonClicked()
-    {}
+    {
+        // If the summon screen ui object is null, instantiate a copy of the prefab.
+        if(!summonScreenInstance)
+        {
+            summonScreenInstance = Instantiate(summonScreenPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the summon screen.
+        SwitchToSelectedScreen(summonScreenInstance);
+    }
 
     // When the GM screen button is clicked, the GM screen UI is displayed in the center of the screen.
     public void OnGMScreenButtonClicked()
@@ -244,23 +332,106 @@ public class MainMenuUIController : MonoBehaviour
         {
             gmScreenInstance = Instantiate(gmScreenPrefab, screenDisplayContainer.transform);
         }
-        // If we have a valid gm screen ui object, make it active and make sure it is at the front of the ui canvas.
-        else
-        {
-            gmScreenInstance.SetActive(true);
-            gmScreenInstance.transform.SetAsLastSibling();
-        }
 
-        // Disable the previously active ui screen.
-        currentScreen.SetActive(false);
-
-        // Make the gm screen ui the currently active ui screen.
-        currentScreen = gmScreenInstance;
+        // Switch to the gm screen.
+        SwitchToSelectedScreen(gmScreenInstance);
     }
 
+    // Load the account mail interface.
     public void OnMailButtonClicked()
-    {}
+    {
+        // If the mail screen ui object is null, instantiate a copy of the prefab.
+        if(!mailScreenInstance)
+        {
+            mailScreenInstance = Instantiate(mailScreenPrefab, screenDisplayContainer.transform);
+        }
 
-    public void OnOptionsButtonClicked()
-    {}
+        // Switch to the mail screen.
+        SwitchToSelectedScreen(mailScreenInstance);
+    }
+
+    // When the 'hamburger' button icon is pressed, expand a dropdown list of other menu buttons.
+    public void OnHamburgerMenuButtonClicked()
+    {
+        if(hamburgerMenu.activeInHierarchy)
+        {
+            HideHamburgerMenu();
+        }
+        else
+        {
+            ShowHamburgerMenu();
+        }
+    }
+
+    // Load the friend list interface.
+    public void OnFriendsButtonClicked()
+    {
+        // If the friends list ui object is null, instantiate a copy of the prefab.
+        if(!friendListInstance)
+        {
+            friendListInstance = Instantiate(friendListPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the friend list.
+        SwitchToSelectedScreen(friendListInstance);
+    }
+
+    // Load the achievement list interface.
+    public void OnAchievementsButtonClicked()
+    {
+        // If the achievement list ui is null, instantiate a copy of the prefab.
+        if(!achievementListInstance)
+        {
+            achievementListInstance = Instantiate(achievementListPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the achievement list.
+        SwitchToSelectedScreen(achievementListInstance);
+    }
+
+    // Load the settings screen.
+    public void OnSettingsButtonClicked()
+    {
+        // If the settings screen ui object is null, instantiate a copy of the prefab.
+        if(!settingsScreenInstance)
+        {
+            settingsScreenInstance = Instantiate(settingsScreenPrefab, screenDisplayContainer.transform);
+        }
+
+        // Switch to the settings screen.
+        SwitchToSelectedScreen(settingsScreenInstance);
+    }
+
+    public void SwitchToSelectedScreen(GameObject selectedScreen)
+    {
+        // If the selected screen was changed, update scene information.
+        if(currentScreen != selectedScreen)
+        {
+            selectedScreen.SetActive(true);
+            selectedScreen.transform.SetAsLastSibling();
+
+            // Disable the previously active ui screen.
+            currentScreen.SetActive(false);
+
+            // Make the new screen ui the currently active ui screen.
+            currentScreen = selectedScreen;
+        }
+
+        // Hide the dropdown menu.
+        HideHamburgerMenu();
+    }
+
+    // Displays the dropdown list that should appear when pressing the 'hamburger' menu button.
+    // Note: Animations, if necessary, should be handled here until the menu object gets its own script.
+    public void ShowHamburgerMenu()
+    {
+        hamburgerMenu.SetActive(true);
+    }
+
+    // Hides the above dropdown list.
+    // Note: Animations, if necessary, should be handled here.
+    public void HideHamburgerMenu()
+    {
+        hamburgerMenu.SetActive(false);
+    }
 }
