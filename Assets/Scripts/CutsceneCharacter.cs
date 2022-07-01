@@ -493,8 +493,6 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 
-    // The writers want to be able to use numbers as shorthand for a given stage position. This method takes the number and
-    // translates it into a preset stage position, then starts the move coroutine as normal.
     //[YarnCommand("char_move")]
     public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
@@ -541,7 +539,7 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    // I see no reason not to include a more flexible version of the above command, at least until they reserve this command name for something else.
+    // Moves the character to the given gameobject position.
     [YarnCommand("char_move")]
     public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
