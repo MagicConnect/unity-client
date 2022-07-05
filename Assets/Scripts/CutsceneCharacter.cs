@@ -363,6 +363,13 @@ public class CutsceneCharacter : CutsceneObject
     [YarnCommand("char_move_time")]
     public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
     {
+        // If the stageposition is null then something went wrong with the command.
+        if(!stagePosition)
+        {
+            Debug.LogErrorFormat(this, "Cutscene Character - {0}: Yarn Spinner couldn't find a valid stage position object in the scene. Please check for typos or missing arguments.", gameObject.name);
+            yield break;
+        }
+
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
         if(movingCoroutine != null)
@@ -541,10 +548,17 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    // I see no reason not to include a more flexible version of the above command, at least until they reserve this command name for something else.
+    // Move the character to a given stage position object in the scene.
     [YarnCommand("char_move")]
     public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
+        // If the position object is null, Yarn Spinner couldn't find the gameobject in the scene.
+        if(!position)
+        {
+            Debug.LogErrorFormat(this, "Cutscene Character - {0}: Yarn Spinner couldn't find a valid stage position object in the scene. Please check for typos or missing arguments.", gameObject.name);
+            yield break;
+        }
+
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
