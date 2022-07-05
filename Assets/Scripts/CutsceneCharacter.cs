@@ -72,7 +72,7 @@ public class CutsceneCharacter : CutsceneObject
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("char_hide")]
-    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -151,7 +151,7 @@ public class CutsceneCharacter : CutsceneObject
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("char_show")]
-    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -226,7 +226,7 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_dim")]
-    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -294,7 +294,7 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_undim")]
-    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -361,7 +361,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("char_move_time")]
-    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
     {
         // If the stageposition is null then something went wrong with the command.
         if(!stagePosition)
@@ -439,7 +439,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     [YarnCommand("char_move_coord_time")]
-    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
     {
         if(movingCoroutine != null)
         {
@@ -550,7 +550,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Move the character to a given stage position object in the scene.
     [YarnCommand("char_move")]
-    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = true, bool waitForAnimation = true)
     {
         // If the position object is null, Yarn Spinner couldn't find the gameobject in the scene.
         if(!position)

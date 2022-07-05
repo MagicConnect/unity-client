@@ -662,7 +662,7 @@ public class CutsceneManager : MonoBehaviour
     // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
     // doesn't matter; the method handles that logic automatically.
     [YarnCommand("char_dim_alternate")]
-    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = true, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
     {
         // Don't accept null references. If the writer puts in the wrong name or for some reason a character
         // wasn't loaded or something else happens to make this not work, we want to know about it.
@@ -746,7 +746,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's image to the one specified (animated).
     [YarnCommand("bg_switch")]
-    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -773,7 +773,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's color to the one specified.
     [YarnCommand("bg_color_rgba")]
-    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -802,7 +802,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     [YarnCommand("bg_color")]
-    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -834,7 +834,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Convenience method for fading the background to black.
-    [YarnCommand("bg_blackout")]
+    //[YarnCommand("bg_blackout")]
     public static IEnumerator BackgroundFadeToBlack_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
