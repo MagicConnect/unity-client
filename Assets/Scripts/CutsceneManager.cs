@@ -90,6 +90,10 @@ public class CutsceneManager : MonoBehaviour
 
     Coroutine colorChangeCoroutine;
 
+    public float autoDimAnimationTime = 0.0f;
+
+    public bool useAutodimSystem = true;
+
     void Awake()
     {
         Instance = this;
@@ -662,7 +666,7 @@ public class CutsceneManager : MonoBehaviour
     // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
     // doesn't matter; the method handles that logic automatically.
     [YarnCommand("char_dim_alternate")]
-    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = true, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
     {
         // Don't accept null references. If the writer puts in the wrong name or for some reason a character
         // wasn't loaded or something else happens to make this not work, we want to know about it.
@@ -746,7 +750,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's image to the one specified (animated).
     [YarnCommand("bg_switch")]
-    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -773,7 +777,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's color to the one specified.
     [YarnCommand("bg_color_rgba")]
-    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -802,7 +806,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     [YarnCommand("bg_color")]
-    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = false)
+    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = true)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -834,7 +838,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Convenience method for fading the background to black.
-    [YarnCommand("bg_blackout")]
+    //[YarnCommand("bg_blackout")]
     public static IEnumerator BackgroundFadeToBlack_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
@@ -864,7 +868,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method which adds one of the preset character vfx to the scene. An optional tag argument allows the writer to identify any vfx
     // using that tag later, in case they want to configure it in some way.
-    [YarnCommand("vfx_char")]
+    //[YarnCommand("vfx_char")]
     public static void AddCharacterVfx(string effectName, GameObject character, float duration, string tag = "default")
     {
         switch(effectName)
@@ -876,7 +880,7 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("vfx_char_clear")]
+    //[YarnCommand("vfx_char_clear")]
     public static void RemoveSpeedLineEffect(string name)
     {
         if(Instance.effects.ContainsKey(name))
@@ -891,15 +895,8 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    // This method clears all active character vfx.
-    [YarnCommand("vfx_char_clear_all")]
-    public static void ClearAllCharacterVfx()
-    {
-
-    }
-
     // Clears all active character vfx with the given tag.
-    [YarnCommand("vfx_char_clear_tagged")]
+    //[YarnCommand("vfx_char_clear_tagged")]
     public static void ClearAllTaggedCharacterVfx(string tag)
     {
 
@@ -907,14 +904,14 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for configuring character-based speedline vfx. Might need to expand into more commands if more configuration
     // options are added later.
-    [YarnCommand("vfx_char_cfg_speedline")]
+    //[YarnCommand("vfx_char_cfg_speedline")]
     public static void ConfigureCharacterSpeedlineVfx(string tag, float radius, string color)
     {
 
     }
 
     // Method for adding vfx that apply to the whole screen. Optional tag for identifying effects later.
-    [YarnCommand("vfx_screen")]
+    //[YarnCommand("vfx_screen")]
     public static void AddScreenVfx(string effectName, float duration, string tag = "default")
     {
         switch(effectName)
@@ -925,14 +922,14 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Method for adding vfx that apply to the background. Optional tag for identifying effects later.
-    [YarnCommand("vfx_bg")]
+    //[YarnCommand("vfx_bg")]
     public static void AddBackgroundVfx(string effectName, float duration, string tag = "default")
     {
 
     }
 
     // Method for adding vfx that apply to the foreground. Optional tag for identifying effects later.
-    [YarnCommand("vfx_fg")]
+    //[YarnCommand("vfx_fg")]
     public static void AddForegroundVfx(string effectName, float duration, string tag = "default")
     {
 
@@ -940,7 +937,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the background layer.
     [YarnCommand("vfx_bg_blackout")]
-    public static void AddBackgroundBlackoutVfx(float animationTime, string name = "vfx_bg_blackout")
+    public static IEnumerator AddBackgroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
     {
         // Clear any active fadein/blackout effects.
         ClearAllBackgroundFadeinVfx();
@@ -957,12 +954,18 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
+        }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
         }
     }
 
     // Adds the reverse of the blackout effect on the background layer.
     [YarnCommand("vfx_bg_fadein")]
-    public static void AddBackgroundFadeinVfx(float animationTime, string name = "vfx_bg_fadein")
+    public static IEnumerator AddBackgroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
     {
         // Clear all background blackout effects.
         ClearAllBackgroundBlackoutVfx();
@@ -974,11 +977,16 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
     }
 
     // Adds a blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_blackout")]
-    public static void AddForegroundBlackoutVfx(float animationTime, string name = "vfx_fg_blackout")
+    public static IEnumerator AddForegroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_blackout")
     {
         // Clear any active fadein effects.
         ClearAllForegroundFadeinVfx();
@@ -995,12 +1003,18 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
+        }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
         }
     }
 
     // Reverse of the blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_fadein")]
-    public static void AddForegroundFadeinVfx(float animationTime, string name = "vfx_fg_fadein")
+    public static IEnumerator AddForegroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
     {
         // Clear all foreground blackout effects.
         ClearAllForegroundBlackoutVfx();
@@ -1012,11 +1026,16 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
     }
 
     // Adds a blackout effect on the screen layer.
     [YarnCommand("vfx_scr_blackout")]
-    public static void AddScreenBlackoutVfx(float animationTime, string name = "vfx_scr_blackout")
+    public static IEnumerator AddScreenBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_blackout")
     {
         // Clear any active fadein effects.
         ClearAllScreenFadeinVfx();
@@ -1033,12 +1052,18 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
+        }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
         }
     }
 
     // Reverse blackout effect on the screen layer.
     [YarnCommand("vfx_scr_fadein")]
-    public static void AddScreenFadeinVfx(float animationTime, string name = "vfx_scr_fadein")
+    public static IEnumerator AddScreenFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_fadein")
     {
         // Clear all screen blackout effects.
         ClearAllScreenBlackoutVfx();
@@ -1050,6 +1075,11 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
     }
 
     public static void ClearAllBackgroundBlackoutVfx()
@@ -1133,6 +1163,54 @@ public class CutsceneManager : MonoBehaviour
         foreach(Transform effect in Instance.screenEffectContainer.transform)
         {
             Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all active character vfx.
+    [YarnCommand("vfx_char_clear_all")]
+    public static void ClearAllCharacterVfx()
+    {
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            character.gameObject.GetComponent<CutsceneCharacter>().ClearAllVfx();
+        }
+    }
+
+    [YarnCommand("vfx_char_speedline")]
+    public static void AddCharacterSpeedlineVfx(GameObject character, float duration = -1.0f, string color = "#000000FF", float radius = 100.0f, string name = "vfx_char_speedline")
+    {
+        // Instantiate a copy of the speedline prefab.
+        GameObject newEffect = Instantiate(Instance.speedlineEffectPrefab, character.GetComponent<CutsceneCharacter>().effectsContainer.transform);
+
+        // Set default attributes of the new object.
+        newEffect.name = name;
+        newEffect.GetComponent<CutsceneEffect>().duration = duration;
+
+        // A negative duration means it's persistent and should stay active until cleared.
+        if(duration < 0)
+        {
+            newEffect.GetComponent<CutsceneEffect>().isPersistent = true;
+        }
+        else
+        {
+            newEffect.GetComponent<CutsceneEffect>().isPersistent = false;
+        }
+
+        // Configure the particle system that makes up the speedline effect.
+        ParticleSystem particle = newEffect.GetComponentInChildren<ParticleSystem>();
+
+        ParticleSystem.ShapeModule shape = particle.shape;
+        shape.radius = radius;
+
+        ParticleSystem.MainModule main = particle.main;
+        Color newColor;
+        if(ColorUtility.TryParseHtmlString(color, out newColor))
+        {
+            main.startColor = newColor;
+        }
+        else
+        {
+            Debug.LogErrorFormat(Instance, "Command error: vfx_char_speedline: Unable to parse the string '{0}' as a color value. Make sure it's a valid hexadecimal color value in the html format (ex. #000000FF).", color);
         }
     }
 
@@ -1336,11 +1414,14 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Check to make sure that a character by the given name doesn't already exist.
+        // NOTE: I don't think I care about this anymore.
+        /*
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
             return;
         }
+        */
 
         // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
         // then there's nothing to do.
@@ -1378,12 +1459,12 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Add the new object to the list(s) so it can be tracked.
-        Instance.characters.Add(newObject);
-        Instance.cutsceneCharacters.Add(objectName, newObject);
-        Instance.cutsceneObjects.Add(objectName, newObject);
+        //Instance.characters.Add(newObject);
+        //Instance.cutsceneCharacters.Add(objectName, newObject);
+        //Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
-    [YarnCommand("char_clear")]
+    //[YarnCommand("char_clear")]
     public static void RemoveCharacter(string objectName)
     {
         if(Instance.cutsceneObjects.ContainsKey(objectName))
@@ -1539,7 +1620,9 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("char_clear_all")]
     public static void RemoveAllCharacters()
     {
-        foreach(string character in Instance.cutsceneCharacters.Keys)
+        // Instead of tracking everything manually I'm gonna let Unity handle it for now. If an object pool is implemented
+        // then that can handle tracking objects, if needed.
+        /*foreach(string character in Instance.cutsceneCharacters.Keys)
         {
             GameObject temp = Instance.cutsceneCharacters[character];
             Instance.cutsceneObjects.Remove(character);
@@ -1548,6 +1631,12 @@ public class CutsceneManager : MonoBehaviour
 
         Instance.cutsceneCharacters.Clear();
         Instance.characters.Clear();
+        */
+
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            Destroy(character.gameObject);
+        }
     }
 
     [YarnCommand("wait_anim")]
@@ -1607,7 +1696,8 @@ public class CutsceneManager : MonoBehaviour
     public static void ResetScene()
     {
         // Remove all writer-created cutscene objects and characters.
-        RemoveAllCutsceneObjects();
+        //RemoveAllCutsceneObjects();
+        RemoveAllCharacters();
 
         // Reset the background to the default color, image, etc.
         defaultBackground.GetComponent<CutsceneBackground>().ResetBackground();
@@ -1616,6 +1706,49 @@ public class CutsceneManager : MonoBehaviour
         ClearAllBackgroundVfx();
         ClearAllForegroundVfx();
         ClearAllScreenVfx();
+
+        // Remove all character based effects.
+        ClearAllCharacterVfx();
+    }
+
+    [YarnCommand("set_autodim_time")]
+    public static void SetAutoDimAnimationTime(float time)
+    {
+        Instance.autoDimAnimationTime = time;
+    }
+
+    [YarnCommand("set_autodim_on")]
+    public static void EnableAutodimSystem()
+    {
+        Instance.useAutodimSystem = true;
+    }
+
+    [YarnCommand("set_autodim_off")]
+    public static void DisableAutodimSystem()
+    {
+        Instance.useAutodimSystem = false;
+    }
+
+    public static void AutodimCharacters(string speaker)
+    {
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            CutsceneCharacter cutsceneCharacter = character.gameObject.GetComponent<CutsceneCharacter>();
+            if(character.gameObject.name == speaker)
+            {
+                if(cutsceneCharacter.isDimmed && cutsceneCharacter.undimmingCoroutine == null)
+                {
+                    cutsceneCharacter.StartCoroutine(cutsceneCharacter.UndimCharacter_Handler(Instance.autoDimAnimationTime, false));
+                }
+            }
+            else
+            {
+                if(!cutsceneCharacter.isDimmed && cutsceneCharacter.dimmingCoroutine == null)
+                {
+                    cutsceneCharacter.StartCoroutine(cutsceneCharacter.DimCharacter_Handler(Instance.autoDimAnimationTime, false));
+                }
+            }
+        }
     }
 }
 
