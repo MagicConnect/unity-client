@@ -69,6 +69,11 @@ public class CutsceneCharacter : CutsceneObject
         rectTransform.position = stagePosition.GetComponent<RectTransform>().position;
     }
 
+    public void MoveCharacter(float x, float y)
+    {
+        rectTransform.position = new Vector3(x, y, rectTransform.position.z);
+    }
+
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("char_hide")]
@@ -223,6 +228,11 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
     }
 
+    public void SetColor(Color color)
+    {
+        characterImage.color = color;
+    }
+
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_dim")]
@@ -244,7 +254,17 @@ public class CutsceneCharacter : CutsceneObject
 
         // TODO: Make a method which instantly sets the character color to gray, so no coroutine is
         // created when the animation time is 0.
-        dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+        //dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+
+        if(animationTime <= 0.0f)
+        {
+            SetColor(Color.gray);
+            yield break;
+        }
+        else
+        {
+            dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+        }
 
         if(waitForAnimation)
         {
@@ -312,7 +332,17 @@ public class CutsceneCharacter : CutsceneObject
 
         // TODO: Make a method which instantly sets the character's color back to the default so no coroutine is
         // started when the animation time is 0.
-        undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+        //undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+
+        if(animationTime <= 0.0f)
+        {
+            SetColor(Color.white);
+            yield break;
+        }
+        else
+        {
+            undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+        }
 
         if(waitForAnimation)
         {
@@ -446,7 +476,17 @@ public class CutsceneCharacter : CutsceneObject
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+        //movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+
+        if(animationTime <= 0.0f)
+        {
+            MoveCharacter(x, y);
+            yield break;
+        }
+        else
+        {
+            movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+        }
 
         if(waitForAnimation)
         {
