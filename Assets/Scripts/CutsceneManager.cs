@@ -940,7 +940,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the background layer.
     [YarnCommand("vfx_bg_blackout")]
-    public static void AddBackgroundBlackoutVfx(float animationTime, string name = "vfx_bg_blackout")
+    public static void AddBackgroundBlackoutVfx(float animationTime = 0.0f, string name = "vfx_bg_blackout")
     {
         // Clear any active fadein/blackout effects.
         ClearAllBackgroundFadeinVfx();
@@ -962,7 +962,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds the reverse of the blackout effect on the background layer.
     [YarnCommand("vfx_bg_fadein")]
-    public static void AddBackgroundFadeinVfx(float animationTime, string name = "vfx_bg_fadein")
+    public static void AddBackgroundFadeinVfx(float animationTime = 0.0f, string name = "vfx_bg_fadein")
     {
         // Clear all background blackout effects.
         ClearAllBackgroundBlackoutVfx();
@@ -978,7 +978,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_blackout")]
-    public static void AddForegroundBlackoutVfx(float animationTime, string name = "vfx_fg_blackout")
+    public static void AddForegroundBlackoutVfx(float animationTime = 0.0f, string name = "vfx_fg_blackout")
     {
         // Clear any active fadein effects.
         ClearAllForegroundFadeinVfx();
@@ -1000,7 +1000,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Reverse of the blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_fadein")]
-    public static void AddForegroundFadeinVfx(float animationTime, string name = "vfx_fg_fadein")
+    public static void AddForegroundFadeinVfx(float animationTime = 0.0f, string name = "vfx_fg_fadein")
     {
         // Clear all foreground blackout effects.
         ClearAllForegroundBlackoutVfx();
@@ -1016,7 +1016,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the screen layer.
     [YarnCommand("vfx_scr_blackout")]
-    public static void AddScreenBlackoutVfx(float animationTime, string name = "vfx_scr_blackout")
+    public static void AddScreenBlackoutVfx(float animationTime = 0.0f, string name = "vfx_scr_blackout")
     {
         // Clear any active fadein effects.
         ClearAllScreenFadeinVfx();
@@ -1038,7 +1038,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Reverse blackout effect on the screen layer.
     [YarnCommand("vfx_scr_fadein")]
-    public static void AddScreenFadeinVfx(float animationTime, string name = "vfx_scr_fadein")
+    public static void AddScreenFadeinVfx(float animationTime = 0.0f, string name = "vfx_scr_fadein")
     {
         // Clear all screen blackout effects.
         ClearAllScreenBlackoutVfx();
