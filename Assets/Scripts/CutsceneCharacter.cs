@@ -670,6 +670,13 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat(this, "{0} finished moving to {1}.", gameObject.name, position.name);
     }
 
+    // Removes this character from the scene.
+    [YarnCommand("char_clear")]
+    public void ClearCharacter()
+    {
+        Destroy(this.gameObject);
+    }
+
     // Removes all visual effects attached to this character.
     [YarnCommand("vfx_char_clear")]
     public void ClearAllVfx()

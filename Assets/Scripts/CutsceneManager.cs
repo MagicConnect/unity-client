@@ -1410,11 +1410,14 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Check to make sure that a character by the given name doesn't already exist.
+        // NOTE: I don't think I care about this anymore.
+        /*
         if(Instance.cutsceneObjects.ContainsKey(objectName))
         {
             Debug.LogErrorFormat("Cutscene Manager: Character cannot be created because another object with the name '{0}' already exists.", objectName);
             return;
         }
+        */
 
         // Next check to make sure that the sprite name given exists in the cache. If either of these things aren't true,
         // then there's nothing to do.
@@ -1452,12 +1455,12 @@ public class CutsceneManager : MonoBehaviour
         }
 
         // Add the new object to the list(s) so it can be tracked.
-        Instance.characters.Add(newObject);
-        Instance.cutsceneCharacters.Add(objectName, newObject);
-        Instance.cutsceneObjects.Add(objectName, newObject);
+        //Instance.characters.Add(newObject);
+        //Instance.cutsceneCharacters.Add(objectName, newObject);
+        //Instance.cutsceneObjects.Add(objectName, newObject);
     }
 
-    [YarnCommand("char_clear")]
+    //[YarnCommand("char_clear")]
     public static void RemoveCharacter(string objectName)
     {
         if(Instance.cutsceneObjects.ContainsKey(objectName))
@@ -1613,7 +1616,9 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("char_clear_all")]
     public static void RemoveAllCharacters()
     {
-        foreach(string character in Instance.cutsceneCharacters.Keys)
+        // Instead of tracking everything manually I'm gonna let Unity handle it for now. If an object pool is implemented
+        // then that can handle tracking objects, if needed.
+        /*foreach(string character in Instance.cutsceneCharacters.Keys)
         {
             GameObject temp = Instance.cutsceneCharacters[character];
             Instance.cutsceneObjects.Remove(character);
@@ -1622,6 +1627,12 @@ public class CutsceneManager : MonoBehaviour
 
         Instance.cutsceneCharacters.Clear();
         Instance.characters.Clear();
+        */
+
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            Destroy(character.gameObject);
+        }
     }
 
     [YarnCommand("wait_anim")]
@@ -1681,7 +1692,8 @@ public class CutsceneManager : MonoBehaviour
     public static void ResetScene()
     {
         // Remove all writer-created cutscene objects and characters.
-        RemoveAllCutsceneObjects();
+        //RemoveAllCutsceneObjects();
+        RemoveAllCharacters();
 
         // Reset the background to the default color, image, etc.
         defaultBackground.GetComponent<CutsceneBackground>().ResetBackground();
