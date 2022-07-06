@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Yarn.Unity;
 
 public class CutsceneEffect : CutsceneObject
 {
@@ -32,7 +33,15 @@ public class CutsceneEffect : CutsceneObject
         if(!isPersistent && timePassed >= duration)
         {
             // Destruction of this effect should be handled elsewhere. Fire off the event and let someone else deal with it.
-            EffectExpired?.Invoke(gameObject);
+            //EffectExpired?.Invoke(gameObject);
+            Destroy(this.gameObject);
         }
+    }
+
+    // Removes this single effect from the scene.
+    [YarnCommand("vfx_clear")]
+    public void ClearEffect()
+    {
+        Destroy(this.gameObject);
     }
 }

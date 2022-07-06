@@ -15,6 +15,8 @@ public class CutsceneCharacter : CutsceneObject
 
     public bool isDimmed = false;
 
+    public GameObject effectsContainer;
+
     // If animations need to stop playing for whatever reason, or we need to check if there's an animation running,
     // these coroutine handlers will be necessary.
     Coroutine dimmingCoroutine;
@@ -666,5 +668,15 @@ public class CutsceneCharacter : CutsceneObject
         movingCoroutine = null;
 
         Debug.LogFormat(this, "{0} finished moving to {1}.", gameObject.name, position.name);
+    }
+
+    // Removes all visual effects attached to this character.
+    [YarnCommand("vfx_char_clear")]
+    public void ClearAllVfx()
+    {
+        foreach(Transform effect in effectsContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
     }
 }

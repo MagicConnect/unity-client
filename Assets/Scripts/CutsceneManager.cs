@@ -864,7 +864,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method which adds one of the preset character vfx to the scene. An optional tag argument allows the writer to identify any vfx
     // using that tag later, in case they want to configure it in some way.
-    [YarnCommand("vfx_char")]
+    //[YarnCommand("vfx_char")]
     public static void AddCharacterVfx(string effectName, GameObject character, float duration, string tag = "default")
     {
         switch(effectName)
@@ -876,7 +876,7 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    [YarnCommand("vfx_char_clear")]
+    //[YarnCommand("vfx_char_clear")]
     public static void RemoveSpeedLineEffect(string name)
     {
         if(Instance.effects.ContainsKey(name))
@@ -891,15 +891,8 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    // This method clears all active character vfx.
-    [YarnCommand("vfx_char_clear_all")]
-    public static void ClearAllCharacterVfx()
-    {
-        
-    }
-
     // Clears all active character vfx with the given tag.
-    [YarnCommand("vfx_char_clear_tagged")]
+    //[YarnCommand("vfx_char_clear_tagged")]
     public static void ClearAllTaggedCharacterVfx(string tag)
     {
 
@@ -907,14 +900,14 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for configuring character-based speedline vfx. Might need to expand into more commands if more configuration
     // options are added later.
-    [YarnCommand("vfx_char_cfg_speedline")]
+    //[YarnCommand("vfx_char_cfg_speedline")]
     public static void ConfigureCharacterSpeedlineVfx(string tag, float radius, string color)
     {
 
     }
 
     // Method for adding vfx that apply to the whole screen. Optional tag for identifying effects later.
-    [YarnCommand("vfx_screen")]
+    //[YarnCommand("vfx_screen")]
     public static void AddScreenVfx(string effectName, float duration, string tag = "default")
     {
         switch(effectName)
@@ -925,14 +918,14 @@ public class CutsceneManager : MonoBehaviour
     }
 
     // Method for adding vfx that apply to the background. Optional tag for identifying effects later.
-    [YarnCommand("vfx_bg")]
+    //[YarnCommand("vfx_bg")]
     public static void AddBackgroundVfx(string effectName, float duration, string tag = "default")
     {
 
     }
 
     // Method for adding vfx that apply to the foreground. Optional tag for identifying effects later.
-    [YarnCommand("vfx_fg")]
+    //[YarnCommand("vfx_fg")]
     public static void AddForegroundVfx(string effectName, float duration, string tag = "default")
     {
 
@@ -1166,6 +1159,54 @@ public class CutsceneManager : MonoBehaviour
         foreach(Transform effect in Instance.screenEffectContainer.transform)
         {
             Destroy(effect.gameObject);
+        }
+    }
+
+    // Clears all active character vfx.
+    [YarnCommand("vfx_char_clear_all")]
+    public static void ClearAllCharacterVfx()
+    {
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            character.gameObject.GetComponent<CutsceneCharacter>().ClearAllVfx();
+        }
+    }
+
+    [YarnCommand("vfx_char_speedline")]
+    public static void AddCharacterSpeedlineVfx(GameObject character, float duration = -1.0f, string color = "#000000FF", float radius = 100.0f, string name = "vfx_char_speedline")
+    {
+        // Instantiate a copy of the speedline prefab.
+        GameObject newEffect = Instantiate(Instance.speedlineEffectPrefab, character.GetComponent<CutsceneCharacter>().effectsContainer.transform);
+
+        // Set default attributes of the new object.
+        newEffect.name = name;
+        newEffect.GetComponent<CutsceneEffect>().duration = duration;
+
+        // A negative duration means it's persistent and should stay active until cleared.
+        if(duration < 0)
+        {
+            newEffect.GetComponent<CutsceneEffect>().isPersistent = true;
+        }
+        else
+        {
+            newEffect.GetComponent<CutsceneEffect>().isPersistent = false;
+        }
+
+        // Configure the particle system that makes up the speedline effect.
+        ParticleSystem particle = newEffect.GetComponentInChildren<ParticleSystem>();
+
+        ParticleSystem.ShapeModule shape = particle.shape;
+        shape.radius = radius;
+
+        ParticleSystem.MainModule main = particle.main;
+        Color newColor;
+        if(ColorUtility.TryParseHtmlString(color, out newColor))
+        {
+            main.startColor = newColor;
+        }
+        else
+        {
+            Debug.LogErrorFormat(Instance, "Command error: vfx_char_speedline: Unable to parse the string '{0}' as a color value. Make sure it's a valid hexadecimal color value in the html format (ex. #000000FF).", color);
         }
     }
 
@@ -1649,6 +1690,9 @@ public class CutsceneManager : MonoBehaviour
         ClearAllBackgroundVfx();
         ClearAllForegroundVfx();
         ClearAllScreenVfx();
+
+        // Remove all character based effects.
+        ClearAllCharacterVfx();
     }
 }
 
