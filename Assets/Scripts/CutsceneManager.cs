@@ -938,9 +938,14 @@ public class CutsceneManager : MonoBehaviour
 
     }
 
+    public static IEnumerator AddBackgroundBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
+    {
+        yield break;
+    }
+
     // Adds a blackout effect on the background layer.
     [YarnCommand("vfx_bg_blackout")]
-    public static void AddBackgroundBlackoutVfx(float animationTime = 0.0f, string name = "vfx_bg_blackout")
+    public static IEnumerator AddBackgroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
     {
         // Clear any active fadein/blackout effects.
         ClearAllBackgroundFadeinVfx();
@@ -957,12 +962,23 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
         }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
+        }
+    }
+
+    public static IEnumerator AddBackgroundFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
+    {
+        yield break;
     }
 
     // Adds the reverse of the blackout effect on the background layer.
     [YarnCommand("vfx_bg_fadein")]
-    public static void AddBackgroundFadeinVfx(float animationTime = 0.0f, string name = "vfx_bg_fadein")
+    public static IEnumerator AddBackgroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
     {
         // Clear all background blackout effects.
         ClearAllBackgroundBlackoutVfx();
@@ -974,11 +990,21 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
+    }
+
+    public static IEnumerator AddForegroundBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_blackout")
+    {
+        yield break;
     }
 
     // Adds a blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_blackout")]
-    public static void AddForegroundBlackoutVfx(float animationTime = 0.0f, string name = "vfx_fg_blackout")
+    public static IEnumerator AddForegroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_blackout")
     {
         // Clear any active fadein effects.
         ClearAllForegroundFadeinVfx();
@@ -995,12 +1021,23 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
         }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
+        }
+    }
+
+    public static IEnumerator AddForegroundFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
+    {
+        yield break;
     }
 
     // Reverse of the blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_fadein")]
-    public static void AddForegroundFadeinVfx(float animationTime = 0.0f, string name = "vfx_fg_fadein")
+    public static IEnumerator AddForegroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
     {
         // Clear all foreground blackout effects.
         ClearAllForegroundBlackoutVfx();
@@ -1012,11 +1049,21 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
+    }
+
+    public static IEnumerator AddScreenBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_blackout")
+    {
+        yield break;
     }
 
     // Adds a blackout effect on the screen layer.
     [YarnCommand("vfx_scr_blackout")]
-    public static void AddScreenBlackoutVfx(float animationTime = 0.0f, string name = "vfx_scr_blackout")
+    public static IEnumerator AddScreenBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_blackout")
     {
         // Clear any active fadein effects.
         ClearAllScreenFadeinVfx();
@@ -1033,12 +1080,23 @@ public class CutsceneManager : MonoBehaviour
         if(animationTime <= 0.0f)
         {
             effect.GetComponent<CutsceneVfxBlackout>().CompleteAnimation();
+            yield break;
         }
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
+        }
+    }
+
+    public static IEnumerator AddScreenFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_fadein")
+    {
+        yield break;
     }
 
     // Reverse blackout effect on the screen layer.
     [YarnCommand("vfx_scr_fadein")]
-    public static void AddScreenFadeinVfx(float animationTime = 0.0f, string name = "vfx_scr_fadein")
+    public static IEnumerator AddScreenFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_fadein")
     {
         // Clear all screen blackout effects.
         ClearAllScreenBlackoutVfx();
@@ -1050,6 +1108,11 @@ public class CutsceneManager : MonoBehaviour
         // Give it default parameters.
         effect.name = name;
         effect.GetComponent<CutsceneVfxFadein>().animationTime = animationTime;
+
+        if(waitForAnimation)
+        {
+            yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
+        }
     }
 
     public static void ClearAllBackgroundBlackoutVfx()
