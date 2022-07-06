@@ -686,4 +686,15 @@ public class CutsceneCharacter : CutsceneObject
             Destroy(effect.gameObject);
         }
     }
+
+    public override bool IsAnimating()
+    {
+        bool isFading = fadeInCoroutine != null || fadeOutCoroutine != null;
+        bool isMoving = movingCoroutine != null;
+        bool isDimming = dimmingCoroutine != null || undimmingCoroutine != null;
+        bool isScaling = scalingCoroutine != null;
+        bool isRotating = rotationCoroutine != null;
+
+        return isFading || isMoving || isDimming || isScaling || isRotating;
+    }
 }

@@ -1652,6 +1652,7 @@ public class CutsceneManager : MonoBehaviour
                 return false;
             }
 
+            // Note: Obsolete.
             foreach(GameObject cObject in Instance.cutsceneObjects.Values)
             {
                 var cutsceneObject = cObject.GetComponent<CutsceneObject>();
@@ -1663,9 +1664,10 @@ public class CutsceneManager : MonoBehaviour
                 }
             }
 
+            // Check for any layered effect animations.
             foreach(Transform effect in Instance.backgroundEffectContainer.transform)
             {
-                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                if(effect.gameObject.GetComponent<CutsceneEffect>().IsAnimating())
                 {
                     return false;
                 }
@@ -1673,7 +1675,7 @@ public class CutsceneManager : MonoBehaviour
 
             foreach(Transform effect in Instance.foregroundEffectContainer.transform)
             {
-                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                if(effect.gameObject.GetComponent<CutsceneEffect>().IsAnimating())
                 {
                     return false;
                 }
@@ -1681,11 +1683,23 @@ public class CutsceneManager : MonoBehaviour
 
             foreach(Transform effect in Instance.screenEffectContainer.transform)
             {
-                if(effect.gameObject.GetComponent<CutsceneEffect>().isAnimating)
+                if(effect.gameObject.GetComponent<CutsceneEffect>().IsAnimating())
                 {
                     return false;
                 }
             }
+
+            // Check if any character objects are animating.
+            foreach(Transform character in Instance.characterContainer.transform)
+            {
+                if(character.gameObject.GetComponent<CutsceneCharacter>().IsAnimating())
+                {
+                    return false;
+                }
+            }
+
+            // Check for any character based effect animations.
+            // Note: Not implemented because I don't know how animations for speedlines should work.
 
             return true;
         });
