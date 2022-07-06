@@ -255,6 +255,12 @@ using Yarn.Unity;
             lineText.gameObject.SetActive(true);
             canvasGroup.gameObject.SetActive(true);
 
+            // Send the character name attribute to the autodimming system in the cutscene manager.
+            if (CutsceneManager.Instance.useAutodimSystem)
+            {
+                CutsceneManager.AutodimCharacters(dialogueLine.CharacterName);
+            }
+
             int length;
 
             if (characterNameText == null)
@@ -306,6 +312,12 @@ using Yarn.Unity;
             {
                 lineText.gameObject.SetActive(true);
                 canvasGroup.gameObject.SetActive(true);
+
+                // Send the character name attribute to the autodimming system in the cutscene manager.
+                if(CutsceneManager.Instance.useAutodimSystem)
+                {
+                    CutsceneManager.AutodimCharacters(dialogueLine.CharacterName);
+                }
 
                 // Hide the continue button until presentation is complete (if
                 // we have one).

@@ -90,6 +90,10 @@ public class CutsceneManager : MonoBehaviour
 
     Coroutine colorChangeCoroutine;
 
+    public float autoDimAnimationTime = 0.0f;
+
+    public bool useAutodimSystem = true;
+
     void Awake()
     {
         Instance = this;
@@ -1705,6 +1709,46 @@ public class CutsceneManager : MonoBehaviour
 
         // Remove all character based effects.
         ClearAllCharacterVfx();
+    }
+
+    [YarnCommand("set_autodim_time")]
+    public static void SetAutoDimAnimationTime(float time)
+    {
+        Instance.autoDimAnimationTime = time;
+    }
+
+    [YarnCommand("set_autodim_on")]
+    public static void EnableAutodimSystem()
+    {
+        Instance.useAutodimSystem = true;
+    }
+
+    [YarnCommand("set_autodim_off")]
+    public static void DisableAutodimSystem()
+    {
+        Instance.useAutodimSystem = false;
+    }
+
+    public static void AutodimCharacters(string speaker)
+    {
+        foreach(Transform character in Instance.characterContainer.transform)
+        {
+            CutsceneCharacter cutsceneCharacter = character.gameObject.GetComponent<CutsceneCharacter>();
+            if(character.gameObject.name == speaker)
+            {
+                if(cutsceneCharacter.isDimmed && cutsceneCharacter.undimmingCoroutine == null)
+                {
+                    cutsceneCharacter.StartCoroutine(cutsceneCharacter.UndimCharacter_Handler(Instance.autoDimAnimationTime, false));
+                }
+            }
+            else
+            {
+                if(!cutsceneCharacter.isDimmed && cutsceneCharacter.dimmingCoroutine == null)
+                {
+                    cutsceneCharacter.StartCoroutine(cutsceneCharacter.DimCharacter_Handler(Instance.autoDimAnimationTime, false));
+                }
+            }
+        }
     }
 }
 

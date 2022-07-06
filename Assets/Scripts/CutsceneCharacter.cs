@@ -19,8 +19,8 @@ public class CutsceneCharacter : CutsceneObject
 
     // If animations need to stop playing for whatever reason, or we need to check if there's an animation running,
     // these coroutine handlers will be necessary.
-    Coroutine dimmingCoroutine;
-    Coroutine undimmingCoroutine;
+    public Coroutine dimmingCoroutine;
+    public Coroutine undimmingCoroutine;
 
     void Awake()
     {
