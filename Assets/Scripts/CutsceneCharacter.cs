@@ -261,6 +261,7 @@ public class CutsceneCharacter : CutsceneObject
         if(animationTime <= 0.0f)
         {
             SetColor(Color.gray);
+            isDimmed = true;
             yield break;
         }
         else
@@ -339,6 +340,7 @@ public class CutsceneCharacter : CutsceneObject
         if(animationTime <= 0.0f)
         {
             SetColor(Color.white);
+            isDimmed = false;
             yield break;
         }
         else

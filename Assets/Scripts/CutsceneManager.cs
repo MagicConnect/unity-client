@@ -1728,18 +1728,21 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("set_autodim_time")]
     public static void SetAutoDimAnimationTime(float time)
     {
+        Debug.LogFormat(Instance, "Cutscene Manager: set_autodim_time: Autodim system animation time set to {0} seconds.", time);
         Instance.autoDimAnimationTime = time;
     }
 
     [YarnCommand("set_autodim_on")]
     public static void EnableAutodimSystem()
     {
+        Debug.LogFormat(Instance, "Cutscene Manager: set_autodim_on: Autodim system enabled.");
         Instance.useAutodimSystem = true;
     }
 
     [YarnCommand("set_autodim_off")]
     public static void DisableAutodimSystem()
     {
+        Debug.LogFormat(Instance, "Cutscene Manager: set_autodim_off: Autodim system disabled.");
         Instance.useAutodimSystem = false;
     }
 
@@ -1752,6 +1755,7 @@ public class CutsceneManager : MonoBehaviour
             {
                 if(cutsceneCharacter.isDimmed && cutsceneCharacter.undimmingCoroutine == null)
                 {
+                    Debug.LogFormat(Instance, "Cutscene Manager: Autodim System: Automatically undimming character '{0}' because they are speaking.", cutsceneCharacter.gameObject.name);
                     cutsceneCharacter.StartCoroutine(cutsceneCharacter.UndimCharacter_Handler(Instance.autoDimAnimationTime, false));
                 }
             }
@@ -1759,6 +1763,7 @@ public class CutsceneManager : MonoBehaviour
             {
                 if(!cutsceneCharacter.isDimmed && cutsceneCharacter.dimmingCoroutine == null)
                 {
+                    Debug.LogFormat(Instance, "Cutscene Manager: Autodim System: Automatically dimming character '{0}' because they are not speaking.", cutsceneCharacter.gameObject.name);
                     cutsceneCharacter.StartCoroutine(cutsceneCharacter.DimCharacter_Handler(Instance.autoDimAnimationTime, false));
                 }
             }

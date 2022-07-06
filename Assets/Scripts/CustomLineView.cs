@@ -258,6 +258,7 @@ using Yarn.Unity;
             // Send the character name attribute to the autodimming system in the cutscene manager.
             if (CutsceneManager.Instance.useAutodimSystem)
             {
+                Debug.LogFormat(this, "CustomLineView: InterruptLine -> Sending character name '{0}' to autodim system.", dialogueLine.CharacterName);
                 CutsceneManager.AutodimCharacters(dialogueLine.CharacterName);
             }
 
@@ -316,6 +317,7 @@ using Yarn.Unity;
                 // Send the character name attribute to the autodimming system in the cutscene manager.
                 if(CutsceneManager.Instance.useAutodimSystem)
                 {
+                    Debug.LogFormat(this, "CustomLineView: RuneLineInternal -> Sending character name '{0}' to autodim system.", dialogueLine.CharacterName);
                     CutsceneManager.AutodimCharacters(dialogueLine.CharacterName);
                 }
 
