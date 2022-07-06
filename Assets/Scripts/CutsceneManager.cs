@@ -895,7 +895,7 @@ public class CutsceneManager : MonoBehaviour
     [YarnCommand("vfx_char_clear_all")]
     public static void ClearAllCharacterVfx()
     {
-
+        
     }
 
     // Clears all active character vfx with the given tag.
@@ -938,11 +938,6 @@ public class CutsceneManager : MonoBehaviour
 
     }
 
-    public static IEnumerator AddBackgroundBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
-    {
-        yield break;
-    }
-
     // Adds a blackout effect on the background layer.
     [YarnCommand("vfx_bg_blackout")]
     public static IEnumerator AddBackgroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
@@ -971,11 +966,6 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    public static IEnumerator AddBackgroundFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
-    {
-        yield break;
-    }
-
     // Adds the reverse of the blackout effect on the background layer.
     [YarnCommand("vfx_bg_fadein")]
     public static IEnumerator AddBackgroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
@@ -995,11 +985,6 @@ public class CutsceneManager : MonoBehaviour
         {
             yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
         }
-    }
-
-    public static IEnumerator AddForegroundBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_blackout")
-    {
-        yield break;
     }
 
     // Adds a blackout effect on the foreground layer.
@@ -1030,11 +1015,6 @@ public class CutsceneManager : MonoBehaviour
         }
     }
 
-    public static IEnumerator AddForegroundFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
-    {
-        yield break;
-    }
-
     // Reverse of the blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_fadein")]
     public static IEnumerator AddForegroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
@@ -1054,11 +1034,6 @@ public class CutsceneManager : MonoBehaviour
         {
             yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxFadein>().IsAnimating());
         }
-    }
-
-    public static IEnumerator AddScreenBlackoutVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_blackout")
-    {
-        yield break;
     }
 
     // Adds a blackout effect on the screen layer.
@@ -1087,11 +1062,6 @@ public class CutsceneManager : MonoBehaviour
         {
             yield return new WaitUntil(() => !effect.GetComponent<CutsceneVfxBlackout>().IsAnimating());
         }
-    }
-
-    public static IEnumerator AddScreenFadeinVfx_Handler(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_fadein")
-    {
-        yield break;
     }
 
     // Reverse blackout effect on the screen layer.
