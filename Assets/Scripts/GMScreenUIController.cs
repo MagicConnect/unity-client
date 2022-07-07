@@ -406,32 +406,29 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGetGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Get, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Get;
 
-        //request.Send();
+        request.Send();
     }
 
     public void OnPostGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Post;
 
-        //request.Send();
+        request.Send();
     }
 
     public void OnPatchGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Patch, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Patch;
 
-        //request.Send();
+        request.Send();
     }
 
     // Takes a BestHTTP request and dumps information about it to the console for testing.
