@@ -264,12 +264,27 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmAddWeaponButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", weaponContentIds[weaponIdDropdown.itemText.text]);
+        
+        string weaponName = weaponIdDropdown.captionText.text;
+        string weaponId;
 
-        request.Send();
+        if(weaponContentIds.TryGetValue(weaponName, out weaponId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", weaponId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Weapon: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", weaponName);
+        }
     }
 
     public void OnGmGainCrystalsButtonClicked()
