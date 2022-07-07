@@ -106,57 +106,32 @@ public class MailScreenUIController : MonoBehaviour
         
     }
 
+    // Sends a me/mail request to the server to get the latest mails. Updating the UI is handled in a callback method.
+    public void RequestMailListRefresh()
+    {}
+
+    public void OnRefreshButtonClicked()
+    {}
+
+    public void OnClaimAllButtonClicked()
+    {}
+
+    public void OnDeleteAllButtonClicked()
+    {}
+
+    public void OnDeleteButtonClicked()
+    {}
+
+    public void OnMailSelected()
+    {}
+
     public void SendTestMail()
     {
         // Create a /mail/{player} post request to the server.
         HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
 
-        //request.FormUsage = BestHTTP.Forms.HTTPFormUsage.Multipart;
-
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
-
-        // Build JSON data to be sent to the server.
-        /*
-        var data = new JObject();
-        data.Add("title", "Test Mail");
-        data.Add("longText", "This is a test mail to myself.");
-        data.Add("forPromoCode", "");
-        
-        // Character attachment data:
-        var characters = new JObject();
-        characters.Add("contentId", "");
-        characters.Add("quantity", 0);
-
-        // Weapon attachment data:
-        var weapons = new JObject();
-        weapons.Add("contentId", "");
-        weapons.Add("quantity", 0);
-
-        // Accessory attachment data:
-        var accessories = new JObject();
-        accessories.Add("contentId", "");
-        accessories.Add("quantity", 0);
-
-        // Item attachment data:
-        var item1 = new JObject();
-        item1.Add("contentId", "");
-        item1.Add("quantity", 0);
-
-        var item2 = new JObject();
-        item2.Add("contentId", "");
-        item2.Add("quantity", 0);
-
-        var items = new JToken[2];
-        items[0] = item1;
-        items[1] = item2;
-
-        // Add attachment data to core JSON data:
-        data.Add("attachedCharacters", characters);
-        data.Add("attachedWeapons", items);
-        data.Add("attachedAccessories", accessories);
-        data.Add("attachedItems", items);
-        */
 
         SentMail newMail = new SentMail("Test Mail", "This is a test mail to myself.");
         Attachment character1 = new Attachment("fe162e55-5166-4bfd-81c9-171e66f80174", 1); // Lana Elenore
@@ -178,12 +153,58 @@ public class MailScreenUIController : MonoBehaviour
         var data = JObject.FromObject(newMail);
 
         // Add JSON data to the request.
-        //request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+        request.SetHeader("Content-Type", "application/json; charset=UTF-8");
         request.RawData = System.Text.Encoding.UTF8.GetBytes(data.ToString());
 
         Debug.Log(data.ToString(), this);
+        
+        // Send the request to the server.
+        request.Send();
+    }
 
-        //string attributes = string.Format("\"title\": {0}, \"longText\": {1}, \"forPromoCode\": {2}", "Test Mail", "This is a test mail to myself.", "");
+    public void SendTestMailTypeTwo()
+    {
+        // Create a /mail/{player} post request to the server.
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
+
+        // Send authorization token with the request.
+        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+        SentMail newMail = new SentMail("Test Mail 2", "This is another test mail to myself.");
+
+        Attachment weapon1 = new Attachment("538403a9-5a15-411a-8ee3-5037b1f9a0b2", 1); // wood axe
+        Attachment weapon2 = new Attachment("b778ddc7-1dcb-481b-858e-b3b3cd97b9ae", 1); // sharp axe
+        newMail.attachedWeapons = new Attachment[]{weapon1, weapon2};
+
+        var data = JObject.FromObject(newMail);
+
+        // Add JSON data to the request.
+        request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+        request.RawData = System.Text.Encoding.UTF8.GetBytes(data.ToString());
+
+        Debug.Log(data.ToString(), this);
+        
+        // Send the request to the server.
+        request.Send();
+    }
+
+    public void SendTestMailTypeThree()
+    {
+        // Create a /mail/{player} post request to the server.
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
+
+        // Send authorization token with the request.
+        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+        SentMail newMail = new SentMail("Test Mail 3", "This is yet another test mail to myself.");
+
+        var data = JObject.FromObject(newMail);
+
+        // Add JSON data to the request.
+        request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+        request.RawData = System.Text.Encoding.UTF8.GetBytes(data.ToString());
+
+        Debug.Log(data.ToString(), this);
         
         // Send the request to the server.
         request.Send();

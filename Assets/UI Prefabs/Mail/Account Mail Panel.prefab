@@ -2735,7 +2735,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 5699678801991173372}
         m_TargetAssemblyTypeName: MailScreenUIController, Assembly-CSharp
-        m_MethodName: SendTestMail
+        m_MethodName: OnRefreshButtonClicked
         m_Mode: 1
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
