@@ -189,12 +189,27 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmAddAccessoryButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", accessoryContentIds[accessoryIdDropdown.itemText.text]);
 
-        request.Send();
+        string accessoryName = accessoryIdDropdown.captionText.text;
+        string accessoryId;
+
+        if(accessoryContentIds.TryGetValue(accessoryName, out accessoryId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", accessoryId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Accessory: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", accessoryName);
+        }
     }
 
     public void OnGmAddCharacterButtonClicked()
@@ -209,7 +224,7 @@ public class GMScreenUIController : MonoBehaviour
         if(characterContentIds.TryGetValue(characterName, out characterId))
         {
             string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", characterId, "}");
-            Debug.LogFormat(this, "GM Screen: Add Character: Request body sent to server: {0}", requestBody);
+            Debug.LogFormat(this, "GM UI Controller: Add Character: Request body sent to server: {0}", requestBody);
 
             request.SetHeader("Content-Type", "application/json; charset=UTF-8");
             request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
