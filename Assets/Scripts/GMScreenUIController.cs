@@ -11,15 +11,8 @@ public class GMScreenUIController : MonoBehaviour
 {
     public event Action<string> OnResponseBodyReceived;
 
-    // These are the input field ui objects where the 'contentId' is set by the user. After caching gamedata is implemented
-    // these should be replaced by drop downs, which would be far easier to use.
-    //public TMP_InputField accessoryId;
-
-    //public TMP_InputField characterId;
-
-    //public TMP_InputField shopId;
-
-    //public TMP_InputField weaponId;
+    // Input field for the gain crystals request.
+    public TMP_InputField crystalAmountField;
 
     // These are the dropdown ui objects where the 'contentId' is set by the user.
     public TMP_Dropdown accessoryIdDropdown;
@@ -289,11 +282,24 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmGainCrystalsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-crystals"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-crystals"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        if(int.TryParse(crystalAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Crystals: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Crystals: Unable to parse '{0}' into a valid integer. No request will be sent.", crystalAmountField.text);
+        }
     }
 
     public void OnGmGainLimitedShardsButtonClicked()
@@ -302,7 +308,7 @@ public class GMScreenUIController : MonoBehaviour
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnGmGainPermanentShardsButtonClicked()
@@ -311,7 +317,7 @@ public class GMScreenUIController : MonoBehaviour
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnGmResetShopButtonClicked()
@@ -320,7 +326,7 @@ public class GMScreenUIController : MonoBehaviour
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnPostGmMaintenanceButtonClicked()
@@ -330,7 +336,7 @@ public class GMScreenUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
         request.MethodType = HTTPMethods.Post;
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnGetGmMaintenanceButtonClicked()
@@ -340,7 +346,7 @@ public class GMScreenUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
         request.MethodType = HTTPMethods.Get;
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnGetGmSettingsButtonClicked()
@@ -350,7 +356,7 @@ public class GMScreenUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
         request.MethodType = HTTPMethods.Get;
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnPostGmSettingsButtonClicked()
@@ -360,7 +366,7 @@ public class GMScreenUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
         request.MethodType = HTTPMethods.Post;
 
-        request.Send();
+        //request.Send();
     }
 
     public void OnPatchGmSettingsButtonClicked()
@@ -370,7 +376,7 @@ public class GMScreenUIController : MonoBehaviour
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
         request.MethodType = HTTPMethods.Patch;
 
-        request.Send();
+        //request.Send();
     }
 
     // Takes a BestHTTP request and dumps information about it to the console for testing.

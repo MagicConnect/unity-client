@@ -7610,7 +7610,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3981144736081462084}
   m_Direction: 0
   m_Value: 0
-  m_Size: 0.99974597
+  m_Size: 0.94047016
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -8521,7 +8521,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3981144734950655717
 RectTransform:
   m_ObjectHideFlags: 0
@@ -17801,6 +17801,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2901c4815a1dca44da61744370719f0d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  crystalAmountField: {fileID: 3981144734950655714}
   accessoryIdDropdown: {fileID: 6013914684365809804}
   characterIdDropdown: {fileID: 8474153914116804068}
   shopIdDropdown: {fileID: 4646101053185337239}
@@ -22765,7 +22766,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 3981144736055156008}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.28010634
+  m_Size: 0.29789326
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -24251,7 +24252,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3981144736464597648
 RectTransform:
   m_ObjectHideFlags: 0
@@ -24299,7 +24300,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'contentId:'
+  m_text: 'amount:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
