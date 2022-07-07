@@ -14,6 +14,9 @@ public class GMScreenUIController : MonoBehaviour
     // Input field for the gain crystals request.
     public TMP_InputField crystalAmountField;
 
+    // Input field for the gain limited shards request.
+    public TMP_InputField limitedShardAmountField;
+
     // These are the dropdown ui objects where the 'contentId' is set by the user.
     public TMP_Dropdown accessoryIdDropdown;
 
@@ -304,11 +307,24 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmGainLimitedShardsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-limited-shards"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-limited-shards"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        //request.Send();
+        if(int.TryParse(limitedShardAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Limited Shards: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Limited Shards: Unable to parse '{0}' into a valid integer. No request will be sent.", limitedShardAmountField.text);
+        }
     }
 
     public void OnGmGainPermanentShardsButtonClicked()

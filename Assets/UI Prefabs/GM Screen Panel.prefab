@@ -6009,7 +6009,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3981144734733872991
 RectTransform:
   m_ObjectHideFlags: 0
@@ -6057,7 +6057,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 'contentId:'
+  m_text: 'amount:'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -7761,7 +7761,7 @@ GameObject:
   - component: {fileID: 3981144734882915240}
   - component: {fileID: 3981144734882915243}
   m_Layer: 5
-  m_Name: API Command List Item (5)
+  m_Name: Gain Limited Shards Command
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -17802,6 +17802,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   crystalAmountField: {fileID: 3981144734950655714}
+  limitedShardAmountField: {fileID: 3981144736494956338}
   accessoryIdDropdown: {fileID: 6013914684365809804}
   characterIdDropdown: {fileID: 8474153914116804068}
   shopIdDropdown: {fileID: 4646101053185337239}
@@ -24650,12 +24651,12 @@ GameObject:
   - component: {fileID: 3981144736494956339}
   - component: {fileID: 3981144736494956338}
   m_Layer: 5
-  m_Name: Parameter Input Field
+  m_Name: Shard Amount Input Field
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &3981144736494956341
 RectTransform:
   m_ObjectHideFlags: 0
