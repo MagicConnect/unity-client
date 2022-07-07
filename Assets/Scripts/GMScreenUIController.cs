@@ -199,12 +199,27 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmAddCharacterButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", characterContentIds[characterIdDropdown.itemText.text]);
 
-        request.Send();
+        string characterName = characterIdDropdown.captionText.text;
+        string characterId;
+
+        if(characterContentIds.TryGetValue(characterName, out characterId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", characterId, "}");
+            Debug.LogFormat(this, "GM Screen: Add Character: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", characterName);
+        }
     }
 
     public void OnGmAddShopButtonClicked()
@@ -322,10 +337,13 @@ public class GMScreenUIController : MonoBehaviour
         formattedOutput = string.Concat(formattedOutput, string.Format("Original URI: {0}\n", request.Uri));
         formattedOutput = string.Concat(formattedOutput, string.Format("Headers:\n {0}\n", request.DumpHeaders()));
 
-        formattedOutput = string.Concat(formattedOutput, string.Format("Form Fields:\n"));
-        foreach(BestHTTP.Forms.HTTPFieldData fieldData in request.GetFormFields())
+        if(request.GetFormFields() != null)
         {
-            formattedOutput = string.Concat(formattedOutput, string.Format("{0} : {1}\n", fieldData.Name, fieldData.Text));
+            formattedOutput = string.Concat(formattedOutput, string.Format("Form Fields:\n"));
+            foreach(BestHTTP.Forms.HTTPFieldData fieldData in request.GetFormFields())
+            {
+                formattedOutput = string.Concat(formattedOutput, string.Format("{0} : {1}\n", fieldData.Name, fieldData.Text));
+            }
         }
         
         // A bunch of information that is probably not important unless specifically asked for, such as metadata or constraints.
