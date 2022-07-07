@@ -32,6 +32,8 @@ public class GMScreenUIController : MonoBehaviour
     public TMP_Dropdown shopIdDropdown;
 
     public TMP_Dropdown weaponIdDropdown;
+
+    public TMP_Dropdown resetShopIdDropdown;
     #endregion
 
     // When the name of an accessory, shop, etc. is chosen in the dropdown list, these dictionaries
@@ -110,6 +112,9 @@ public class GMScreenUIController : MonoBehaviour
             // Populate the dropdown ui with all the available shops that can be added.
             shopIdDropdown.ClearOptions();
             shopIdDropdown.AddOptions(shopIds);
+
+            resetShopIdDropdown.ClearOptions();
+            resetShopIdDropdown.AddOptions(shopIds);
         }
         catch(Exception e)
         {
@@ -359,11 +364,26 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmResetShopButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/reset-shop"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/reset-shop"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        //request.Send();
+        string shopName = resetShopIdDropdown.captionText.text;
+
+        if(shopContentIds.TryGetValue(shopName, out var shopId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", shopId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Reset Shop: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Reset Shop: Unable to retrieve content id for '{0}'. No request will be sent.", shopName);
+        }
     }
 
     public void OnPostGmMaintenanceButtonClicked()
