@@ -388,22 +388,20 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnPostGmMaintenanceButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Post;
 
-        //request.Send();
+        request.Send();
     }
 
     public void OnGetGmMaintenanceButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), HTTPMethods.Get, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Get;
 
-        //request.Send();
+        request.Send();
     }
 
     public void OnGetGmSettingsButtonClicked()
