@@ -11,13 +11,20 @@ public class GMScreenUIController : MonoBehaviour
 {
     public event Action<string> OnResponseBodyReceived;
 
+    // These are the input fields where a value needs to be entered (usually an amount).
+    #region Input Fields
     // Input field for the gain crystals request.
     public TMP_InputField crystalAmountField;
 
     // Input field for the gain limited shards request.
     public TMP_InputField limitedShardAmountField;
 
+    // Input field for the gain permanent shards request.
+    public TMP_InputField permanentShardAmountField;
+    #endregion
+
     // These are the dropdown ui objects where the 'contentId' is set by the user.
+    #region Dropdowns
     public TMP_Dropdown accessoryIdDropdown;
 
     public TMP_Dropdown characterIdDropdown;
@@ -25,6 +32,7 @@ public class GMScreenUIController : MonoBehaviour
     public TMP_Dropdown shopIdDropdown;
 
     public TMP_Dropdown weaponIdDropdown;
+    #endregion
 
     // When the name of an accessory, shop, etc. is chosen in the dropdown list, these dictionaries
     // can be used to translate that into a content id that would be sent to the server as part of the api.
@@ -329,11 +337,24 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmGainPermanentShardsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-permanent-shards"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-permanent-shards"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        //request.Send();
+        if(int.TryParse(permanentShardAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Permanent Shards: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Permanent Shards: Unable to parse '{0}' into a valid integer. No request will be sent.", permanentShardAmountField.text);
+        }
     }
 
     public void OnGmResetShopButtonClicked()
