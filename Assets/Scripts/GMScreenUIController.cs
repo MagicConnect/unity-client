@@ -239,12 +239,27 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmAddShopButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", shopContentIds[shopIdDropdown.itemText.text]);
+        
+        string shopName = shopIdDropdown.captionText.text;
+        string shopId;
 
-        request.Send();
+        if(shopContentIds.TryGetValue(shopName, out shopId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", shopId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Shop: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", shopName);
+        }
     }
 
     public void OnGmAddWeaponButtonClicked()
