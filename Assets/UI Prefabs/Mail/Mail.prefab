@@ -409,7 +409,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 6569067976269967288}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1475101297176345546}
+        m_TargetAssemblyTypeName: MailData, Assembly-CSharp
+        m_MethodName: OnMailClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1475101297176345546
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -433,6 +445,13 @@ MonoBehaviour:
   attachedAccessories: []
   attachedItems: []
   recipient: 
+  titleDisplayText: {fileID: 6569067976190403535}
+  sendDateDisplayText: {fileID: 6569067976381195882}
+  attachmentIcon: {fileID: 6569067975962759917}
+  defaultColor: {r: 0, g: 0, b: 0, a: 0}
+  selectedColor: {r: 0, g: 0, b: 0, a: 0}
+  backgroundPanel: {fileID: 6569067977434613458}
+  isSelected: 0
 --- !u!1 &6569067976381195880
 GameObject:
   m_ObjectHideFlags: 0

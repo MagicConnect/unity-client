@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+using TMPro;
 
 using BestHTTP;
 using Newtonsoft.Json;
@@ -88,47 +89,31 @@ public class MailScreenUIController : MonoBehaviour
         }
     }
 
-    // An individual character entry sent with the mail.
-    public class Character
-    {
-        public string ContentId;
-
-        public int Quantity;
-    }
-
-    // An individual weapon entry sent with the mail.
-    public class Weapon
-    {
-        public string ContentId;
-
-        public int Quantity;
-    }
-
-    // An individual accessory entry sent with the mail.
-    public class Accessory
-    {
-        public string ContentId;
-
-        public int Quantity;
-    }
-
-    // An individual item entry sent with the mail.
-    public class Item
-    {
-        public string ContentId;
-
-        public int Quantity;
-    }
-
     public FirebaseHandler firebase;
 
+    // The mail ui item prefab to be copied.
     public GameObject mailPrefab;
 
     // The most recent mail information from the server.
     public MailList currentMailList;
 
+    // The mail currently selected in the ui.
+    public MailData currentSelectedMail;
+
+    // Mail information referenced by the mail's id attribute.
+    public Dictionary<string, Mail> mailsById = new Dictionary<string, Mail>();
+
+    // Mail ui elements referenced by the mail's id attribute.
+    public Dictionary<string, MailData> mailUiItemsById = new Dictionary<string, MailData>();
+
     // The parent content gameobject for the mail list.
     public GameObject mailListContainer;
+
+    public TMP_Text titleDisplayText;
+
+    public TMP_Text sendDateDisplayText;
+
+    public TMP_Text contentDisplayText;
 
     // Start is called before the first frame update
     void Start()
@@ -167,8 +152,24 @@ public class MailScreenUIController : MonoBehaviour
     public void OnDeleteButtonClicked()
     {}
 
-    public void OnMailSelected()
-    {}
+    // Called when a mail item has been selected/clicked in the ui.
+    public void OnMailSelected(string id)
+    {
+        // Update the info panel with the mail's contents.
+        Mail mailInfo = mailsById[id];
+
+        titleDisplayText.text = mailInfo.title;
+        sendDateDisplayText.text = mailInfo.sentAt;
+        contentDisplayText.text = mailInfo.longText;
+
+        // Tell the old mail item it is no longer selected, then track the newly selected mail item.
+        if(currentSelectedMail)
+        {
+            currentSelectedMail.Unselect();
+        }
+        
+        currentSelectedMail = mailUiItemsById[id];
+    }
 
     // Debug methods for sending mails to myself. Useful for testing but not much else.
     // Note: If we support sending mails to other users this code would be useful for copy/pasting.
@@ -316,7 +317,18 @@ public class MailScreenUIController : MonoBehaviour
                 Debug.LogFormat(this, "Mail Id: {0}", mail.id);
 
                 // Create a new mail instance from the prefab and add it to the mail list ui.
-                Instantiate(mailPrefab, mailListContainer.transform);
+                GameObject newMail = Instantiate(mailPrefab, mailListContainer.transform);
+                MailData newMailData = newMail.GetComponent<MailData>();
+
+                // Pass it the parsed mail information.
+                newMailData.mailData = mail;
+
+                // Subscribe to the mail item's click event.
+                newMailData.onMailSelected += OnMailSelected;
+
+                // Store the mail information and ui items so they can be easily referenced when events occur.
+                mailsById.Add(mail.id, mail);
+                mailUiItemsById.Add(newMailData.mailData.id, newMailData);
             }
         }
         else

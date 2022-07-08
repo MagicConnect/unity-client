@@ -126,6 +126,9 @@ MonoBehaviour:
   firebase: {fileID: 0}
   mailPrefab: {fileID: 6569067976269967295, guid: 450f98dfe03712248a57a3edffcb67cb, type: 3}
   mailListContainer: {fileID: 3313137585243753498}
+  titleDisplayText: {fileID: 5220785582781712358}
+  sendDateDisplayText: {fileID: 5220785583786550447}
+  contentDisplayText: {fileID: 5220785583869994704}
 --- !u!1 &3313137585243753498
 GameObject:
   m_ObjectHideFlags: 0
