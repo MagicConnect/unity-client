@@ -10,8 +10,6 @@ using Newtonsoft.Json.Linq;
 
 public class MailScreenUIController : MonoBehaviour
 {
-    public FirebaseHandler firebase;
-
     // This defines the mail JSON object we send to the server.
     public class SentMail
     {
@@ -42,6 +40,41 @@ public class MailScreenUIController : MonoBehaviour
         }
     }
 
+    // All the mail information received from the server.
+    public class MailList
+    {
+        public Mail[] mails;
+    }
+
+    // A single mail object parsed from the server.
+    public class Mail
+    {
+        public string id;
+
+        public string title;
+
+        public string longText;
+
+        public string forPromoCode;
+
+        public string sentAt;
+
+        public string readAt;
+
+        public string claimedAt;
+
+        public string recipient;
+
+        public Attachment[] attachedCharacters;
+
+        public Attachment[] attachedWeapons;
+
+        public Attachment[] attachedAccessories;
+
+        public Attachment[] attachedItems;
+    }
+
+    // A single mail attachment (characters, weapons, etc.).
     public class Attachment
     {
         public string contentId;
@@ -87,17 +120,22 @@ public class MailScreenUIController : MonoBehaviour
         public int Quantity;
     }
 
+    public FirebaseHandler firebase;
+
+    public GameObject mailPrefab;
+
+    // The most recent mail information from the server.
+    public MailList currentMailList;
+
+    // The parent content gameobject for the mail list.
+    public GameObject mailListContainer;
+
     // Start is called before the first frame update
     void Start()
     {
         firebase = FirebaseHandler.Instance;
 
-        // Send a /me/mail request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me/mail"), OnMeMailRequestFinished);
-
-        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
-
-        request.Send();
+        RequestUpdatedMailList();
     }
 
     // Update is called once per frame
@@ -107,8 +145,15 @@ public class MailScreenUIController : MonoBehaviour
     }
 
     // Sends a me/mail request to the server to get the latest mails. Updating the UI is handled in a callback method.
-    public void RequestMailListRefresh()
-    {}
+    public void RequestUpdatedMailList()
+    {
+        // Send a /me/mail request to the server.
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me/mail"), OnMeMailRequestFinished);
+
+        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+        request.Send();
+    }
 
     public void OnRefreshButtonClicked()
     {}
@@ -125,6 +170,9 @@ public class MailScreenUIController : MonoBehaviour
     public void OnMailSelected()
     {}
 
+    // Debug methods for sending mails to myself. Useful for testing but not much else.
+    // Note: If we support sending mails to other users this code would be useful for copy/pasting.
+    #region Test Mail Methods
     public void SendTestMail()
     {
         // Create a /mail/{player} post request to the server.
@@ -255,6 +303,28 @@ public class MailScreenUIController : MonoBehaviour
                 break;
         }// end switch block
     }
+    #endregion
+
+    public void ParseMailResponseIntoObjects(string data)
+    {
+        MailList mailList = JsonConvert.DeserializeObject<MailList>(data);
+
+        if(mailList != null && mailList.mails != null)
+        {
+            foreach(Mail mail in mailList.mails)
+            {
+                Debug.LogFormat(this, "Mail Id: {0}", mail.id);
+
+                // Create a new mail instance from the prefab and add it to the mail list ui.
+                Instantiate(mailPrefab, mailListContainer.transform);
+            }
+        }
+        else
+        {
+            // TODO: This isn't necessarily an error. It could just mean there's no mail to display.
+            Debug.LogErrorFormat(this, "Mail UI Controller: Something went wrong parsing the /me/mail response data -> Data: {0}", data);
+        }
+    }
 
     public void OnMeMailRequestFinished(HTTPRequest request, HTTPResponse response)
     {
@@ -276,7 +346,7 @@ public class MailScreenUIController : MonoBehaviour
                     Debug.LogFormat(this, "Major Version: {0} Minor Version: {1}", response.VersionMajor, response.VersionMinor);
                     Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
 
-                    //ParseResponseIntoUIInfo(response.DataAsText);
+                    ParseMailResponseIntoObjects(response.DataAsText);
                 }
                 else
                 {
