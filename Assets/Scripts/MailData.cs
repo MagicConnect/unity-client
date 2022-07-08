@@ -88,11 +88,18 @@ public class MailData : MonoBehaviour
     // Updates this mail's ui elements to reflect any changes in data.
     public void UpdateUi()
     {
+        Debug.LogFormat(this, "Updating mail list item ({0}) using most recent information.", mailData.id);
+
         // Update basic information display.
         titleDisplayText.text = mailData.title;
         sendDateDisplayText.text = mailData.sentAt;
 
         // TODO: Check if mail has been read, and figure out a visual to represent the mail's read status.
+        if(mailData.readAt == null || mailData.readAt == "")
+        {
+            titleDisplayText.text = string.Format("<b>{0}</b>", mailData.title);
+            sendDateDisplayText.text = string.Format("<b>{0}</b>", mailData.sentAt);
+        }
 
         // Check if the mail item is selected in the ui, and change the color to reflect it.
         if(isSelected)

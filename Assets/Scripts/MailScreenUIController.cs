@@ -47,6 +47,12 @@ public class MailScreenUIController : MonoBehaviour
         public Mail[] mails;
     }
 
+    // The json parser needs this to parse responses where we expect only one mail object.
+    public class SingleMail
+    {
+        public Mail mail;
+    }
+
     // A single mail object parsed from the server.
     public class Mail
     {
@@ -133,7 +139,7 @@ public class MailScreenUIController : MonoBehaviour
     public void RequestUpdatedMailList()
     {
         // Send a /me/mail request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me/mail"), OnMeMailRequestFinished);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/me/mail"), HTTPMethods.Get, OnMeMailRequestFinished);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
 
@@ -141,10 +147,27 @@ public class MailScreenUIController : MonoBehaviour
     }
 
     public void OnRefreshButtonClicked()
-    {}
+    {
+
+    }
+
+    public void OnClaimButtonClicked()
+    {
+        // Send a /mail/{player}/{id}/claim request to the server.
+        // TODO: Once the account id is properly stored, use that here as the player argument.
+        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/claim", "62a3e9553a23910038e9f4bc", currentSelectedMail.mailData.id);
+        Debug.LogFormat("Claim Request URL: {0}", requestUrl);
+        HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnMailClaimedRequestFinished);
+
+        request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+        //request.Send();
+    }
 
     public void OnClaimAllButtonClicked()
-    {}
+    {
+
+    }
 
     public void OnDeleteAllButtonClicked()
     {}
@@ -169,6 +192,20 @@ public class MailScreenUIController : MonoBehaviour
         }
         
         currentSelectedMail = mailUiItemsById[id];
+
+        // If the mail was previously unread, tell the server that it has been read.
+        if(mailInfo.readAt == null && mailInfo.readAt != "")
+        {
+            // Send a /mail/{player}/{id}/read request to the server.
+            // TODO: Once the account id is properly stored, use that here as the player argument.
+            string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/read", "62a3e9553a23910038e9f4bc", currentSelectedMail.mailData.id);
+            Debug.LogFormat("Read Request URL: {0}", requestUrl);
+            HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnMailReadRequestFinished);
+
+            request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
+
+            request.Send();
+        }
     }
 
     // Debug methods for sending mails to myself. Useful for testing but not much else.
@@ -359,6 +396,114 @@ public class MailScreenUIController : MonoBehaviour
                     Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
 
                     ParseMailResponseIntoObjects(response.DataAsText);
+                }
+                else
+                {
+                    Debug.LogWarningFormat(this, "Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", response.StatusCode, response.Message, response.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Mail Screen: Request finished with an error: " + (request.Exception != null ? (request.Exception.Message + "\n" + request.Exception.StackTrace) : "No Exception"), this);
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Mail Screen: Request aborted.", this);
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Mail Screen: Connection timed out.", this);
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Mail Screen: Processing the request timed out.", this);
+                break;
+        }// end switch block
+    }
+
+    public void OnMailReadRequestFinished(HTTPRequest request, HTTPResponse response)
+    {
+        switch(request.State)
+        {
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(response.IsSuccess)
+                {
+                    // Dump all headers and their values into the console.
+                    Debug.LogFormat(this, "API Response Headers/Values:");
+                    foreach(string header in response.Headers.Keys)
+                    {
+                        Debug.LogFormat(this, "Header: {0} Value(s): {1}", header, response.Headers[header]);
+                    }
+
+                    Debug.LogFormat(this, "Response Data: {0}", response.DataAsText);
+                    Debug.LogFormat(this, "Status Code: {0} Message: {1}", response.StatusCode, response.Message);
+                    Debug.LogFormat(this, "Major Version: {0} Minor Version: {1}", response.VersionMajor, response.VersionMinor);
+                    Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
+
+                    //ParseMailResponseIntoObjects(response.DataAsText);
+
+                    Mail updatedMail = JsonConvert.DeserializeObject<SingleMail>(response.DataAsText).mail;
+
+                    if(updatedMail != null)
+                    {
+                        Debug.LogFormat(this, "Updated mail information received. Refreshing the ui. -> {0}", response.DataAsText);
+                        Debug.LogFormat(this, "Mail Id: {0}", updatedMail.id);
+                        mailsById.Remove(updatedMail.id);
+                        mailsById.Add(updatedMail.id, updatedMail);
+
+                        mailUiItemsById[updatedMail.id].mailData = updatedMail;
+                    }
+                    else
+                    {
+                        Debug.LogErrorFormat(this, "The mail read request was successful but there was a problem parsing the updated mail information.");
+                    }
+                }
+                else
+                {
+                    Debug.LogWarningFormat(this, "Request finished successfully, but the server sent an error. Status Code: {0}--{1} Message: {2}", response.StatusCode, response.Message, response.DataAsText);
+                }
+                break;
+            // The request finished with an unexpected error. The request's Exception property may contain more info about the error.
+            case HTTPRequestStates.Error:
+                Debug.LogError("Mail Screen: Request finished with an error: " + (request.Exception != null ? (request.Exception.Message + "\n" + request.Exception.StackTrace) : "No Exception"), this);
+                break;
+            // The request aborted, initiated by the user.
+            case HTTPRequestStates.Aborted:
+                Debug.LogWarning("Mail Screen: Request aborted.", this);
+                break;
+            // Connecting to the server timed out.
+            case HTTPRequestStates.ConnectionTimedOut:
+                Debug.LogError("Mail Screen: Connection timed out.", this);
+                break;
+            // The request didn't finish in the given time.
+            case HTTPRequestStates.TimedOut:
+                Debug.LogError("Mail Screen: Processing the request timed out.", this);
+                break;
+        }// end switch block
+    }
+
+    public void OnMailClaimedRequestFinished(HTTPRequest request, HTTPResponse response)
+    {
+        switch(request.State)
+        {
+            // The request finished without any problem.
+            case HTTPRequestStates.Finished:
+                if(response.IsSuccess)
+                {
+                    // Dump all headers and their values into the console.
+                    Debug.LogFormat(this, "API Response Headers/Values:");
+                    foreach(string header in response.Headers.Keys)
+                    {
+                        Debug.LogFormat(this, "Header: {0} Value(s): {1}", header, response.Headers[header]);
+                    }
+
+                    Debug.LogFormat(this, "Response Data: {0}", response.DataAsText);
+                    Debug.LogFormat(this, "Status Code: {0} Message: {1}", response.StatusCode, response.Message);
+                    Debug.LogFormat(this, "Major Version: {0} Minor Version: {1}", response.VersionMajor, response.VersionMinor);
+                    Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
+
+                    //ParseMailResponseIntoObjects(response.DataAsText);
                 }
                 else
                 {
