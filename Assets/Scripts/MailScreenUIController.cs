@@ -100,6 +100,9 @@ public class MailScreenUIController : MonoBehaviour
     // The mail ui item prefab to be copied.
     public GameObject mailPrefab;
 
+    // The attachment ui prefab to be copied into the scene.
+    public GameObject attachmentPrefab;
+
     // The most recent mail information from the server.
     public MailList currentMailList;
 
@@ -120,6 +123,12 @@ public class MailScreenUIController : MonoBehaviour
     public TMP_Text sendDateDisplayText;
 
     public TMP_Text contentDisplayText;
+
+    // The layout group where a mail's attachments are displayed.
+    public GameObject attachmentGrid;
+
+    // Panel which contains all mail content ui elements. Disabled when no mail is selected.
+    public GameObject mailContentsDisplay;
 
     // Start is called before the first frame update
     void Start()
@@ -148,7 +157,7 @@ public class MailScreenUIController : MonoBehaviour
 
     public void OnRefreshButtonClicked()
     {
-
+        RequestUpdatedMailList();
     }
 
     public void OnClaimButtonClicked()
@@ -161,7 +170,7 @@ public class MailScreenUIController : MonoBehaviour
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
 
-        //request.Send();
+        request.Send();
     }
 
     public void OnClaimAllButtonClicked()
@@ -178,12 +187,54 @@ public class MailScreenUIController : MonoBehaviour
     // Called when a mail item has been selected/clicked in the ui.
     public void OnMailSelected(string id)
     {
+        // Show the mail content display, if it's not already visible.
+        mailContentsDisplay.SetActive(true);
+
         // Update the info panel with the mail's contents.
         Mail mailInfo = mailsById[id];
 
         titleDisplayText.text = mailInfo.title;
         sendDateDisplayText.text = mailInfo.sentAt;
         contentDisplayText.text = mailInfo.longText;
+
+        // Clear the attachment grid of all attachments from previous mails.
+        foreach(Transform attachment in attachmentGrid.transform)
+        {
+            Destroy(attachment.gameObject);
+        }
+
+        // Get the attachment information and create attachment icons for each mail attachment.
+        if(mailInfo.attachedAccessories != null && mailInfo.attachedAccessories.Length > 0)
+        {
+            foreach(Attachment attachment in mailInfo.attachedAccessories)
+            {
+                Instantiate(attachmentPrefab, attachmentGrid.transform);
+            }
+        }
+
+        if(mailInfo.attachedCharacters != null && mailInfo.attachedCharacters.Length > 0)
+        {
+            foreach(Attachment attachment in mailInfo.attachedCharacters)
+            {
+                Instantiate(attachmentPrefab, attachmentGrid.transform);
+            }
+        }
+
+        if(mailInfo.attachedWeapons != null && mailInfo.attachedWeapons.Length > 0)
+        {
+            foreach(Attachment attachment in mailInfo.attachedWeapons)
+            {
+                Instantiate(attachmentPrefab, attachmentGrid.transform);
+            }
+        }
+
+        if(mailInfo.attachedItems != null && mailInfo.attachedItems.Length > 0)
+        {
+            foreach(Attachment attachment in mailInfo.attachedItems)
+            {
+                Instantiate(attachmentPrefab, attachmentGrid.transform);
+            }
+        }
 
         // Tell the old mail item it is no longer selected, then track the newly selected mail item.
         if(currentSelectedMail)
@@ -214,7 +265,7 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMail()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
@@ -251,7 +302,7 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMailTypeTwo()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
@@ -277,7 +328,7 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMailTypeThree()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnMeMailRequestFinished);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
@@ -317,6 +368,7 @@ public class MailScreenUIController : MonoBehaviour
                     Debug.LogFormat(this, "Was from cache: {0}", response.IsFromCache);
 
                     //ParseResponseIntoUIInfo(response.DataAsText);
+                    RequestUpdatedMailList();
                 }
                 else
                 {
@@ -349,6 +401,16 @@ public class MailScreenUIController : MonoBehaviour
 
         if(mailList != null && mailList.mails != null)
         {
+            // Clear all mail items from the list.
+            // TODO: Depending on the animations, we'll probably want to update existing mail items instead of destroying them.
+            // Destroying the objects also means we have to reset any dynamic information like selections, so just go ahead and make a better refresh method.
+            foreach(Transform mail in mailListContainer.transform)
+            {
+                Destroy(mail.gameObject);
+                mailsById.Clear();
+                mailUiItemsById.Clear();
+            }
+
             foreach(Mail mail in mailList.mails)
             {
                 Debug.LogFormat(this, "Mail Id: {0}", mail.id);
@@ -367,6 +429,16 @@ public class MailScreenUIController : MonoBehaviour
                 mailsById.Add(mail.id, mail);
                 mailUiItemsById.Add(newMailData.mailData.id, newMailData);
             }
+
+            // Hide the mail content display.
+            // TODO: This will probably need to be moved depending on how the refresh logic is updated. The display will also
+            // need to be hidden whenever the mail list is empty, assuming this doesn't handle that case.
+            mailContentsDisplay.SetActive(false);
+
+            // We no longer have a selected mail, so make the current reference null.
+            // TODO: This is another thing that will change if and when the refresh logic changes. We might want to keep the currently
+            // selected mail visible, while the list changes.
+            currentSelectedMail = null;
         }
         else
         {
