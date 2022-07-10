@@ -208,7 +208,8 @@ public class MailScreenUIController : MonoBehaviour
         {
             foreach(Attachment attachment in mailInfo.attachedAccessories)
             {
-                Instantiate(attachmentPrefab, attachmentGrid.transform);
+                GameObject newAttachment = Instantiate(attachmentPrefab, attachmentGrid.transform);
+                newAttachment.GetComponent<MailAttachment>().SetData(attachment.contentId, attachment.quantity, MailAttachment.AttachmentType.Accessory);
             }
         }
 
@@ -216,7 +217,8 @@ public class MailScreenUIController : MonoBehaviour
         {
             foreach(Attachment attachment in mailInfo.attachedCharacters)
             {
-                Instantiate(attachmentPrefab, attachmentGrid.transform);
+                GameObject newAttachment = Instantiate(attachmentPrefab, attachmentGrid.transform);
+                newAttachment.GetComponent<MailAttachment>().SetData(attachment.contentId, attachment.quantity, MailAttachment.AttachmentType.Character);
             }
         }
 
@@ -224,7 +226,8 @@ public class MailScreenUIController : MonoBehaviour
         {
             foreach(Attachment attachment in mailInfo.attachedWeapons)
             {
-                Instantiate(attachmentPrefab, attachmentGrid.transform);
+                GameObject newAttachment = Instantiate(attachmentPrefab, attachmentGrid.transform);
+                newAttachment.GetComponent<MailAttachment>().SetData(attachment.contentId, attachment.quantity, MailAttachment.AttachmentType.Weapon);
             }
         }
 
@@ -232,7 +235,8 @@ public class MailScreenUIController : MonoBehaviour
         {
             foreach(Attachment attachment in mailInfo.attachedItems)
             {
-                Instantiate(attachmentPrefab, attachmentGrid.transform);
+                GameObject newAttachment = Instantiate(attachmentPrefab, attachmentGrid.transform);
+                newAttachment.GetComponent<MailAttachment>().SetData(attachment.contentId, attachment.quantity, MailAttachment.AttachmentType.Item);
             }
         }
 
