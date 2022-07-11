@@ -79,7 +79,7 @@ public class CutsceneCharacter : CutsceneObject
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("char_hide")]
-    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -117,6 +117,12 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
         Color newColor = new Color(r, g, b, 0.0f);
+
+        if(isDimmed)
+        {
+            newColor = new Color(Color.gray.r, Color.gray.g, Color.gray.b, 0.0f);
+        }
+
         Color oldColor = characterImage.color;
 
         while(timePassed <= animationTime)
@@ -133,7 +139,10 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(oldColor, newColor, progress);
+            // Only the alpha value needs to be changed, so lerp the alpha and just use whatever the current color is for every other value.
+            float alpha = Mathf.Lerp(1.0f, 0.0f, progress);
+            //characterImage.color = Color.Lerp(oldColor, newColor, progress);
+            characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, alpha);
 
             timePassed += Time.deltaTime;
 
@@ -144,7 +153,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
-        characterImage.color = newColor;
+        //characterImage.color = newColor;
+        characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 0.0f);
 
         // The character is already invisible, but just in case lets deactivate the image too. There might be a performance
         // cost from having too many transparent objects floating around.
@@ -158,7 +168,7 @@ public class CutsceneCharacter : CutsceneObject
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("char_show")]
-    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -194,7 +204,7 @@ public class CutsceneCharacter : CutsceneObject
     {
         Debug.LogFormat("Cutscene Character {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
-        Color oldColor = new Color(r, g, b, 0.0f);
+        Color oldColor = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 0.0f);
 
         // Make sure the character is capable of being seen. By default character images are deactivated until used.
         ShowObject();
@@ -213,7 +223,19 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(oldColor, Color.white, progress);
+            /*
+            if(!isDimmed)
+            {
+                characterImage.color = Color.Lerp(oldColor, Color.white, progress);
+            }
+            else
+            {
+                characterImage.color = Color.Lerp(oldColor, Color.gray, progress);
+            }
+            */
+            // Only the alpha value needs to be changed, so lerp the alpha and just use whatever the current color is for every other value.
+            float alpha = Mathf.Lerp(0.0f, 1.0f, progress);
+            characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, alpha);
 
             timePassed += Time.deltaTime;
 
@@ -224,7 +246,17 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
-        characterImage.color = Color.white;
+        /*
+        if(!isDimmed)
+        {
+            characterImage.color = Color.white;
+        }
+        else
+        {
+            characterImage.color = Color.gray;
+        }
+        */
+        characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 1.0f);
 
         fadeInCoroutine = null;
         Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
@@ -238,8 +270,13 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_dim")]
-    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
+        if(CutsceneManager.Instance.useDefaultDimTime)
+        {
+            animationTime = CutsceneManager.Instance.autoDimAnimationTime;
+        }
+
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
         {
@@ -295,7 +332,9 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(Color.white, Color.gray, progress);
+            // Only the rgb values change, not the alpha, so lerp the colors and override the final alpha value to be whatever the current one is.
+            Color lerpedColor = Color.Lerp(Color.white, Color.gray, progress);
+            characterImage.color = new Color(lerpedColor.r, lerpedColor.g, lerpedColor.b, characterImage.color.a);
 
             timePassed += Time.deltaTime;
 
@@ -306,7 +345,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
-        characterImage.color = Color.gray;
+        //characterImage.color = Color.gray;
+        characterImage.color = new Color(Color.gray.r, Color.gray.g, Color.gray.b, characterImage.color.a);
 
         isDimming = false;
         isDimmed = true;
@@ -317,8 +357,13 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_undim")]
-    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
+        if(CutsceneManager.Instance.useDefaultDimTime)
+        {
+            animationTime = CutsceneManager.Instance.autoDimAnimationTime;
+        }
+
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
         {
@@ -374,7 +419,9 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(Color.gray, Color.white, progress);
+            // Only the rgb values need to change, so lerp the color and then override the final alpha value to be unchanged.
+            Color lerpedColor = Color.Lerp(Color.gray, Color.white, progress);
+            characterImage.color = new Color(lerpedColor.r, lerpedColor.g, lerpedColor.b, characterImage.color.a);
 
             timePassed += Time.deltaTime;
 
@@ -385,7 +432,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
-        characterImage.color = Color.white;
+        //characterImage.color = Color.white;
+        characterImage.color = new Color(Color.white.r, Color.white.g, Color.white.b, characterImage.color.a);
 
         isUndimming = false;
         isDimmed = false;
@@ -395,7 +443,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("char_move_time")]
-    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = false)
     {
         // If the stageposition is null then something went wrong with the command.
         if(!stagePosition)
@@ -473,7 +521,7 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     [YarnCommand("char_move_coord_time")]
-    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = false)
     {
         if(movingCoroutine != null)
         {
@@ -593,7 +641,7 @@ public class CutsceneCharacter : CutsceneObject
 
     // Move the character to a given stage position object in the scene.
     [YarnCommand("char_move")]
-    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = true, bool waitForAnimation = true)
+    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = true, bool waitForAnimation = false)
     {
         // If the position object is null, Yarn Spinner couldn't find the gameobject in the scene.
         if(!position)
