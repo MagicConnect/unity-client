@@ -167,6 +167,28 @@ public class MainMenuUIController : MonoBehaviour
         // The structure of the JSON response could change over time, so wrap attempts to retrieve a value
         // in try/catch blocks to make sure each exception is caught and reported to be fixed later.
 
+        // Get and store the player's user id. We need this for making certain requests to the server.
+        try
+        {
+            string userId = responseJsonObject["account"]["_id"].Value<string>();
+            PlayerPrefs.SetString("user_id", userId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving '_id' value -> {0}", e);
+        }
+
+        // Get and store the player's account id. I don't know if we need this yet but might as well, just in case.
+        try
+        {
+            string accountId = responseJsonObject["account"]["accountId"].Value<string>();
+            PlayerPrefs.SetString("account_id", accountId);
+        }
+        catch (Exception e)
+        {
+            Debug.LogErrorFormat(this, "Main Menu: Exception occurred while retrieving 'accountId' value -> {0}", e);
+        }
+
         // Get and set the player's display name.
         // (this doesn't need to be done each time but we get the displayname already with each response so whatever)
         try
