@@ -272,6 +272,11 @@ public class CutsceneCharacter : CutsceneObject
     [YarnCommand("char_dim")]
     public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
+        if(CutsceneManager.Instance.useDefaultDimTime)
+        {
+            animationTime = CutsceneManager.Instance.autoDimAnimationTime;
+        }
+
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
         {
@@ -354,6 +359,11 @@ public class CutsceneCharacter : CutsceneObject
     [YarnCommand("char_undim")]
     public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
     {
+        if(CutsceneManager.Instance.useDefaultDimTime)
+        {
+            animationTime = CutsceneManager.Instance.autoDimAnimationTime;
+        }
+
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
         {
