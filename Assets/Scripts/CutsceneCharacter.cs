@@ -544,8 +544,6 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Moving animation complete.", gameObject.name);
     }
 
-    // The writers want to be able to use numbers as shorthand for a given stage position. This method takes the number and
-    // translates it into a preset stage position, then starts the move coroutine as normal.
     //[YarnCommand("char_move")]
     public IEnumerator MoveCharacterPreset_Handler(int position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
     {
@@ -591,6 +589,7 @@ public class CutsceneCharacter : CutsceneObject
             yield return new WaitUntil(() => movingCoroutine == null);
         }
     }
+
 
     // Move the character to a given stage position object in the scene.
     [YarnCommand("char_move")]
