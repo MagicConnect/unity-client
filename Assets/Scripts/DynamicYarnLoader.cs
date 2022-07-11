@@ -83,12 +83,24 @@ public class DynamicYarnLoader : MonoBehaviour
 
         if (errors.Count() > 0)
         {
-            Debug.LogError("Bad");
-            /*parseErrorMessages.AddRange(errors.Select(e => {
-                string message = $"{ctx.assetPath}: {e}";
-                ctx.LogImportError($"Error importing {message}");
+            //Debug.LogError("Bad");
+            parseErrorMessages.AddRange(errors.Select(e => {
+                //string message = $"{ctx.assetPath}: {e}";
+                string message = string.Format("{0}", e);
+                //ctx.LogImportError($"Error importing {message}");
                 return message;
-            }));*/
+            }));
+
+            
+            //Debug.LogErrorFormat("Something went wrong parsing the Yarn file:");
+            string output = "Dynamic Yarn Loader: Something went wrong while parsing Yarn script:\n";
+            foreach(string message in parseErrorMessages)
+            {
+                //Debug.LogErrorFormat("{0}", message);
+                output += message + "\n";
+            }
+
+            Debug.LogError(output, this);
         }
         else
         {

@@ -75,4 +75,9 @@ public class CutsceneVfxBlackout : CutsceneEffect
 
         timePassed += Time.deltaTime;
     }
+
+    public override bool IsAnimating()
+    {
+        return this.isAnimating;
+    }
 }

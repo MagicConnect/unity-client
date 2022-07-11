@@ -335,6 +335,11 @@ public class CutsceneObject : MonoBehaviour
     [YarnCommand("obj_move")]
     public IEnumerator MoveObject_Handler(GameObject stagePosition, float animationTime = 0.2f, bool waitForAnimation = false)
     {
+        if(!stagePosition)
+        {
+            yield break;
+        }
+
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
         if(movingCoroutine != null)

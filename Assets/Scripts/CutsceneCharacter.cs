@@ -15,10 +15,12 @@ public class CutsceneCharacter : CutsceneObject
 
     public bool isDimmed = false;
 
+    public GameObject effectsContainer;
+
     // If animations need to stop playing for whatever reason, or we need to check if there's an animation running,
     // these coroutine handlers will be necessary.
-    Coroutine dimmingCoroutine;
-    Coroutine undimmingCoroutine;
+    public Coroutine dimmingCoroutine;
+    public Coroutine undimmingCoroutine;
 
     void Awake()
     {
@@ -69,10 +71,15 @@ public class CutsceneCharacter : CutsceneObject
         rectTransform.position = stagePosition.GetComponent<RectTransform>().position;
     }
 
+    public void MoveCharacter(float x, float y)
+    {
+        rectTransform.position = new Vector3(x, y, rectTransform.position.z);
+    }
+
     // Command to fade a character out until they're invisible. Optional rgb values determine what color the character should fade into,
     // so for example the character can fade to black instead of just turning invisible.
     [YarnCommand("char_hide")]
-    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeOutCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         // If there's already a fade out animation running, cancel it.
         if(fadeOutCoroutine != null)
@@ -151,7 +158,7 @@ public class CutsceneCharacter : CutsceneObject
     // character should be, so for example the character can fade in from black.
     // TODO: Potentially add more color value parameters to choose which color the character fades back into.
     [YarnCommand("char_show")]
-    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false, float r = 1.0f, float g = 1.0f, float b = 1.0f)
+    public IEnumerator FadeInCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true, float r = 1.0f, float g = 1.0f, float b = 1.0f)
     {
         if(fadeInCoroutine != null)
         {
@@ -223,10 +230,15 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
     }
 
+    public void SetColor(Color color)
+    {
+        characterImage.color = color;
+    }
+
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_dim")]
-    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator DimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
     {
         // If there's already a dimming animation playing, override it.
         if(dimmingCoroutine != null)
@@ -244,7 +256,18 @@ public class CutsceneCharacter : CutsceneObject
 
         // TODO: Make a method which instantly sets the character color to gray, so no coroutine is
         // created when the animation time is 0.
-        dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+        //dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+
+        if(animationTime <= 0.0f)
+        {
+            SetColor(Color.gray);
+            isDimmed = true;
+            yield break;
+        }
+        else
+        {
+            dimmingCoroutine = StartCoroutine(DimCharacter(animationTime));
+        }
 
         if(waitForAnimation)
         {
@@ -294,7 +317,7 @@ public class CutsceneCharacter : CutsceneObject
     // Yarn Spinner waits for a coroutine command to finish, and we want the option to start the animation and keep
     // the dialogue moving. To solve this problem there needs to be 2 coroutines to handle the same behavior.
     [YarnCommand("char_undim")]
-    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = false)
+    public IEnumerator UndimCharacter_Handler(float animationTime = 0.0f, bool waitForAnimation = true)
     {
         // If there's already an undimming animation playing, override it.
         if(undimmingCoroutine != null)
@@ -312,7 +335,18 @@ public class CutsceneCharacter : CutsceneObject
 
         // TODO: Make a method which instantly sets the character's color back to the default so no coroutine is
         // started when the animation time is 0.
-        undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+        //undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+
+        if(animationTime <= 0.0f)
+        {
+            SetColor(Color.white);
+            isDimmed = false;
+            yield break;
+        }
+        else
+        {
+            undimmingCoroutine = StartCoroutine(UndimCharacter(animationTime));
+        }
 
         if(waitForAnimation)
         {
@@ -361,8 +395,15 @@ public class CutsceneCharacter : CutsceneObject
 
     // Moves the character over time to a given "stage position", a preset position on the screen.
     [YarnCommand("char_move_time")]
-    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacter_Handler(GameObject stagePosition, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
     {
+        // If the stageposition is null then something went wrong with the command.
+        if(!stagePosition)
+        {
+            Debug.LogErrorFormat(this, "Cutscene Character - {0}: Yarn Spinner couldn't find a valid stage position object in the scene. Please check for typos or missing arguments.", gameObject.name);
+            yield break;
+        }
+
         // If the character is already moving to a position, cancel that move animation. If we want more complex movement,
         // like zigzagging across the screen, we can change this later or add specialized commands to handle that problem.
         if(movingCoroutine != null)
@@ -432,14 +473,24 @@ public class CutsceneCharacter : CutsceneObject
     }
 
     [YarnCommand("char_move_coord_time")]
-    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterCoordinate_Handler(float x, float y, float animationTime = 0.0f, bool smoothLerp = true, bool waitForAnimation = true)
     {
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
         }
 
-        movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+        //movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+
+        if(animationTime <= 0.0f)
+        {
+            MoveCharacter(x, y);
+            yield break;
+        }
+        else
+        {
+            movingCoroutine = StartCoroutine(MoveCharacterToCoordinate(x, y, animationTime, smoothLerp));
+        }
 
         if(waitForAnimation)
         {
@@ -539,10 +590,18 @@ public class CutsceneCharacter : CutsceneObject
         }
     }
 
-    // Moves the character to the given gameobject position.
+
+    // Move the character to a given stage position object in the scene.
     [YarnCommand("char_move")]
-    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = false, bool waitForAnimation = false)
+    public IEnumerator MoveCharacterPositionSpeed_Handler(GameObject position, float speed, bool smoothLerp = true, bool waitForAnimation = true)
     {
+        // If the position object is null, Yarn Spinner couldn't find the gameobject in the scene.
+        if(!position)
+        {
+            Debug.LogErrorFormat(this, "Cutscene Character - {0}: Yarn Spinner couldn't find a valid stage position object in the scene. Please check for typos or missing arguments.", gameObject.name);
+            yield break;
+        }
+
         if(movingCoroutine != null)
         {
             StopCoroutine(movingCoroutine);
@@ -610,5 +669,33 @@ public class CutsceneCharacter : CutsceneObject
         movingCoroutine = null;
 
         Debug.LogFormat(this, "{0} finished moving to {1}.", gameObject.name, position.name);
+    }
+
+    // Removes this character from the scene.
+    [YarnCommand("char_clear")]
+    public void ClearCharacter()
+    {
+        Destroy(this.gameObject);
+    }
+
+    // Removes all visual effects attached to this character.
+    [YarnCommand("vfx_char_clear")]
+    public void ClearAllVfx()
+    {
+        foreach(Transform effect in effectsContainer.transform)
+        {
+            Destroy(effect.gameObject);
+        }
+    }
+
+    public override bool IsAnimating()
+    {
+        bool isFading = fadeInCoroutine != null || fadeOutCoroutine != null;
+        bool isMoving = movingCoroutine != null;
+        bool isDimming = dimmingCoroutine != null || undimmingCoroutine != null;
+        bool isScaling = scalingCoroutine != null;
+        bool isRotating = rotationCoroutine != null;
+
+        return isFading || isMoving || isDimming || isScaling || isRotating;
     }
 }

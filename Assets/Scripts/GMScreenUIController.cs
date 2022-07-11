@@ -11,17 +11,20 @@ public class GMScreenUIController : MonoBehaviour
 {
     public event Action<string> OnResponseBodyReceived;
 
-    // These are the input field ui objects where the 'contentId' is set by the user. After caching gamedata is implemented
-    // these should be replaced by drop downs, which would be far easier to use.
-    //public TMP_InputField accessoryId;
+    // These are the input fields where a value needs to be entered (usually an amount).
+    #region Input Fields
+    // Input field for the gain crystals request.
+    public TMP_InputField crystalAmountField;
 
-    //public TMP_InputField characterId;
+    // Input field for the gain limited shards request.
+    public TMP_InputField limitedShardAmountField;
 
-    //public TMP_InputField shopId;
-
-    //public TMP_InputField weaponId;
+    // Input field for the gain permanent shards request.
+    public TMP_InputField permanentShardAmountField;
+    #endregion
 
     // These are the dropdown ui objects where the 'contentId' is set by the user.
+    #region Dropdowns
     public TMP_Dropdown accessoryIdDropdown;
 
     public TMP_Dropdown characterIdDropdown;
@@ -29,6 +32,9 @@ public class GMScreenUIController : MonoBehaviour
     public TMP_Dropdown shopIdDropdown;
 
     public TMP_Dropdown weaponIdDropdown;
+
+    public TMP_Dropdown resetShopIdDropdown;
+    #endregion
 
     // When the name of an accessory, shop, etc. is chosen in the dropdown list, these dictionaries
     // can be used to translate that into a content id that would be sent to the server as part of the api.
@@ -106,6 +112,9 @@ public class GMScreenUIController : MonoBehaviour
             // Populate the dropdown ui with all the available shops that can be added.
             shopIdDropdown.ClearOptions();
             shopIdDropdown.AddOptions(shopIds);
+
+            resetShopIdDropdown.ClearOptions();
+            resetShopIdDropdown.AddOptions(shopIds);
         }
         catch(Exception e)
         {
@@ -189,126 +198,235 @@ public class GMScreenUIController : MonoBehaviour
 
     public void OnGmAddAccessoryButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-accessory"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", accessoryContentIds[accessoryIdDropdown.itemText.text]);
 
-        request.Send();
+        string accessoryName = accessoryIdDropdown.captionText.text;
+        string accessoryId;
+
+        if(accessoryContentIds.TryGetValue(accessoryName, out accessoryId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", accessoryId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Accessory: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", accessoryName);
+        }
     }
 
     public void OnGmAddCharacterButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-character"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", characterContentIds[characterIdDropdown.itemText.text]);
 
-        request.Send();
+        string characterName = characterIdDropdown.captionText.text;
+        string characterId;
+
+        if(characterContentIds.TryGetValue(characterName, out characterId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", characterId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Character: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", characterName);
+        }
     }
 
     public void OnGmAddShopButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-shop"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", shopContentIds[shopIdDropdown.itemText.text]);
+        
+        string shopName = shopIdDropdown.captionText.text;
+        string shopId;
 
-        request.Send();
+        if(shopContentIds.TryGetValue(shopName, out shopId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", shopId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Shop: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", shopName);
+        }
     }
 
     public void OnGmAddWeaponButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/add-weapon"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.AddField("contentId", weaponContentIds[weaponIdDropdown.itemText.text]);
+        
+        string weaponName = weaponIdDropdown.captionText.text;
+        string weaponId;
 
-        request.Send();
+        if(weaponContentIds.TryGetValue(weaponName, out weaponId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", weaponId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Add Weapon: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Unable to retrieve content id for '{0}'. No request will be sent.", weaponName);
+        }
     }
 
     public void OnGmGainCrystalsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-crystals"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-crystals"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        if(int.TryParse(crystalAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Crystals: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Crystals: Unable to parse '{0}' into a valid integer. No request will be sent.", crystalAmountField.text);
+        }
     }
 
     public void OnGmGainLimitedShardsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-limited-shards"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-limited-shards"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        if(int.TryParse(limitedShardAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Limited Shards: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Limited Shards: Unable to parse '{0}' into a valid integer. No request will be sent.", limitedShardAmountField.text);
+        }
     }
 
     public void OnGmGainPermanentShardsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-permanent-shards"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/gain-permanent-shards"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        if(int.TryParse(permanentShardAmountField.text, out var amount))
+        {
+            string requestBody = string.Format("{0}\"amount\": {1}{2}", "{", amount, "}");
+            Debug.LogFormat(this, "GM UI Controller: Gain Permanent Shards: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Gain Permanent Shards: Unable to parse '{0}' into a valid integer. No request will be sent.", permanentShardAmountField.text);
+        }
     }
 
     public void OnGmResetShopButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/reset-shop"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/debug/reset-shop"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
 
-        request.Send();
+        string shopName = resetShopIdDropdown.captionText.text;
+
+        if(shopContentIds.TryGetValue(shopName, out var shopId))
+        {
+            string requestBody = string.Format("{0}\"contentId\": \"{1}\"{2}", "{", shopId, "}");
+            Debug.LogFormat(this, "GM UI Controller: Reset Shop: Request body sent to server: {0}", requestBody);
+
+            request.SetHeader("Content-Type", "application/json; charset=UTF-8");
+            request.RawData = System.Text.Encoding.UTF8.GetBytes(requestBody);
+
+            request.Send();
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "GM UI Controller: Reset Shop: Unable to retrieve content id for '{0}'. No request will be sent.", shopName);
+        }
     }
 
     public void OnPostGmMaintenanceButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Post;
 
         request.Send();
     }
 
     public void OnGetGmMaintenanceButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/maintenance"), HTTPMethods.Get, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Get;
 
         request.Send();
     }
 
     public void OnGetGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Get, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Get;
 
         request.Send();
     }
 
     public void OnPostGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Post, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Post;
 
         request.Send();
     }
 
     public void OnPatchGmSettingsButtonClicked()
     {
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), OnGetResponseReceived);
+        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/gm/settings"), HTTPMethods.Patch, OnGetResponseReceived);
 
         request.AddHeader("Authorization", string.Format("Bearer {0}", FirebaseHandler.Instance.userToken));
-        request.MethodType = HTTPMethods.Patch;
 
         request.Send();
     }
@@ -322,10 +440,13 @@ public class GMScreenUIController : MonoBehaviour
         formattedOutput = string.Concat(formattedOutput, string.Format("Original URI: {0}\n", request.Uri));
         formattedOutput = string.Concat(formattedOutput, string.Format("Headers:\n {0}\n", request.DumpHeaders()));
 
-        formattedOutput = string.Concat(formattedOutput, string.Format("Form Fields:\n"));
-        foreach(BestHTTP.Forms.HTTPFieldData fieldData in request.GetFormFields())
+        if(request.GetFormFields() != null)
         {
-            formattedOutput = string.Concat(formattedOutput, string.Format("{0} : {1}\n", fieldData.Name, fieldData.Text));
+            formattedOutput = string.Concat(formattedOutput, string.Format("Form Fields:\n"));
+            foreach(BestHTTP.Forms.HTTPFieldData fieldData in request.GetFormFields())
+            {
+                formattedOutput = string.Concat(formattedOutput, string.Format("{0} : {1}\n", fieldData.Name, fieldData.Text));
+            }
         }
         
         // A bunch of information that is probably not important unless specifically asked for, such as metadata or constraints.
