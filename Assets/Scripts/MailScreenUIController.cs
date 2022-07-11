@@ -163,8 +163,14 @@ public class MailScreenUIController : MonoBehaviour
     public void OnClaimButtonClicked()
     {
         // Send a /mail/{player}/{id}/claim request to the server.
-        // TODO: Once the account id is properly stored, use that here as the player argument.
-        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/claim", "62a3e9553a23910038e9f4bc", currentSelectedMail.mailData.id);
+        string userId = PlayerPrefs.GetString("user_id", "");
+        if(userId == "")
+        {
+            Debug.LogErrorFormat(this, "Mail Screen: The 'user_id' setting couldn't be found in PlayerPrefs. Unable to send a claim request.");
+            return;
+        }
+
+        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/claim", userId, currentSelectedMail.mailData.id);
         Debug.LogFormat("Claim Request URL: {0}", requestUrl);
         HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnMailClaimedRequestFinished);
 
@@ -252,8 +258,14 @@ public class MailScreenUIController : MonoBehaviour
         if(mailInfo.readAt == null && mailInfo.readAt != "")
         {
             // Send a /mail/{player}/{id}/read request to the server.
-            // TODO: Once the account id is properly stored, use that here as the player argument.
-            string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/read", "62a3e9553a23910038e9f4bc", currentSelectedMail.mailData.id);
+            string userId = PlayerPrefs.GetString("user_id", "");
+            if(userId == "")
+            {
+                Debug.LogErrorFormat(this, "Mail Screen: The 'user_id' setting couldn't be found in PlayerPrefs. Unable to send a read request.");
+                return;
+            }
+
+            string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}/{1}/read", userId, currentSelectedMail.mailData.id);
             Debug.LogFormat("Read Request URL: {0}", requestUrl);
             HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnMailReadRequestFinished);
 
@@ -269,7 +281,15 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMail()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
+        string userId = PlayerPrefs.GetString("user_id", "");
+        if(userId == "")
+        {
+            Debug.LogErrorFormat(this, "Mail Screen: The 'user_id' setting couldn't be found in PlayerPrefs. Unable to send a mail request.");
+            return;
+        }
+
+        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}", userId);
+        HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
@@ -306,7 +326,15 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMailTypeTwo()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
+        string userId = PlayerPrefs.GetString("user_id", "");
+        if(userId == "")
+        {
+            Debug.LogErrorFormat(this, "Mail Screen: The 'user_id' setting couldn't be found in PlayerPrefs. Unable to send a mail request.");
+            return;
+        }
+
+        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}", userId);
+        HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
@@ -332,7 +360,15 @@ public class MailScreenUIController : MonoBehaviour
     public void SendTestMailTypeThree()
     {
         // Create a /mail/{player} post request to the server.
-        HTTPRequest request = new HTTPRequest(new Uri("http://testserver.magic-connect.com/mail/62a3e9553a23910038e9f4bc"), HTTPMethods.Post, OnTestSendMailRequestFinished);
+        string userId = PlayerPrefs.GetString("user_id", "");
+        if(userId == "")
+        {
+            Debug.LogErrorFormat(this, "Mail Screen: The 'user_id' setting couldn't be found in PlayerPrefs. Unable to send a mail request.");
+            return;
+        }
+
+        string requestUrl = string.Format("http://testserver.magic-connect.com/mail/{0}", userId);
+        HTTPRequest request = new HTTPRequest(new Uri(requestUrl), HTTPMethods.Post, OnTestSendMailRequestFinished);
 
         // Send authorization token with the request.
         request.AddHeader("Authorization", string.Format("Bearer {0}", firebase.userToken));
