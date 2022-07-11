@@ -666,7 +666,7 @@ public class CutsceneManager : MonoBehaviour
     // Convenience command for writers to quickly switch which of two characters are dimmed or undimmed. Order of characters given
     // doesn't matter; the method handles that logic automatically.
     [YarnCommand("char_dim_alternate")]
-    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = true, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
+    public static IEnumerator SwitchDimmedCharacter(GameObject firstCharacter, GameObject secondCharacter, float animationTime = 0.0f, bool waitForAnimation = false, bool undimFirstCharacter = false, bool undimSecondCharacter = false)
     {
         // Don't accept null references. If the writer puts in the wrong name or for some reason a character
         // wasn't loaded or something else happens to make this not work, we want to know about it.
@@ -750,7 +750,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's image to the one specified (animated).
     [YarnCommand("bg_switch")]
-    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = true)
+    public static IEnumerator SwitchBackgroundImage_Handler(string imageName, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -777,7 +777,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Method for changing the default background's color to the one specified.
     [YarnCommand("bg_color_rgba")]
-    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = true)
+    public static IEnumerator SwitchBackgroundColor_Handler(float r, float g, float b, float a = 1.0f, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -806,7 +806,7 @@ public class CutsceneManager : MonoBehaviour
     }
 
     [YarnCommand("bg_color")]
-    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = true)
+    public static IEnumerator SwitchBackgroundColor_Handler(string hexcode, float animationTime = 0.0f, bool waitForAnimation = false)
     {
         CutsceneBackground cutsceneBackground = defaultBackground.GetComponent<CutsceneBackground>();
 
@@ -937,7 +937,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the background layer.
     [YarnCommand("vfx_bg_blackout")]
-    public static IEnumerator AddBackgroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_blackout")
+    public static IEnumerator AddBackgroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_bg_blackout")
     {
         // Clear any active fadein/blackout effects.
         ClearAllBackgroundFadeinVfx();
@@ -965,7 +965,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds the reverse of the blackout effect on the background layer.
     [YarnCommand("vfx_bg_fadein")]
-    public static IEnumerator AddBackgroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_bg_fadein")
+    public static IEnumerator AddBackgroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_bg_fadein")
     {
         // Clear all background blackout effects.
         ClearAllBackgroundBlackoutVfx();
@@ -986,7 +986,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_blackout")]
-    public static IEnumerator AddForegroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_blackout")
+    public static IEnumerator AddForegroundBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_fg_blackout")
     {
         // Clear any active fadein effects.
         ClearAllForegroundFadeinVfx();
@@ -1014,7 +1014,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Reverse of the blackout effect on the foreground layer.
     [YarnCommand("vfx_fg_fadein")]
-    public static IEnumerator AddForegroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_fg_fadein")
+    public static IEnumerator AddForegroundFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_fg_fadein")
     {
         // Clear all foreground blackout effects.
         ClearAllForegroundBlackoutVfx();
@@ -1035,7 +1035,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Adds a blackout effect on the screen layer.
     [YarnCommand("vfx_scr_blackout")]
-    public static IEnumerator AddScreenBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_blackout")
+    public static IEnumerator AddScreenBlackoutVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_scr_blackout")
     {
         // Clear any active fadein effects.
         ClearAllScreenFadeinVfx();
@@ -1063,7 +1063,7 @@ public class CutsceneManager : MonoBehaviour
 
     // Reverse blackout effect on the screen layer.
     [YarnCommand("vfx_scr_fadein")]
-    public static IEnumerator AddScreenFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = true, string name = "vfx_scr_fadein")
+    public static IEnumerator AddScreenFadeinVfx(float animationTime = 0.0f, bool waitForAnimation = false, string name = "vfx_scr_fadein")
     {
         // Clear all screen blackout effects.
         ClearAllScreenBlackoutVfx();

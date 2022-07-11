@@ -44,7 +44,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("obj_scale")]
-    public IEnumerator AnimateObjectScale_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
+    public IEnumerator AnimateObjectScale_Handler(float x, float y, float z, float animationTime, bool waitForAnimation = false)
     {
         // If there's already a scaling animation running, cancel it.
         if(scalingCoroutine != null)
@@ -101,7 +101,7 @@ public class CutsceneObject : MonoBehaviour
     }
 
     [YarnCommand("obj_rotation")]
-    public IEnumerator AnimateObjectRotation_Handler(float x, float y, float z, float animationTime, bool waitForAnimation)
+    public IEnumerator AnimateObjectRotation_Handler(float x, float y, float z, float animationTime, bool waitForAnimation = false)
     {
         // If there's already a rotation animation running, cancel it.
         if(rotationCoroutine != null)
