@@ -117,6 +117,12 @@ public class CutsceneCharacter : CutsceneObject
         Debug.LogFormat("Cutscene Character {0}: Fading out over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
         Color newColor = new Color(r, g, b, 0.0f);
+
+        if(isDimmed)
+        {
+            newColor = new Color(Color.gray.r, Color.gray.g, Color.gray.b, 0.0f);
+        }
+
         Color oldColor = characterImage.color;
 
         while(timePassed <= animationTime)
@@ -133,7 +139,10 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(oldColor, newColor, progress);
+            // Only the alpha value needs to be changed, so lerp the alpha and just use whatever the current color is for every other value.
+            float alpha = Mathf.Lerp(1.0f, 0.0f, progress);
+            //characterImage.color = Color.Lerp(oldColor, newColor, progress);
+            characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, alpha);
 
             timePassed += Time.deltaTime;
 
@@ -144,7 +153,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
-        characterImage.color = newColor;
+        //characterImage.color = newColor;
+        characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 0.0f);
 
         // The character is already invisible, but just in case lets deactivate the image too. There might be a performance
         // cost from having too many transparent objects floating around.
@@ -194,7 +204,7 @@ public class CutsceneCharacter : CutsceneObject
     {
         Debug.LogFormat("Cutscene Character {0}: Fading in over {1} seconds.", gameObject.name, animationTime);
         float timePassed = 0.0f;
-        Color oldColor = new Color(r, g, b, 0.0f);
+        Color oldColor = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 0.0f);
 
         // Make sure the character is capable of being seen. By default character images are deactivated until used.
         ShowObject();
@@ -213,7 +223,19 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(oldColor, Color.white, progress);
+            /*
+            if(!isDimmed)
+            {
+                characterImage.color = Color.Lerp(oldColor, Color.white, progress);
+            }
+            else
+            {
+                characterImage.color = Color.Lerp(oldColor, Color.gray, progress);
+            }
+            */
+            // Only the alpha value needs to be changed, so lerp the alpha and just use whatever the current color is for every other value.
+            float alpha = Mathf.Lerp(0.0f, 1.0f, progress);
+            characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, alpha);
 
             timePassed += Time.deltaTime;
 
@@ -224,7 +246,17 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color result is set after the animation completes, in case the timing was off.
-        characterImage.color = Color.white;
+        /*
+        if(!isDimmed)
+        {
+            characterImage.color = Color.white;
+        }
+        else
+        {
+            characterImage.color = Color.gray;
+        }
+        */
+        characterImage.color = new Color(characterImage.color.r, characterImage.color.g, characterImage.color.b, 1.0f);
 
         fadeInCoroutine = null;
         Debug.LogFormat("Cutscene Character {0}: Fade in animation complete.", gameObject.name);
@@ -295,7 +327,9 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(Color.white, Color.gray, progress);
+            // Only the rgb values change, not the alpha, so lerp the colors and override the final alpha value to be whatever the current one is.
+            Color lerpedColor = Color.Lerp(Color.white, Color.gray, progress);
+            characterImage.color = new Color(lerpedColor.r, lerpedColor.g, lerpedColor.b, characterImage.color.a);
 
             timePassed += Time.deltaTime;
 
@@ -306,7 +340,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
-        characterImage.color = Color.gray;
+        //characterImage.color = Color.gray;
+        characterImage.color = new Color(Color.gray.r, Color.gray.g, Color.gray.b, characterImage.color.a);
 
         isDimming = false;
         isDimmed = true;
@@ -374,7 +409,9 @@ public class CutsceneCharacter : CutsceneObject
                 progress = timePassed / animationTime;
             }
 
-            characterImage.color = Color.Lerp(Color.gray, Color.white, progress);
+            // Only the rgb values need to change, so lerp the color and then override the final alpha value to be unchanged.
+            Color lerpedColor = Color.Lerp(Color.gray, Color.white, progress);
+            characterImage.color = new Color(lerpedColor.r, lerpedColor.g, lerpedColor.b, characterImage.color.a);
 
             timePassed += Time.deltaTime;
 
@@ -385,7 +422,8 @@ public class CutsceneCharacter : CutsceneObject
         }
 
         // Make sure the desired color is set after the animation completes, just in case the timing was off by a fraction of a second.
-        characterImage.color = Color.white;
+        //characterImage.color = Color.white;
+        characterImage.color = new Color(Color.white.r, Color.white.g, Color.white.b, characterImage.color.a);
 
         isUndimming = false;
         isDimmed = false;
