@@ -8172,9 +8172,9 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_Sprite: {fileID: 21300000, guid: 18865fc276a990d49a3b3125320258ad, type: 3}
+  m_Sprite: {fileID: 21300000, guid: 937e313c4e7196a4d97dc61d438befaf, type: 3}
   m_Type: 0
-  m_PreserveAspect: 0
+  m_PreserveAspect: 1
   m_FillCenter: 1
   m_FillMethod: 4
   m_FillAmount: 1
@@ -8195,7 +8195,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_AspectMode: 4
-  m_AspectRatio: 1.77
+  m_AspectRatio: 2.33
 --- !u!1 &3901929853588360476
 GameObject:
   m_ObjectHideFlags: 0
@@ -8419,6 +8419,7 @@ GameObject:
   - component: {fileID: 3496449371304386189}
   - component: {fileID: 186715389990071473}
   - component: {fileID: 8178536753859829580}
+  - component: {fileID: 6908019104516140105}
   m_Layer: 5
   m_Name: Character List Panel
   m_TagString: Untagged
@@ -8487,6 +8488,21 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!114 &6908019104516140105
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5794351448931216352}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c358aef7f0ef3a94a8be020446446cd1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterListContainer: {fileID: 8982821714271365785}
+  characterCardPrefab: {fileID: 6683268297609550291, guid: 7cbbef8247b696e499af346edb4a1c1a, type: 3}
+  backgroundImage: {fileID: 8356493999295313722}
 --- !u!1 &6366787649917768226
 GameObject:
   m_ObjectHideFlags: 0

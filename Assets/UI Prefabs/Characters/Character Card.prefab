@@ -1167,6 +1167,7 @@ GameObject:
   - component: {fileID: 8061019313986873306}
   - component: {fileID: 5733471128550052432}
   - component: {fileID: 651720681314621978}
+  - component: {fileID: 2368464256255680794}
   m_Layer: 5
   m_Name: Character Card
   m_TagString: Untagged
@@ -1256,6 +1257,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   m_Padding: {x: 0, y: 0, z: 0, w: 0}
   m_Softness: {x: 0, y: 0}
+--- !u!114 &2368464256255680794
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6683268297609550291}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 475fb25efa2c3a94a9d5ee67a7455076, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  characterArt: {fileID: 5189726068996162567}
+  characterType: {fileID: 4418950504591924392}
+  characterName: {fileID: 439378922194138854}
+  characterLevel: {fileID: 5164198018442486882}
 --- !u!1 &6942549300847328198
 GameObject:
   m_ObjectHideFlags: 0
