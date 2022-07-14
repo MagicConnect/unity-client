@@ -11,8 +11,8 @@ public class CharacterCard : MonoBehaviour
     // The character headshot/bodyshot.
     public Image characterArt;
 
-    // The attack type of the character, used for filtering and showing the right type symbol.
-    public Image characterType;
+    // The sprite representing the character's archetype.
+    public Image archetypeIcon;
 
     // The character's full name.
     public TMP_Text characterName;
@@ -22,6 +22,16 @@ public class CharacterCard : MonoBehaviour
 
     // The parsed character information retrieved from the server.
     public CharacterListUIController.Character character;
+
+    // The reference to the character list controller, where we can find useful assets like the archetype sprites.
+    public CharacterListUIController characterList;
+
+    // These are the stars that will be spawned into the star rating area.
+    public GameObject fullStarPrefab;
+    public GameObject emptyStarPrefab;
+
+    // The star rating layout group where the stars will be arranged.
+    public GameObject starContainer;
 
     // Start is called before the first frame update
     void Start()
@@ -81,14 +91,38 @@ public class CharacterCard : MonoBehaviour
                 // Set the character name text.
                 characterName.text = character["name"].Value<string>().ToUpper();
 
-                // Get the character's attack type and set the type icon sprite.
+                // Get the character's archetype and set the type icon sprite.
+                string archetype = character["archetype"].Value<string>();
+
+                Debug.LogFormat(this, "Character Card: {0}: Archetype = {1}", character["name"].Value<string>(), archetype);
+
+                switch(archetype)
+                {
+                    case "Healer": archetypeIcon.sprite = characterList.healerIcon; break;
+                    case "Defender": archetypeIcon.sprite = characterList.defenderIcon; break;
+                    case "Caster": archetypeIcon.sprite = characterList.casterIcon; break;
+                    case "Attacker": archetypeIcon.sprite = characterList.attackerIcon; break;
+                    case "Ranger": archetypeIcon.sprite = characterList.rangerIcon; break;
+                    default: break;
+                }
 
                 // Set the character level text.
                 characterLevel.text = this.character.currentLevel;
 
-                // Get the character's skill information and populate the skill list.
-
                 // Display the character's star rating.
+                int rating = character["stars"].Value<int>();
+
+                // Spawn full stars to match the character's rating.
+                for(int i = 0; i < rating; i += 1)
+                {
+                    Instantiate(fullStarPrefab, starContainer.transform);
+                }
+
+                // If the rating is less than 5, spawn empty stars to fill out the graphic.
+                for(int i = 0; i < 5 - rating; i += 1)
+                {
+                    Instantiate(emptyStarPrefab, starContainer.transform);
+                }
             }
         }
     }

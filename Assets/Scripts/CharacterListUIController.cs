@@ -69,6 +69,20 @@ public class CharacterListUIController : MonoBehaviour
     // The character list background image.
     public Image backgroundImage;
 
+    // Sprite references the character card will use for displaying the archetype.
+    public Sprite healerIcon;
+    public Sprite attackerIcon;
+    public Sprite defenderIcon;
+    public Sprite casterIcon;
+    public Sprite rangerIcon;
+
+    // Sprite references for the star rating each character card will display.
+    public Sprite starFull;
+    public Sprite starGray;
+
+    void Awake()
+    {}
+
     // Start is called before the first frame update
     void Start()
     {
@@ -111,6 +125,7 @@ public class CharacterListUIController : MonoBehaviour
             GameObject newCharacterCard = Instantiate(characterCardPrefab, characterListContainer.transform);
 
             // Give the character card the character information it needs to work with. The card will handle its own animations.
+            newCharacterCard.GetComponent<CharacterCard>().characterList = this;
             newCharacterCard.GetComponent<CharacterCard>().SetCharacter(character);
         }
     }
