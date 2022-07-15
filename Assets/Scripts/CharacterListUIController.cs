@@ -67,6 +67,9 @@ public class CharacterListUIController : MonoBehaviour
     // The firebase handler which we get our authentication token from.
     FirebaseHandler firebase = FirebaseHandler.Instance;
 
+    // Reference to the character screen controller so this component can pass along important information.
+    public CharacterScreenUIController characterScreenController;
+
     // The list content gameobject which will all character cards will be attached to.
     public GameObject characterListContainer;
 
@@ -131,8 +134,12 @@ public class CharacterListUIController : MonoBehaviour
             GameObject newCharacterCard = Instantiate(characterCardPrefab, characterListContainer.transform);
 
             // Give the character card the character information it needs to work with. The card will handle its own animations.
-            newCharacterCard.GetComponent<CharacterCard>().characterList = this;
-            newCharacterCard.GetComponent<CharacterCard>().SetCharacter(character);
+            CharacterCard characterCard = newCharacterCard.GetComponent<CharacterCard>();
+            characterCard.characterList = this;
+            characterCard.SetCharacter(character);
+
+            // Pass along the card to the character screen controller so it can subscribe to its events.
+            characterScreenController.SubscribeToCardEvents(characterCard);
         }
     }
 
@@ -216,6 +223,11 @@ public class CharacterListUIController : MonoBehaviour
                 Debug.LogError("Processing the request timed out.");
                 break;
         }// end switch block
+    }
+
+    public void OnCharacterCardSelected(string contentId)
+    {
+        
     }
 
     public void OnAllArchetypesClicked()

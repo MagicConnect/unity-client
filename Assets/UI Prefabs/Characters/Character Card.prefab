@@ -1381,6 +1381,7 @@ MonoBehaviour:
   fullStarPrefab: {fileID: 4093457917236713563, guid: 0052f3a45eb7c1f4f8d4325b1b944481, type: 3}
   emptyStarPrefab: {fileID: 1796303207975301335, guid: f3565f389c5e2744b948525892005875, type: 3}
   starContainer: {fileID: 1859127791938662862}
+  archetype: 0
 --- !u!114 &8486132579713544096
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1424,7 +1425,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 5733471128550052432}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 2368464256255680794}
+        m_TargetAssemblyTypeName: CharacterCard, Assembly-CSharp
+        m_MethodName: OnCardClicked
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!1 &6942549300847328198
 GameObject:
   m_ObjectHideFlags: 0
