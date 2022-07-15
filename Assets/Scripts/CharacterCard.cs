@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -32,6 +33,13 @@ public class CharacterCard : MonoBehaviour
 
     // The star rating layout group where the stars will be arranged.
     public GameObject starContainer;
+
+    // The character's archetype information from the server. Used for filtering cards in the character list.
+    public CharacterListUIController.Archetype archetype;
+
+    // Click event that fires when the character card is clicked. The character list ui controller
+    // will handle changing screens, so this card needs to let it know.
+    public event Action<string> OnCharacterCardClicked;
 
     // Start is called before the first frame update
     void Start()
@@ -98,11 +106,26 @@ public class CharacterCard : MonoBehaviour
 
                 switch(archetype)
                 {
-                    case "Healer": archetypeIcon.sprite = characterList.healerIcon; break;
-                    case "Defender": archetypeIcon.sprite = characterList.defenderIcon; break;
-                    case "Caster": archetypeIcon.sprite = characterList.casterIcon; break;
-                    case "Attacker": archetypeIcon.sprite = characterList.attackerIcon; break;
-                    case "Ranger": archetypeIcon.sprite = characterList.rangerIcon; break;
+                    case "Healer": 
+                        archetypeIcon.sprite = characterList.healerIcon;
+                        this.archetype = CharacterListUIController.Archetype.Healer;
+                        break;
+                    case "Defender": 
+                        archetypeIcon.sprite = characterList.defenderIcon;
+                        this.archetype = CharacterListUIController.Archetype.Defender;
+                        break;
+                    case "Caster": 
+                        archetypeIcon.sprite = characterList.casterIcon;
+                        this.archetype = CharacterListUIController.Archetype.Caster;
+                        break;
+                    case "Attacker": 
+                        archetypeIcon.sprite = characterList.attackerIcon;
+                        this.archetype = CharacterListUIController.Archetype.Attacker;
+                        break;
+                    case "Ranger": 
+                        archetypeIcon.sprite = characterList.rangerIcon; 
+                        this.archetype = CharacterListUIController.Archetype.Ranger;
+                        break;
                     default: break;
                 }
 
@@ -124,6 +147,14 @@ public class CharacterCard : MonoBehaviour
                     Instantiate(emptyStarPrefab, starContainer.transform);
                 }
             }
+        }
+    }
+
+    public void OnCardClicked()
+    {
+        if(OnCharacterCardClicked != null)
+        {
+            OnCharacterCardClicked.Invoke(character.contentId);
         }
     }
 }

@@ -54,6 +54,16 @@ public class CharacterListUIController : MonoBehaviour
         public int critical;
     }
 
+    // The possible archetypes the characters can be. Used for sorting the character list.
+    public enum Archetype
+    {
+        Attacker,
+        Healer,
+        Defender,
+        Caster,
+        Ranger
+    }
+
     // The firebase handler which we get our authentication token from.
     FirebaseHandler firebase = FirebaseHandler.Instance;
 
@@ -103,10 +113,6 @@ public class CharacterListUIController : MonoBehaviour
     {
         
     }
-
-    // Shows/hides character cards based on the attack type filter chosen.
-    public void FilterCharacterList()
-    {}
 
     // Uses the most recent character list information to populate the character list with character cards.
     public void RefreshCharacterList()
@@ -210,5 +216,61 @@ public class CharacterListUIController : MonoBehaviour
                 Debug.LogError("Processing the request timed out.");
                 break;
         }// end switch block
+    }
+
+    public void OnAllArchetypesClicked()
+    {
+        // Activate all character cards in the character list since there is no filter.
+        foreach(Transform card in characterListContainer.transform)
+        {
+            card.gameObject.SetActive(true);
+        }
+    }
+
+    // Tells the filter method to filter based on the attacker archetype.
+    public void OnAttackerFilterClicked()
+    {
+        FilterCharacterList(Archetype.Attacker);
+    }
+
+    // Tells the filter method to filter based on the defender archetype.
+    public void OnDefenderFilterClicked()
+    {
+        FilterCharacterList(Archetype.Defender);
+    }
+
+    // Tells the filter method to filter based on the ranger archetype.
+    public void OnRangerFilterClicked()
+    {
+        FilterCharacterList(Archetype.Ranger);
+    }
+
+    // Tells the filter method to filter based on the healer archetype.
+    public void OnHealerArchetypeClicked()
+    {
+        FilterCharacterList(Archetype.Healer);
+    }
+
+    // Tells the filter method to filter based on the caster archetype.
+    public void OnCasterArchetypeClicked()
+    {
+        FilterCharacterList(Archetype.Caster);
+    }
+
+    // Shows/hides character cards based on the attack type filter chosen.
+    public void FilterCharacterList(Archetype archetype)
+    {
+        foreach(Transform card in characterListContainer.transform)
+        {
+            // Activate the character card if it is the chosen archetype, otherwise deactivate it.
+            if(card.gameObject.GetComponent<CharacterCard>().archetype == archetype)
+            {
+                card.gameObject.SetActive(true);
+            }
+            else
+            {
+                card.gameObject.SetActive(false);
+            }
+        }
     }
 }
