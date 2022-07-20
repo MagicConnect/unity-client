@@ -156,18 +156,20 @@ public class CharacterDetailsUIController : MonoBehaviour
                 defenseText.text = string.Format("{0}", serverData.currentEssences.defense);
                 criticalText.text = string.Format("{0}", serverData.currentEssences.critical);
 
+                // Clear the skill list of any preexisting skill icons.
+                foreach(Transform skill in skillListContainer.transform)
+                {
+                    Destroy(skill.gameObject);
+                }
+
                 // Get character skill information/art and display it.
                 foreach(JToken characterSkill in character["skills"].Children())
                 {
                     Debug.LogFormat(this, "{0}", characterSkill["name"].Value<string>());
 
-                    foreach(JToken cachedSkill in GameDataCache.Instance.parsedGameData["skills"].Children())
-                    {
-                        if(characterSkill["name"].Value<string>() == cachedSkill["id"].Value<string>())
-                        {
-                            Debug.LogFormat(this, "Skill match: {0}", cachedSkill["name"].Value<string>());
-                        }
-                    }
+                    // Instantiate a new skill icon object and pass it the skill's content id.
+                    GameObject skillIcon = Instantiate(skillIconPrefab, skillListContainer.transform);
+                    skillIcon.GetComponent<SkillIcon>().SetSkill(characterSkill["name"].Value<string>());
                 }
 
                 // Display the character's limit break level.
