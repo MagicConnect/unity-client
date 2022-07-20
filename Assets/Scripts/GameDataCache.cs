@@ -57,17 +57,17 @@ public class GameDataCache : MonoBehaviour
     // Object representing an item parsed from JSON data.
     public class Item
     {
-        public string Name;
+        public string name;
 
-        public string Art;
+        public string art;
 
-        public int SellValue;
+        public int sellValue;
 
-        public string Description;
+        public string description;
 
-        public string ItemType;
+        public string itemType;
 
-        public string Id;
+        public string id;
     }
 
     // Object representing a condition parsed from JSON data.
@@ -79,65 +79,554 @@ public class GameDataCache : MonoBehaviour
     // Object representing properties parsed from JSON data.
     public class Props
     {
-        public bool IsPercent;
+        public bool isPercent;
 
-        public int BaseValue;
+        public int baseValue;
 
-        public string BaseStat;
+        public string baseStat;
     }
 
     // Object representing an effect parsed from JSON data.
     public class Effect
     {
-        public string Value;
+        public string value;
 
-        public string Target;
+        public string target;
 
-        public Props Props;
+        public Props props;
     }
 
     public class LbChange
     {
-        public bool ShouldHide;
+        public bool shouldHide;
 
-        public string Name;
+        public string name;
 
-        public string Description;
+        public string description;
 
-        public Condition[] Conditions;
+        public Condition[] conditions;
 
-        public Effect[] Effects;
+        public Effect[] effects;
 
-        public string Trigger;
+        public string trigger;
 
         // TODO: Figure out what this is supposed to be, because there's some sort of ambiguity or redundancy, I don't know which yet.
-        public LbChange LbChanges;
+        public LbChange lbChanges;
     }
 
     public class Ability
     {
-        public string Name;
+        public string name;
 
-        public string Description;
+        public string description;
 
-        public bool IsAbilityUsedAtLB0;
+        public bool isAbilityUsedAtLB0;
 
-        public Condition[] Conditions;
+        public Condition[] conditions;
 
-        public Effect[] Effects;
+        public Effect[] effects;
 
-        public string Trigger;
+        public string trigger;
 
-        public LbChange[] LbChanges;
+        public LbChange[] lbChanges;
 
-        public string Id;
+        public string id;
     }
+
+    // A character id reference as it appears in a Banner object.
+    public class BannerCharacterReference
+    {
+        public string name;
+
+        public bool isBannerSpecial;
+    }
+
+    // An accessory id reference as it appears in a Banner object.
+    public class BannerAccessoryReference
+    {
+        public string name;
+
+        public bool isBannerSpecial;
+    }
+
+    // An item id reference as it appears in a Banner object.
+    public class BannerItemReference
+    {
+        public string name;
+
+        public bool isBannerSpecial;
+    }
+
+    // A weapon id reference as it appears in a Banner object.
+    public class BannerWeaponReference
+    {
+        public string name;
+
+        public bool isBannerSpecial;
+    }
+
+    public class Banner
+    {
+        public string id;
+
+        public string name;
+
+        public string art;
+
+        public string description;
+
+        public string type;
+
+        public string activeStarts;
+
+        public string activeEnds;
+
+        public string rollItem;
+
+        public BannerCharacterReference[] characters;
+
+        public BannerAccessoryReference[] accessories;
+
+        public BannerItemReference[] items;
+
+        public BannerWeaponReference[] weapons;
+    }
+
+    // The base points object found in a character object.
+    public class BasePoints
+    {
+        public int attacker;
+        public int caster;
+        public int defender;
+        public int healer;
+        public int ranger;
+    }
+
+    // The base stats object found in a character object.
+    public class BaseStats
+    {
+        public int attack;
+        public int defense;
+        public int magic;
+        public int special;
+        public int accuracy;
+        public int critical;
+        public int hp;
+        public int magicEvasion;
+        public int meleeEvasion;
+    }
+
+    // The level points object found in a character object.
+    public class LevelPoints
+    {
+        public int attacker;
+        public int caster;
+        public int defender;
+        public int healer;
+        public int ranger;
+    }
+
+    // The level stats object found in a character object.
+    public class LevelStats
+    {
+        public int attack;
+        public int defense;
+        public int magic;
+        public int special;
+        public int accuracy;
+        public int critical;
+        public int hp;
+        public int magicEvasion;
+        public int meleeEvasion;
+    }
+
+    // The lb points object found in a character object.
+    public class LbPoints
+    {
+        public int attacker;
+        public int caster;
+        public int defender;
+        public int healer;
+        public int ranger;
+    }
+
+    // The lb stats object found in a character object.
+    public class LbStats
+    {
+        public int attack;
+        public int defense;
+        public int magic;
+        public int special;
+        public int accuracy;
+        public int critical;
+        public int hp;
+        public int magicEvasion;
+        public int meleeEvasion;
+    }
+
+    // A character's ability id references arranged by ability group.
+    public class CharacterAbilityGroup
+    {
+        public string name;
+        public string[] abilities;
+    }
+
+    // A skill id reference as it appears in a character object.
+    public class CharacterSkillReference
+    {
+        public string name;
+        public int lb;
+    }
+
+    // Spritesheet data that appears in a characters/enemies/etc.
+    public class SpritesheetData
+    {
+        public int attackFrames;
+        public int castFrames;
+        public int deadFrames;
+        public int idleFrames;
+        public int moveFrames;
+        public int onDeathFrames;
+        public int onHitFrames;
+    }
+
+    public class Character
+    {
+        public string name;
+        public string art;
+        public string headArt;
+        public string spritesheet;
+        public int stars;
+        public string primaryStat;
+        public string archetype;
+        public string weapon;
+        public BasePoints basePoints;
+        public BaseStats baseStats;
+        public LevelPoints levelPoints;
+        public LevelStats levelStats;
+        public LbPoints lbPoints;
+        public LbStats lbStats;
+        public CharacterAbilityGroup[] abilities;
+        public CharacterSkillReference[] skills;
+        public string specialSkill;
+        public string id;
+        public SpritesheetData spritesheetData;
+        public string reinforceItem;
+        public int speed;
+        public string title;
+    }
+
+    public class Accessory
+    {
+        public string name;
+        public string art;
+        public string itemType;
+        public int sellValue;
+        public string description;
+        public int stars;
+        public string primaryStat;
+        public string id;
+        public string[] abilities;
+    }
+
+    public class Enemy
+    {
+        public string id;
+        public string name;
+        public string art;
+        public string spritesheet;
+        public string primaryStat;
+        public BasePoints basePoints;
+        public BaseStats baseStats;
+        public LevelPoints levelPoints;
+        public LevelStats levelStats;
+        public string[] abilities;
+        public string[] skills;
+        public SpritesheetData spritesheetData;
+    }
+
+    public class ElementHardCap
+    {
+        public int Dark;
+        public int Earth;
+        public int Fire;
+        public int Ice;
+        public int Light;
+        public int Thunder;
+        public int Neutral;
+    }
+
+    public class ElementSaturation
+    {
+        public int Dark;
+        public int Earth;
+        public int Fire;
+        public int Ice;
+        public int Light;
+        public int Thunder;
+        public int Neutral;
+    }
+
+    // TODO: Figure out the schema for this data.
+    public class Grid
+    {}
+
+    public class NodeEnemyReference
+    {
+        public string name;
+        public int level;
+        public int width;
+        public int height;
+    }
+
+    public class NodeCombat
+    {
+        public bool usesDefaultHardCap;
+        public bool usesDefaultSaturation;
+        public ElementHardCap elementHardCap;
+        public ElementSaturation elementSaturation;
+        public Grid grid;
+    }
+
+    public class MapNode
+    {
+        public string id;
+        public string name;
+        public float x;
+        public float y;
+        public string description;
+        public int staminaCost;
+        public string unlocksMap;
+        public string[] abilities;
+        public string[] drops;
+        public bool isDefaultAvailable;
+    }
+
+    // TODO: Figure out the schema for this information.
+    public class NodeConnection
+    {}
+
+    public class Map
+    {
+        public string id;
+        public string name;
+        public string art;
+        public string activeStarts;
+        public string activeEnds;
+        public MapNode[] nodes;
+        public NodeConnection[] nodeConnections;
+    }
+
+    // A character's shop information and id reference as listed in a shop.
+    public class ShopCharacter
+    {
+        public string name;
+        public int cost;
+        public int quantity;
+    }
+
+    // An accessory's shop information and id reference as listed in a shop.
+    public class ShopAccessory
+    {
+        public string name;
+        public int cost;
+        public int quantity;
+    }
+
+    // An item's shop information and id reference as listed in a shop.
+    public class ShopItem
+    {
+        public string name;
+        public int cost;
+        public int quantity;
+    }
+
+    // A weapon's shop information and id reference as listed in a shop.
+    public class ShopWeapon
+    {
+        public string name;
+        public int cost;
+        public int quantity;
+    }
+
+    public class Shop
+    {
+        public string id;
+        public string name;
+        public string shopReset;
+        public string description;
+        public string activeStarts;
+        public string activeEnds;
+        public string currencyItem;
+        public ShopCharacter[] characters;
+        public ShopAccessory[] accessories;
+        public ShopItem[] items;
+        public ShopWeapon[] weapons;
+    }
+
+    public class GeneratedElements
+    {
+        public int Neutral;
+        public int Fire;
+        public int Ice;
+        public int Light;
+        public int Dark;
+        public int Earth;
+        public int Thunder;
+    }
+
+    public class ConsumedElements
+    {
+        public int Neutral;
+        public int Fire;
+        public int Ice;
+        public int Light;
+        public int Dark;
+        public int Earth;
+        public int Thunder;
+    }
+
+    public class StatScaling
+    {
+        public int hp;
+        public int attack;
+        public int defense;
+        public int magic;
+        public int special;
+        public int accuracy;
+        public int critical;
+        public int magicEvasion;
+        public int meleeEvasion;
+    }
+
+    public class SkillAction
+    {
+        public int castTime;
+        public bool dropsTrap;
+        public bool canTargetDead;
+        public string[] elements;
+        public int hits;
+        public string pattern;
+        public int pull;
+        public int push;
+        public StatScaling statScaling;
+        public string[] statusEffectChanges;
+        public string validTargets;
+    }
+
+    public class Skill
+    {
+        public string name;
+        public string art;
+        public string description;
+        public SkillAction[] actions;
+        public int cooldown;
+        public int hpCost;
+        public int spcCost;
+        public string id;
+        public GeneratedElements generatedElements;
+        public ConsumedElements consumedElements;
+    }
+
+    public class Weapon
+    {
+        public string name;
+        public string art;
+        public string itemType;
+        public int sellValue;
+        public string description;
+        public int stars;
+        public string primaryStat;
+        public string[] abilities;
+        public string weaponType;
+        public string id;
+    }
+
+    public class AchievementRequirement
+    {
+        public string stat;
+        public int statValue;
+        public string mapName;
+        public string mapNodeName;
+    }
+
+    public class AchievementAccessoryReward
+    {
+        public string name;
+        public int quantity;
+    }
+
+    public class AchievementItemReward
+    {
+        public string name;
+        public int quanity;
+    }
+
+    public class AchievementCharacterReward
+    {
+        public string name;
+        public int quantity;
+    }
+
+    public class AchievementWeaponReward
+    {
+        public string name;
+        public int quantity;
+    }
+
+    public class AchievementRewards
+    {
+        public AchievementAccessoryReward[] accessories;
+        public AchievementCharacterReward[] characters;
+        public AchievementItemReward[] items;
+        public AchievementWeaponReward[] weapons;
+    }
+
+    public class Achievement
+    {
+        public string id;
+        public string name;
+        public string description;
+        public string art;
+        public AchievementRequirement requirements;
+        public AchievementRewards rewards;
+        public bool isRepeatable;
+        public string category;
+    }
+
+    public class Store
+    {}
+
+    public class CalendarBonus
+    {}
 
     public class GameDataContent
     {
-        public Item[] Items;
+        public Item[] items;
 
-        public Ability[] Abilities;
+        public Ability[] abilities;
+
+        public Banner[] banners;
+
+        public Character[] characters;
+
+        public Accessory[] accessories;
+
+        public Enemy[] enemies;
+
+        public Map[] maps;
+
+        public Shop[] shops;
+
+        public Skill[] skills;
+
+        public Weapon[] weapons;
+
+        public Achievement[] achievements;
+
+        public Store[] stores;
+
+        public CalendarBonus[] calendarBonuses;
     }
     #endregion
 
