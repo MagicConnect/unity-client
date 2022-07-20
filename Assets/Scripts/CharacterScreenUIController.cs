@@ -63,9 +63,10 @@ public class CharacterScreenUIController : MonoBehaviour
 
     // Shows the character details screen and passes along the character's content id so the details screen knows
     // what to display.
-    public void ShowCharacterDetails(string contentId)
+    public void ShowCharacterDetails(string characterId)
     {
         characterDetailsScreen.SetActive(true);
+        characterDetailsScreen.GetComponent<CharacterDetailsUIController>().LoadCharacterDetails(characterId);
     }
 
     // Makes the character details screen invisible so that the character list can be displayed again.

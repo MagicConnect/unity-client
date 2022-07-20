@@ -154,7 +154,7 @@ public class CharacterCard : MonoBehaviour
     {
         if(OnCharacterCardClicked != null)
         {
-            OnCharacterCardClicked.Invoke(character.contentId);
+            OnCharacterCardClicked.Invoke(character.id);
         }
     }
 }
