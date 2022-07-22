@@ -55,15 +55,92 @@ public class MailAttachment : MonoBehaviour
         this.type = type;
 
         // Use the content id to search the gamedata cache.
+        string artName = "";
+        string objectName = "";
+
         JToken content = null;
         switch(this.type)
         {
-            case AttachmentType.Weapon: content = GameDataCache.Instance.parsedGameData["weapons"]; break;
-            case AttachmentType.Accessory: content = GameDataCache.Instance.parsedGameData["accessories"]; break;
-            case AttachmentType.Item: content = GameDataCache.Instance.parsedGameData["items"]; break;
-            case AttachmentType.Character: content = GameDataCache.Instance.parsedGameData["characters"]; break;
+            case AttachmentType.Weapon: 
+                //content = GameDataCache.Instance.parsedGameData["weapons"];
+                GameDataCache.Instance.weaponsById.TryGetValue(contentId, out var weapon);
+                if(weapon != null)
+                {
+                    artName = weapon.art;
+                    objectName = weapon.name;
+                }
+                else
+                {
+                    Debug.LogErrorFormat(this, "Mail Attachment: No weapon exists with this content id -> {0}", contentId);
+                }
+                break;
+            case AttachmentType.Accessory: 
+                //content = GameDataCache.Instance.parsedGameData["accessories"];
+                GameDataCache.Instance.accessoriesById.TryGetValue(contentId, out var accessory);
+                if(accessory != null)
+                {
+                    artName = accessory.art;
+                    objectName = accessory.name;
+                }
+                else
+                {
+                    Debug.LogErrorFormat(this, "Mail Attachment: No accessory exists with this content id -> {0}", contentId);
+                }
+                break;
+            case AttachmentType.Item: 
+                //content = GameDataCache.Instance.parsedGameData["items"];
+                GameDataCache.Instance.itemsById.TryGetValue(contentId, out var item);
+                if(item != null)
+                {
+                    artName = item.art;
+                    objectName = item.name;
+                }
+                else
+                {
+                    Debug.LogErrorFormat(this, "Mail Attachment: No item exists with this content id -> {0}", contentId);
+                }
+                break;
+            case AttachmentType.Character: 
+                //content = GameDataCache.Instance.parsedGameData["characters"];
+                GameDataCache.Instance.charactersById.TryGetValue(contentId, out var character);
+                if(character != null)
+                {
+                    artName = character.art;
+                    objectName = character.name;
+                }
+                else
+                {
+                    Debug.LogErrorFormat(this, "Mail Attachment: No character exists with this content id -> {0}", contentId);
+                }
+                break;
         }
 
+        // Get the name of the content and use it to set the label text.
+        attachmentName.text = string.Format("{0} x{1}", objectName, this.quantity);
+
+        if(artName != "")
+        {
+            Debug.LogFormat("Mail Attachment: Using name '{0}' to create a new sprite.", artName);
+            WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(artName);
+
+            if (asset != null)
+            {
+                Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+                attachmentImage.sprite = newSprite;
+            }
+            else
+            {
+                // If we get a null reference back then the art doesn't exist in the cache (by the given name, anyway).
+                Debug.LogErrorFormat(this, "Mail Attachment: There was a problem retrieving the texture '{0}' from the asset cache.", artName);
+            }
+        }
+        else
+        {
+            // There was no art listed in the game data. Use a default sprite instead.
+            Debug.LogWarningFormat(this, "Mail Attachment: No art name was given for the attachment content. Using default sprite.");
+        }
+
+/*
         foreach(JToken contentObject in content.Children())
         {
             if(contentObject["id"].Value<string>() == this.contentId)
@@ -95,9 +172,10 @@ public class MailAttachment : MonoBehaviour
                 else
                 {
                     // There was no art listed in the game data. Use a default sprite instead.
-                    Debug.LogErrorFormat(this, "Mail Attachment: No art name was given for the attachment content. Using default sprite.");
+                    Debug.LogWarningFormat(this, "Mail Attachment: No art name was given for the attachment content. Using default sprite.");
                 }
             }
         }
+        */
     }
 }
