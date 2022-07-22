@@ -351,6 +351,16 @@ public class GameDataCache : MonoBehaviour
         public Grid grid;
     }
 
+    public class Drop
+    {
+        public string name;
+        public int dropPercent;
+        public int quantity;
+        public int maxQuantity;
+        public string dropType;
+        public string value;
+    }
+
     public class MapNode
     {
         public string id;
@@ -361,7 +371,7 @@ public class GameDataCache : MonoBehaviour
         public int staminaCost;
         public string unlocksMap;
         public string[] abilities;
-        public string[] drops;
+        public Drop[] drops;
         public bool isDefaultAvailable;
     }
 
@@ -377,7 +387,7 @@ public class GameDataCache : MonoBehaviour
         public string activeStarts;
         public string activeEnds;
         public MapNode[] nodes;
-        public NodeConnection[] nodeConnections;
+        //public NodeConnection[] nodeConnections;
     }
 
     // A character's shop information and id reference as listed in a shop.
@@ -462,6 +472,14 @@ public class GameDataCache : MonoBehaviour
         public int meleeEvasion;
     }
 
+    public class StatusEffectChange
+    {
+        public string effect;
+        public int value;
+        public int duration;
+        public int probability;
+    }
+
     public class SkillAction
     {
         public int castTime;
@@ -473,7 +491,7 @@ public class GameDataCache : MonoBehaviour
         public int pull;
         public int push;
         public StatScaling statScaling;
-        public string[] statusEffectChanges;
+        public StatusEffectChange[] statusEffectChanges;
         public string validTargets;
     }
 
