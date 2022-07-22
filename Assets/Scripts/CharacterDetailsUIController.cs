@@ -110,6 +110,95 @@ public class CharacterDetailsUIController : MonoBehaviour
         Character serverData = JsonConvert.DeserializeObject<ParsedCharacter>(data).character;
 
         // Use the current content id to find the character information in the cached game data.
+        GameDataCache.Instance.charactersById.TryGetValue(serverData.contentId, out var character);
+
+        if(character != null)
+        {
+            // Use the character art name to get the character's profile art from the art cache, then create and set the sprite.
+            string artName = character.art;
+
+            if (artName != "")
+            {
+                Debug.LogFormat("Character Details: Using name '{0}' to create a new sprite.", artName);
+                WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(artName);
+
+                if (asset != null)
+                {
+                    Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+                    characterArt.sprite = newSprite;
+                }
+                else
+                {
+                    // If we get a null reference back then the art doesn't exist in the cache (by the given name, anyway).
+                    Debug.LogErrorFormat(this, "Character Details: There was a problem retrieving the texture '{0}' from the asset cache.", artName);
+                }
+            }
+            else
+            {
+                // There was no art listed in the game data. Use a default sprite instead.
+                Debug.LogErrorFormat(this, "Character Details: No art name was given for the attachment content. Using default sprite.");
+            }
+
+            // Set the character's basic information (name, level, etc.).
+            nameText.text = character.name;
+            levelText.text = string.Format("Level: {0}", serverData.currentLevel);
+            weaponTypeText.text = character.weapon;
+            archetypeText.text = character.archetype;
+
+            // Set the character's stats/essences.
+            // TODO: Once the character response is updated replace this with the calculated stat values from the server.
+            attackText.text = string.Format("{0}", serverData.currentEssences.attack);
+            specialAttackText.text = string.Format("{0}", serverData.currentEssences.special);
+            magicText.text = string.Format("{0}", serverData.currentEssences.magic);
+            hpText.text = string.Format("{0}", serverData.currentEssences.hp);
+            defenseText.text = string.Format("{0}", serverData.currentEssences.defense);
+            criticalText.text = string.Format("{0}", serverData.currentEssences.critical);
+
+            // Clear the skill list of any preexisting skill icons.
+            foreach (Transform skill in skillListContainer.transform)
+            {
+                Destroy(skill.gameObject);
+            }
+
+            // Get character skill information/art and display it.
+            foreach (GameDataCache.CharacterSkillReference skill in character.skills)
+            {
+                Debug.LogFormat(this, "{0}", skill.name);
+
+                // Instantiate a new skill icon object and pass it the skill's content id.
+                GameObject skillIcon = Instantiate(skillIconPrefab, skillListContainer.transform);
+                skillIcon.GetComponent<SkillIcon>().SetSkill(skill.name);
+            }
+
+            // Display the character's limit break level.
+
+            // Clear the star container if it isn't empty.
+            foreach (Transform star in starContainer.transform)
+            {
+                Destroy(star.gameObject);
+            }
+
+            // Display the character's star rating.
+            int rating = character.stars;
+
+            for (int i = 0; i < rating; i += 1)
+            {
+                // Spawn full stars to match the character's rating.
+                Instantiate(fullStarPrefab, starContainer.transform);
+            }
+
+            // If the rating is less than 5, spawn empty stars to fill out the graphic.
+            for (int i = 0; i < 5 - rating; i += 1)
+            {
+                Instantiate(emptyStarPrefab, starContainer.transform);
+            }
+        }
+        else
+        {
+            Debug.LogErrorFormat(this, "Character Details: No character with id '{0}' was found in the cached game data.", serverData.contentId);
+        }
+
+        /*
         JToken characters = GameDataCache.Instance.parsedGameData["characters"];
 
         foreach(JToken character in characters.Children())
@@ -202,7 +291,7 @@ public class CharacterDetailsUIController : MonoBehaviour
                         break;
                     default: break;
                 }
-                */
+                
 
                 // Display the character's star rating.
 
@@ -227,6 +316,7 @@ public class CharacterDetailsUIController : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     // Given a character's id, request relevant information from the server and the cache so it can be displayed.
