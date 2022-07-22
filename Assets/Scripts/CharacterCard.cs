@@ -65,8 +65,88 @@ public class CharacterCard : MonoBehaviour
     public void RefreshUi()
     {
         // Use the current content id to find the character information in the cached game data.
-        JToken characters = GameDataCache.Instance.parsedGameData["characters"];
+        //JToken characters = GameDataCache.Instance.parsedGameData["characters"];
+        GameDataCache.Instance.charactersById.TryGetValue(this.character.contentId, out var character);
 
+        if(character != null)
+        {
+            // Use the character art name to get the character's headshot from the art cache, then create and set the sprite.
+            string artName = character.headArt;
+
+            if (artName != "")
+            {
+                Debug.LogFormat("Character Card: Using name '{0}' to create a new sprite.", artName);
+                WebAssetCache.LoadedImageAsset asset = WebAssetCache.Instance.GetLoadedImageAssetByName(artName);
+
+                if (asset != null)
+                {
+                    Sprite newSprite = Sprite.Create(asset.texture, new Rect(0.0f, 0.0f, asset.texture.width, asset.texture.height), new Vector2(0.0f, 0.0f), 100.0f, 0, SpriteMeshType.FullRect);
+                    characterArt.sprite = newSprite;
+                }
+                else
+                {
+                    // If we get a null reference back then the art doesn't exist in the cache (by the given name, anyway).
+                    Debug.LogErrorFormat(this, "Character Card: There was a problem retrieving the texture '{0}' from the asset cache.", artName);
+                }
+            }
+            else
+            {
+                // There was no art listed in the game data. Use a default sprite instead.
+                Debug.LogErrorFormat(this, "Character Card: No art name was given for the attachment content. Using default sprite.");
+            }
+
+            // Set the character name text.
+            characterName.text = character.name.ToUpper();
+
+            // Get the character's archetype and set the type icon sprite.
+            string archetype = character.archetype;
+
+            Debug.LogFormat(this, "Character Card: {0}: Archetype = {1}", character.name, archetype);
+
+            switch (archetype)
+            {
+                case "Healer":
+                    archetypeIcon.sprite = characterList.healerIcon;
+                    this.archetype = CharacterListUIController.Archetype.Healer;
+                    break;
+                case "Defender":
+                    archetypeIcon.sprite = characterList.defenderIcon;
+                    this.archetype = CharacterListUIController.Archetype.Defender;
+                    break;
+                case "Caster":
+                    archetypeIcon.sprite = characterList.casterIcon;
+                    this.archetype = CharacterListUIController.Archetype.Caster;
+                    break;
+                case "Attacker":
+                    archetypeIcon.sprite = characterList.attackerIcon;
+                    this.archetype = CharacterListUIController.Archetype.Attacker;
+                    break;
+                case "Ranger":
+                    archetypeIcon.sprite = characterList.rangerIcon;
+                    this.archetype = CharacterListUIController.Archetype.Ranger;
+                    break;
+                default: break;
+            }
+
+            // Set the character level text.
+            characterLevel.text = this.character.currentLevel;
+
+            // Display the character's star rating.
+            int rating = character.stars;
+
+            // Spawn full stars to match the character's rating.
+            for (int i = 0; i < rating; i += 1)
+            {
+                Instantiate(fullStarPrefab, starContainer.transform);
+            }
+
+            // If the rating is less than 5, spawn empty stars to fill out the graphic.
+            for (int i = 0; i < 5 - rating; i += 1)
+            {
+                Instantiate(emptyStarPrefab, starContainer.transform);
+            }
+        }
+/*
         foreach(JToken character in characters.Children())
         {
             if(character["id"].Value<string>() == this.character.contentId)
@@ -148,6 +228,7 @@ public class CharacterCard : MonoBehaviour
                 }
             }
         }
+        */
     }
 
     public void OnCardClicked()
