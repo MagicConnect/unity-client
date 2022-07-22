@@ -58,15 +58,10 @@ public class GameDataCache : MonoBehaviour
     public class Item
     {
         public string name;
-
         public string art;
-
         public int sellValue;
-
         public string description;
-
         public string itemType;
-
         public string id;
     }
 
@@ -80,9 +75,7 @@ public class GameDataCache : MonoBehaviour
     public class Props
     {
         public bool isPercent;
-
         public int baseValue;
-
         public string baseStat;
     }
 
@@ -90,26 +83,18 @@ public class GameDataCache : MonoBehaviour
     public class Effect
     {
         public string value;
-
         public string target;
-
         public Props props;
     }
 
     public class LbChange
     {
         public bool shouldHide;
-
         public string name;
-
         public string description;
-
         public Condition[] conditions;
-
         public Effect[] effects;
-
         public string trigger;
-
         // TODO: Figure out what this is supposed to be, because there's some sort of ambiguity or redundancy, I don't know which yet.
         public LbChange lbChanges;
     }
@@ -117,19 +102,12 @@ public class GameDataCache : MonoBehaviour
     public class Ability
     {
         public string name;
-
         public string description;
-
         public bool isAbilityUsedAtLB0;
-
         public Condition[] conditions;
-
         public Effect[] effects;
-
         public string trigger;
-
         public LbChange[] lbChanges;
-
         public string id;
     }
 
@@ -137,7 +115,6 @@ public class GameDataCache : MonoBehaviour
     public class BannerCharacterReference
     {
         public string name;
-
         public bool isBannerSpecial;
     }
 
@@ -145,7 +122,6 @@ public class GameDataCache : MonoBehaviour
     public class BannerAccessoryReference
     {
         public string name;
-
         public bool isBannerSpecial;
     }
 
@@ -153,7 +129,6 @@ public class GameDataCache : MonoBehaviour
     public class BannerItemReference
     {
         public string name;
-
         public bool isBannerSpecial;
     }
 
@@ -161,34 +136,22 @@ public class GameDataCache : MonoBehaviour
     public class BannerWeaponReference
     {
         public string name;
-
         public bool isBannerSpecial;
     }
 
     public class Banner
     {
         public string id;
-
         public string name;
-
         public string art;
-
         public string description;
-
         public string type;
-
         public string activeStarts;
-
         public string activeEnds;
-
         public string rollItem;
-
         public BannerCharacterReference[] characters;
-
         public BannerAccessoryReference[] accessories;
-
         public BannerItemReference[] items;
-
         public BannerWeaponReference[] weapons;
     }
 
@@ -603,32 +566,51 @@ public class GameDataCache : MonoBehaviour
     public class GameDataContent
     {
         public Item[] items;
-
         public Ability[] abilities;
-
         public Banner[] banners;
-
         public Character[] characters;
-
         public Accessory[] accessories;
-
         public Enemy[] enemies;
-
         public Map[] maps;
-
         public Shop[] shops;
-
         public Skill[] skills;
-
         public Weapon[] weapons;
-
         public Achievement[] achievements;
-
         public Store[] stores;
-
         public CalendarBonus[] calendarBonuses;
     }
     #endregion
+
+    // The dictionaries which store the game data objects by their id.
+    public Dictionary<string, Item> itemsById = new Dictionary<string, Item>();
+    public Dictionary<string, Ability> abilitiesById = new Dictionary<string, Ability>();
+    public Dictionary<string, Banner> bannersById = new Dictionary<string, Banner>();
+    public Dictionary<string, Character> charactersById = new Dictionary<string, Character>();
+    public Dictionary<string, Accessory> accessoriesById = new Dictionary<string, Accessory>();
+    public Dictionary<string, Enemy> enemiesById = new Dictionary<string, Enemy>();
+    public Dictionary<string, Map> mapsById = new Dictionary<string, Map>();
+    public Dictionary<string, Shop> shopsById = new Dictionary<string, Shop>();
+    public Dictionary<string, Skill> skillsById = new Dictionary<string, Skill>();
+    public Dictionary<string, Weapon> weaponsById = new Dictionary<string, Weapon>();
+    public Dictionary<string, Achievement> achievementsById = new Dictionary<string, Achievement>();
+    public Dictionary<string, Store> storesById = new Dictionary<string, Store>();
+    public Dictionary<string, CalendarBonus> calendarBonusesById = new Dictionary<string, CalendarBonus>();
+
+    // Just in case, these dictionaries will store the specific unparsed JTokens that the above gamedata was
+    // parsed from. If the above object definitions aren't working for some reason, these will be a backup.
+    public Dictionary<string, JToken> jsonItemsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonAbilitiesById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonBannersById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonCharactersById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonAccessoriesById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonEnemiesById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonMapsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonShopsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonSkillsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonWeaponsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonAchievementsById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonStoresById = new Dictionary<string, JToken>();
+    public Dictionary<string, JToken> jsonCalendarBonusesById = new Dictionary<string, JToken>();
 
     // The local version information, if it exists.
     private VersionNumber currentVersion;
@@ -649,7 +631,7 @@ public class GameDataCache : MonoBehaviour
     public string versionJSON;
 
     // The original JSON file of the gamedata content.
-    public string contentJSON;
+    public string sourceJSON;
 
     // Events which broadcast important state changes and information to listeners.
     public static event Action OnCacheReady;
@@ -658,10 +640,34 @@ public class GameDataCache : MonoBehaviour
 
     public static event Action OnGameDataCacheStartupEnd;
 
-    // There is far too much data for me to realistically make classes for all of it, and it appears that
-    // much of the data is still in development. Instead of parsing into easily usable objects, we're just gonna
-    // have to access an automatically generated JSON object instead.
-    public JObject parsedGameData {get; private set;}
+    // The JSON game data parsed into a traversable tree/dictionary of JTokens.
+    public JObject parsedGameData
+    {
+        get 
+        {
+            Debug.LogWarningFormat(this, "Game Data Cache: 'parsedGameData' has been deprecated. Use 'jsonData' instead, the name is better.");
+            return _jsonData;
+        } 
+        private set
+        {
+            _jsonData = value;
+        }
+    }
+    private JObject _jsonData;
+    public JObject jsonData 
+    {
+        get 
+        {
+            return _jsonData;
+        } 
+        private set
+        {
+            _jsonData = value;
+        }
+    }
+
+    // The fully parsed game data in C# object form.
+    public GameDataContent data {get; private set;}
 
     void Awake()
     {
@@ -785,7 +791,8 @@ public class GameDataCache : MonoBehaviour
             // be parsed into usable data before continuing.
             try
             {
-                parsedGameData = JObject.Parse(LoadDataFromFile("content.dat"));
+                //parsedGameData = JObject.Parse(LoadDataFromFile("content.dat"));
+                LoadGameDataFromJson(LoadDataFromFile("content.dat"));
             }
             catch(Exception e)
             {
@@ -798,7 +805,7 @@ public class GameDataCache : MonoBehaviour
         Debug.Log("GameDataCache: Caching version and content data.");
         if(newDataToCache)
         {
-            SaveDataToFile("content.dat", contentJSON);
+            SaveDataToFile("content.dat", sourceJSON);
             SaveDataToFile("gamedata_version.dat", versionJSON);
             currentVersion = serverVersion;
         }
@@ -817,6 +824,152 @@ public class GameDataCache : MonoBehaviour
         if(OnCacheReady != null)
         {
             OnCacheReady();
+        }
+    }
+
+    // Parses a json string of game data into usable objects.
+    public void LoadGameDataFromJson(string json)
+    {
+        // Store the original json string of the game data.
+        sourceJSON = json;
+
+        // Automatically parse the JSON into JTokens.
+        parsedGameData = JObject.Parse(json);
+
+        // Parse the JSON and store it in dedicated C# objects.
+        data = JsonConvert.DeserializeObject<GameDataContent>(json);
+
+        // Store the parsed data in dictionaries for ease of access.
+        foreach(Item item in data.items)
+        {
+            itemsById.Add(item.id, item);
+        }
+
+        foreach(JToken item in jsonData["items"].Children())
+        {
+            jsonItemsById.Add(item["id"].Value<string>(), item);
+        }
+
+        foreach(Banner banner in data.banners)
+        {
+            bannersById.Add(banner.id, banner);
+        }
+
+        foreach(JToken banner in jsonData["banners"].Children())
+        {
+            jsonBannersById.Add(banner["id"].Value<string>(), banner);
+        }
+
+        foreach(Character character in data.characters)
+        {
+            charactersById.Add(character.id, character);
+        }
+
+        foreach(JToken character in jsonData["characters"].Children())
+        {
+            jsonCharactersById.Add(character["id"].Value<string>(), character);
+        }
+
+        foreach(Ability ability in data.abilities)
+        {
+            abilitiesById.Add(ability.id, ability);
+        }
+
+        foreach(JToken ability in jsonData["abilities"].Children())
+        {
+            jsonAbilitiesById.Add(ability["id"].Value<string>(), ability);
+        }
+
+        foreach(Accessory accessory in data.accessories)
+        {
+            accessoriesById.Add(accessory.id, accessory);
+        }
+
+        foreach(JToken accessory in jsonData["accessories"].Children())
+        {
+            jsonAccessoriesById.Add(accessory["id"].Value<string>(), accessory);
+        }
+
+        foreach(Achievement achievement in data.achievements)
+        {
+            achievementsById.Add(achievement.id, achievement);
+        }
+
+        foreach(JToken achievement in jsonData["achievements"].Children())
+        {
+            jsonAchievementsById.Add(achievement["id"].Value<string>(), achievement);
+        }
+
+        // TODO: Whenever calendar bonuses are defined and have ids, add them here.
+        foreach(CalendarBonus bonus in data.calendarBonuses)
+        {
+            //
+        }
+
+        foreach(JToken bonus in jsonData["calendarBonuses"].Children())
+        {
+            //jsonItemsById.Add(ability["id"].Value<string>(), ability);
+        }
+
+        foreach(Enemy enemy in data.enemies)
+        {
+            enemiesById.Add(enemy.id, enemy);
+        }
+
+        foreach(JToken enemy in jsonData["enemies"].Children())
+        {
+            jsonEnemiesById.Add(enemy["id"].Value<string>(), enemy);
+        }
+
+        foreach(Map map in data.maps)
+        {
+            mapsById.Add(map.id, map);
+        }
+
+        foreach(JToken map in jsonData["maps"].Children())
+        {
+            jsonMapsById.Add(map["id"].Value<string>(), map);
+        }
+
+        foreach(Shop shop in data.shops)
+        {
+            shopsById.Add(shop.id, shop);
+        }
+
+        foreach(JToken shop in jsonData["shops"].Children())
+        {
+            jsonShopsById.Add(shop["id"].Value<string>(), shop);
+        }
+
+        foreach(Skill skill in data.skills)
+        {
+            skillsById.Add(skill.id, skill);
+        }
+
+        foreach(JToken skill in jsonData["skills"].Children())
+        {
+            jsonSkillsById.Add(skill["id"].Value<string>(), skill);
+        }
+        
+        // TODO: Whenever stores are defined and have an id, add them here.
+        foreach(Store store in data.stores)
+        {
+            
+        }
+
+        foreach(JToken store in jsonData["stores"].Children())
+        {
+            //jsonItemsById.Add(ability["id"].Value<string>(), ability);
+        }
+
+        foreach(Weapon weapon in data.weapons)
+        {
+            weaponsById.Add(weapon.id, weapon);
+        }
+
+        foreach(JToken weapon in jsonData["weapons"].Children())
+        {
+            jsonWeaponsById.Add(weapon["id"].Value<string>(), weapon);
         }
     }
 
@@ -872,8 +1025,9 @@ public class GameDataCache : MonoBehaviour
                 if(resp.IsSuccess)
                 {
                     // Now that we got our response from the server, parse the results into a usable object.
-                    parsedGameData = JObject.Parse(resp.DataAsText);
-                    contentJSON = resp.DataAsText;
+                    //parsedGameData = JObject.Parse(resp.DataAsText);
+                    //contentJSON = resp.DataAsText;
+                    LoadGameDataFromJson(resp.DataAsText);
                     Debug.LogFormat("GameDataCache: Server game data downloaded.");
                 }
                 else
